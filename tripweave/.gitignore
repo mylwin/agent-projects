@@ -52,4 +52,9 @@ logs/
 .cache/
 .uv-cache/
 
+# 本地校验报告、截图、日志和中间产物
+/tmp/
+
 # uv.lock、前端锁文件、.python-version 和 .vscode/settings.json 保持可跟踪
+
+.oip-ui/

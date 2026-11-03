@@ -7,7 +7,9 @@ authors = [
     { name = "mylwin", email = "2232802210@qq.com" }
 ]
 requires-python = ">=3.13.15"
-dependencies = []
+dependencies = [
+    "langchain>=1.4.8",
+]
 
 [tool.uv]
 package = false
