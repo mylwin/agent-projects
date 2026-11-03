@@ -8,7 +8,7 @@
 
 **现在先用 LangChain 的 `create_agent` 做 TripWeave 首版；在独立练习中手写一个最小 Agent Loop；当项目确实需要明确的业务分支和恢复执行时，再显式使用 LangGraph。暂不以 Deep Agents 或 pi-agent-core 为主线，也不从零开发通用框架。**
 
-这里的前提是：你希望既完成第一个能用的旅行规划项目，又理解 Agent 原理，并沿用此前讨论的 Python / FastAPI 方向。当前本地 `tripweave` 只有空的 `backend/`、`frontend/`、`docs/` 目录，没有已有技术栈需要迁移；Python 是基于对话的建议，不是本地代码已经确立的事实。
+这里的前提是：你希望既完成第一个能用的旅行规划项目，又理解 Agent 原理，并沿用此前讨论的 Python / FastAPI 方向。当前本地 `tripweave` 已建立 uv 配置与前后端目录骨架，尚未实现应用，没有已有业务代码需要迁移；Python/FastAPI 是当前设计基线。
 
 具体顺序是：
 
@@ -167,13 +167,17 @@ Pi 的上层 `pi-coding-agent` SDK 另外提供 `AgentSession`、持久会话和
 
 ## 10. 保留演进空间，但不先造抽象平台
 
-代码组织可以保持以下边界，无需先搭建完整目录树：
+已按以下职责创建后端目录骨架，完整结构见 [系统架构第 10 节](architecture.md#10-项目目录与部署)：
 
-- `services/`：地图、天气、检索等领域服务，输入输出尽量使用普通数据结构。
-- `schemas/`：请求、候选地点、行程及校验结果。
-- `validators/`：预算、时间、地点与行程约束。
-- `agents/`：模型、工具适配、Prompt 及 Planner 创建。
-- `workflows/`：需求出现后再放显式 LangGraph 编排。
+- `backend/routers/`、`backend/schemas/`：接口协议、请求与响应结构。
+- `backend/services/`：规划用例、行程业务及运行控制。
+- `backend/validators/`：预算、时间、地点与行程约束。
+- `backend/agents/`：Prompt、模型循环适配及 Planner 创建。
+- `backend/tools/`：工具定义与参数、结果转换。
+- `backend/clients/`：模型、地图、天气等供应商客户端。
+- `backend/models/`、`backend/crud/`、`backend/config/`：表模型、数据访问与数据库配置。
+
+显式 LangGraph 工作流在需求确认后再按需添加，不预先创建独立编排层。
 
 对 API 层提供一个清晰的旅行规划服务入口即可。更换运行时仍会涉及消息、流式输出和恢复语义的适配；这样的分层只是减少业务重写，不保证任意框架可以无成本切换。
 

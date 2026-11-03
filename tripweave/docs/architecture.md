@@ -13,7 +13,7 @@
 
 选择 Python 后端，是为了沿用此前的 Agent 学习路线及其生态；React 使用 TypeScript 不要求后端也使用 TypeScript。前后端通过 OpenAPI 契约协作，无需为了统一语言增加第二套 Agent 内核。
 
-本次只编写架构与开发方案，不初始化工程、不安装项目依赖、不调用付费模型或地图接口。架构图为设计示意，不是从已实现代码反推的事实。
+当前已建立 uv 配置与前后端目录骨架，尚未安装业务依赖或实现应用，也未调用付费模型或地图接口。架构图为设计示意，不是从已实现代码反推的事实。
 
 ## 2. 产品范围与设计前提
 
@@ -208,34 +208,69 @@ PostgreSQL 从首版使用，是因为行程版本、运行状态与并发更新
 
 当出现“等待确认后继续”“预算与路线进入不同修复分支”等需求，再加入 LangGraph 外层编排。现有 Planner 可作为节点使用。持久 checkpointer 保存执行状态，业务表继续保存正式行程；引入图运行时不自动替代后台任务执行器。
 
-## 10. 建议目录与部署
+## 10. 项目目录与部署
 
-下列是未来开发目录建议，本次未创建工程骨架：
+目录采用按技术职责组织的分层结构，已创建目录骨架，尚未实现应用。
+后端代码直接放在 `backend/`，不再嵌套 `app/`、`src/` 或 `tripweave/`；
+前端保留 Vite 项目的 `src/`。目录中的 `.gitkeep` 仅用于让 Git 跟踪空目录，
+新增实际文件后可删除相应占位文件。
 
 ```text
 tripweave/
 ├── frontend/
+│   ├── public/                 # 无需构建处理的静态资源
 │   └── src/
-│       ├── app/                 # 路由与全局 Provider
-│       ├── features/
-│       │   ├── planner/         # 对话与运行事件
-│       │   ├── itinerary/       # 行程、版本和卡片
-│       │   └── map/             # 地图 SDK 封装
-│       ├── components/ui/
-│       └── lib/api/             # 生成类型与 API 客户端
+│       ├── api/                # API 客户端与生成的接口类型
+│       ├── router/             # 路由配置
+│       ├── pages/
+│       │   ├── planner/        # 旅行规划工作台页面
+│       │   └── itinerary/      # 行程列表、详情与版本页面
+│       ├── components/
+│       │   ├── ui/             # 通用基础组件
+│       │   ├── planner/        # 对话与运行进度组件
+│       │   ├── itinerary/      # 行程卡片与版本组件
+│       │   └── map/            # 地图 SDK 封装及联动组件
+│       ├── hooks/              # 可复用 Hook、运行事件与状态逻辑
+│       ├── types/              # 前端业务与视图类型
+│       ├── utils/              # 无业务状态的通用工具
+│       ├── assets/             # 参与构建的图片、字体等资源
+│       └── styles/             # 全局样式与主题
 ├── backend/
-│   ├── app/
-│   │   ├── api/                 # 请求与响应协议
-│   │   ├── application/         # 规划用例、运行控制
-│   │   ├── agents/              # Planner、Prompt、工具适配
-│   │   ├── domain/              # 行程模型、预算与路线校验
-│   │   ├── integrations/        # 模型、地图、天气客户端
-│   │   └── persistence/         # ORM、仓储与事务
-│   ├── migrations/
-│   └── tests/
-├── docs/
-└── compose.yaml
+│   ├── config/                 # 应用配置、数据库连接与会话工厂
+│   ├── routers/                # HTTP/SSE 路由、校验与依赖注入
+│   ├── schemas/                # Pydantic 请求、响应、行程及事件模型
+│   ├── models/                 # SQLAlchemy 数据库表模型
+│   ├── crud/                   # 数据查询与写入
+│   ├── services/               # 规划用例、运行控制、行程与版本业务
+│   ├── dependencies/           # 数据库会话、身份等请求依赖
+│   ├── agents/                 # Planner 创建、Prompt 与模型循环适配
+│   ├── tools/                  # Agent 工具定义、参数与结果转换
+│   ├── clients/                # 模型、地图、天气供应商客户端
+│   ├── validators/             # 预算、路线、地点与修改范围校验
+│   ├── utils/                  # 日志、错误等通用工具
+│   ├── migrations/             # 后续 Alembic 数据库迁移
+│   └── tests/                  # 后端自动化测试与接口请求示例
+├── docs/                       # 架构、技术决策与接口文档
+├── AGENTS.md                   # 开发与提交约定
+├── pyproject.toml
+└── uv.lock
 ```
+
+对应关系为：原 `api/` 拆为 `routers/` 和 `schemas/`，`application/` 对应
+`services/`，`domain/` 中的数据结构归入 `schemas/`、业务约束归入
+`validators/`，`integrations/` 对应 `clients/`，`persistence/` 拆为
+`models/`、`crud/` 和 `config/`。这是本项目选择的命名约定，并非框架强制标准。
+
+路由只处理协议与请求依赖，通过 Service 编排业务；CRUD 不返回 HTTP 响应，
+也不自行提交事务。Service 明确事务边界，长时间模型和地图调用不占用数据库事务。
+工具调用 Service 或 Client，避免在 Prompt、路由或工具定义中重复实现业务规则。
+
+前端页面组合业务组件，路由集中在 `router/`；全局 Provider 在未来的入口
+`src/main.tsx` 注册，可复用 Provider 按职责组织，不再单设 `app/`。
+生成的 OpenAPI 类型放在 `api/`，`types/` 只存放额外的业务及视图类型。
+
+后续实现应用时再添加 `backend/main.py`、前端入口和构建配置；部署阶段
+再编写根目录 `compose.yaml`。当前没有可运行的服务或容器编排配置。
 
 本地使用 Vite 开发服务代理 `/api` 到 FastAPI，PostgreSQL 在 Compose 中运行。部署时 Nginx 提供前端静态资源并代理 API，SSE 路径关闭缓冲、配置合适超时；首次部署只运行一个 API 执行实例，与请求内任务模型保持一致。
 

@@ -5,7 +5,7 @@
 
 ## 项目状态与设计依据
 
-- 当前为项目配置与架构设计阶段，`backend/`、`frontend/` 尚未实现应用。
+- 当前已创建项目配置和前后端目录骨架，`backend/`、`frontend/` 尚未实现应用。
   不将目标架构、建议接口或文档中的验收方案描述为已经完成的功能。
 - 技术方案以 `docs/architecture.md` 为基线；Agent 框架取舍见
   `docs/agent-framework-decision.md`；文档索引见 `docs/README.md`。
@@ -21,24 +21,37 @@
 - `docs/architecture/`：交互架构图、图定义及配套生成和检查记录。
 - `pyproject.toml`、`uv.lock`、`.python-version` 位于子项目根目录，
   由 uv 管理 Python 环境和依赖；保持 `[tool.uv] package = false`。
-- 使用现有目录，不增加 `src/` 或再嵌套一层 `tripweave/`。
+- 后端代码直接放在 `backend/`，不增加 `backend/app/`、Python 的 `src/`
+  或再嵌套一层 `tripweave/`；前端使用 `frontend/src/`。
   应用所需的内部 Python 包按需添加 `__init__.py`。
-- 只在需要时创建模块，不预建空文件或通用工具目录，不为当前规模增加抽象层。
+- 已按架构建立目录骨架，空目录使用 `.gitkeep` 纳入版本管理，添加实际文件后
+  可删除占位文件；新模块按需创建，不为当前规模增加抽象层。
 - Python 依赖通过 `uv add`、`uv remove` 管理，前端初始化后使用 pnpm。
   依赖变更同步提交对应锁文件，不手工拼接锁文件内容。
 
 ## 模块职责
 
-以下为后端逐步实现时的职责边界，不要求一次性建立全部目录。
+目录职责以 `docs/architecture.md` 第 10 节为准，后续实现遵循以下边界：
 
-- API 层负责参数校验、依赖注入、HTTP/SSE 协议及错误响应。
-- 应用服务负责需求合并、调用 Planner、触发校验和保存行程。
-- Planner 负责工具调用与结构化草稿，不直接写数据库或绕过业务校验。
-- 工具与供应商适配负责参数约束、外部请求、超时和错误转换。
-- 领域服务负责地点规范化、路线核验、预算汇总及行程约束校验。
-- 仓储层负责查询、事务和版本更新，不执行模型循环；事务边界在用例层明确。
-- 前端组件负责展示与交互；接口调用、地图适配及运行事件处理按职责组织，
-  不在多个状态容器重复维护同一份已保存行程。
+- `backend/config/`：应用配置、数据库连接和会话工厂。
+- `backend/routers/`：参数校验、请求依赖、HTTP/SSE 协议及错误响应。
+- `backend/schemas/`：Pydantic 请求、响应、行程、候选地点及运行事件模型。
+- `backend/models/`：SQLAlchemy 表模型；`migrations/`：后续数据库迁移。
+- `backend/crud/`：数据查询与写入，不处理 HTTP 响应或自行提交事务。
+- `backend/services/`：需求合并、规划用例、运行控制、校验与版本保存；
+  在用例层明确事务边界，长时间模型和地图调用不占用数据库事务。
+- `backend/dependencies/`：数据库会话、身份校验等可复用请求依赖。
+- `backend/agents/`：Planner、Prompt 和模型循环适配，不直接写数据库。
+- `backend/tools/`：Agent 工具定义、参数与结果转换，复用 Service 和 Client。
+- `backend/clients/`：模型、地图、天气供应商协议、外部请求、超时与错误转换。
+- `backend/validators/`：预算、路线、地点与修改范围等纯业务校验。
+- `backend/utils/`：日志、错误等通用工具，不堆放业务逻辑。
+- `backend/tests/`：后端自动化测试与接口请求示例。
+- 前端 `pages/` 组合页面，`components/` 放通用与业务组件，`router/` 管理
+  路由，`api/` 放 API 客户端与生成类型，`hooks/` 放复用状态及事件处理，
+  `types/` 放额外业务类型，`assets/`、`styles/`、`utils/` 按职责组织。
+- 全局 Provider 在未来的 `frontend/src/main.tsx` 注册；前端不在多个状态
+  容器重复维护同一份已保存行程。
 
 ## 命名与导入
 
