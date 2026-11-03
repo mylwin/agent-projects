@@ -167,7 +167,7 @@ Pi 的上层 `pi-coding-agent` SDK 另外提供 `AgentSession`、持久会话和
 
 ## 10. 保留演进空间，但不先造抽象平台
 
-已按以下职责创建后端目录骨架，完整结构见 [系统架构第 10 节](architecture.md#10-项目目录与部署)：
+已按以下职责创建后端目录骨架，完整结构见 [系统架构第 10 节](02-system-architecture.md#10-项目目录与部署)：
 
 - `backend/routers/`、`backend/schemas/`：接口协议、请求与响应结构。
 - `backend/services/`：规划用例、行程业务及运行控制。

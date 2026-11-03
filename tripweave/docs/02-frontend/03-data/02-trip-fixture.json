@@ -1,0 +1,230 @@
+{
+  "schemaVersion": 1,
+  "id": "suzhou-slow-travel",
+  "destination": "苏州",
+  "travelers": 2,
+  "budget": 3000,
+  "currency": "CNY",
+  "messages": [
+    {
+      "id": "welcome",
+      "role": "assistant",
+      "content": "这趟苏州之旅，留一点时间给园林，也留一点给街巷。\n\n今天可以先慢赏园林，午后去博物馆，再沿平江路散步。有什么想调整的，随时告诉我。",
+      "time": "10:24"
+    },
+    {
+      "id": "question",
+      "role": "user",
+      "content": "第 2 天的节奏很好，午餐想吃清淡一点的苏帮菜。",
+      "time": "10:26"
+    },
+    {
+      "id": "suggestion",
+      "role": "assistant",
+      "content": "午餐可以考虑平江路附近的苏式小馆，选择清炒虾仁、时蔬和汤面，口味更清淡。\n\n两人餐费暂按 ¥120 估算，具体菜单和营业情况记得出发前核实。",
+      "time": "10:27"
+    }
+  ],
+  "days": [
+    {
+      "id": 1,
+      "date": "2027-03-12",
+      "label": "抵达苏州 · 古城初探",
+      "title": "初见姑苏 · 一城温柔",
+      "description": "把脚步放慢，从一碗苏式面开始，走进这座水巷里的城。",
+      "distance": "3.2",
+      "activities": [
+        {
+          "id": "d1-arrival",
+          "time": "10:00 – 11:00",
+          "title": "抵达苏州 · 安顿行李",
+          "description": "入住古城附近的酒店，给这趟旅程一个从容的开始。",
+          "location": "姑苏区 · 住宿地",
+          "kind": "hotel",
+          "cost": 0,
+          "point": null
+        },
+        {
+          "id": "d1-lunch",
+          "time": "11:30 – 12:30",
+          "title": "午餐 · 一碗苏式汤面",
+          "description": "尝尝鲜甜的汤头与时令浇头，感受姑苏的日常。",
+          "location": "观前街",
+          "kind": "food",
+          "cost": 80,
+          "point": [
+            230,
+            168
+          ]
+        },
+        {
+          "id": "d1-street",
+          "time": "13:00 – 15:00",
+          "title": "观前街 · 古城寻味",
+          "description": "逛老字号、吃一块糕团，随心走走，不必赶路。",
+          "location": "姑苏区 · 观前街",
+          "kind": "walk",
+          "cost": 60,
+          "point": [
+            255,
+            180
+          ]
+        },
+        {
+          "id": "d1-sunset",
+          "time": "16:00 – 18:00",
+          "title": "山塘街 · 灯火初上",
+          "description": "沿河漫步，等水面上的灯影亮起来。",
+          "location": "七里山塘景区",
+          "kind": "garden",
+          "cost": 100,
+          "point": [
+            100,
+            96
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "date": "2027-03-13",
+      "label": "园林雅集 · 水巷漫行",
+      "title": "园林雅集 · 水巷漫行",
+      "description": "在苏州的园林与水巷之间，慢赏江南的精致与从容。",
+      "distance": "4.5",
+      "activities": [
+        {
+          "id": "d2-breakfast",
+          "time": "08:00 – 09:00",
+          "title": "酒店早餐 · 整理出发",
+          "description": "从容用餐，为园林之行留足时间。",
+          "location": "住宿地（姑苏区）",
+          "kind": "breakfast",
+          "cost": 0,
+          "point": null
+        },
+        {
+          "id": "d2-garden",
+          "time": "09:00 – 11:30",
+          "title": "拙政园",
+          "description": "苏州园林的代表作，亭台水榭错落，四时皆有风雅。",
+          "location": "姑苏区东北街178号",
+          "kind": "garden",
+          "cost": 160,
+          "point": [
+            270,
+            52
+          ]
+        },
+        {
+          "id": "d2-lunch",
+          "time": "11:30 – 13:00",
+          "title": "午餐 · 苏式小馆",
+          "description": "品尝松鼠鳜鱼、响油鳝糊等地道风味。",
+          "location": "平江路一带",
+          "kind": "food",
+          "cost": 120,
+          "point": null
+        },
+        {
+          "id": "d2-museum",
+          "time": "13:00 – 14:30",
+          "title": "苏州博物馆",
+          "description": "在贝聿铭的建筑中，读懂苏州的历史与文脉。",
+          "location": "姑苏区东北街204号",
+          "kind": "museum",
+          "cost": 0,
+          "point": [
+            227,
+            96
+          ]
+        },
+        {
+          "id": "d2-pingjiang",
+          "time": "14:30 – 17:00",
+          "title": "平江路漫步",
+          "description": "沿水巷慢行，逛小店、喝一杯茶，感受老城生活气息。",
+          "location": "平江路历史街区",
+          "kind": "walk",
+          "cost": 60,
+          "point": [
+            245,
+            165
+          ]
+        },
+        {
+          "id": "d2-wangshi",
+          "time": "17:00 – 18:30",
+          "title": "网师园",
+          "description": "小而精致的古典园林，黄昏时分尤显静谧。",
+          "location": "姑苏区带城桥路阔家头巷11号",
+          "kind": "lotus",
+          "cost": 80,
+          "point": [
+            285,
+            224
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "date": "2027-03-14",
+      "label": "湖畔闲走 · 返程",
+      "title": "湖风作别 · 留一点余味",
+      "description": "去湖边散散步，再带一份苏式点心，让旅程的尾声也轻盈。",
+      "distance": "2.8",
+      "activities": [
+        {
+          "id": "d3-breakfast",
+          "time": "08:30 – 09:30",
+          "title": "早餐 · 收拾行李",
+          "description": "慢慢吃完早餐，办理退房并寄存行李。",
+          "location": "住宿地（姑苏区）",
+          "kind": "breakfast",
+          "cost": 40,
+          "point": null
+        },
+        {
+          "id": "d3-lake",
+          "time": "10:00 – 12:00",
+          "title": "金鸡湖 · 湖畔闲走",
+          "description": "吹吹湖风，在开阔的水面前享受一段留白。",
+          "location": "金鸡湖西岸",
+          "kind": "walk",
+          "cost": 0,
+          "point": [
+            290,
+            96
+          ]
+        },
+        {
+          "id": "d3-lunch",
+          "time": "12:00 – 13:00",
+          "title": "午餐 · 再尝江南",
+          "description": "吃一顿简单的午餐，挑选喜欢的苏式糕点。",
+          "location": "湖西商圈",
+          "kind": "food",
+          "cost": 100,
+          "point": [
+            255,
+            152
+          ]
+        },
+        {
+          "id": "d3-return",
+          "time": "14:00 – 15:00",
+          "title": "取行李 · 从容返程",
+          "description": "提前预留交通时间，带着喜欢的回忆回家。",
+          "location": "苏州站",
+          "kind": "hotel",
+          "cost": 40,
+          "point": [
+            120,
+            68
+          ]
+        }
+      ]
+    }
+  ]
+}

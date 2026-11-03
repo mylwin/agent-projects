@@ -4,7 +4,7 @@
   "meta": {
     "title": "TripWeave 首版建议架构",
     "locale": "zh-CN",
-    "output": "tripweave/docs/architecture/tripweave-architecture.html",
+    "output": "tripweave/docs/01-architecture/03-diagrams/01-system-architecture.html",
     "quality_profile": "showcase"
   },
   "components": [
