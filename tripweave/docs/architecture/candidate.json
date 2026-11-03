@@ -1,0 +1,196 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "TripWeave 首版建议架构",
+    "locale": "zh-CN",
+    "output": "tripweave/docs/architecture/tripweave-architecture.html",
+    "quality_profile": "showcase"
+  },
+  "components": [
+    {
+      "id": "ui",
+      "type": "frontend",
+      "label": "旅行工作台",
+      "sublabel": "React · TypeScript · Vite",
+      "pos": [
+        40,
+        80
+      ],
+      "size": [
+        220,
+        84
+      ]
+    },
+    {
+      "id": "api",
+      "type": "backend",
+      "label": "API 与运行入口",
+      "sublabel": "FastAPI · REST / SSE",
+      "pos": [
+        400,
+        80
+      ],
+      "size": [
+        220,
+        84
+      ]
+    },
+    {
+      "id": "db",
+      "type": "database",
+      "label": "业务与执行记录",
+      "sublabel": "PostgreSQL · 行程版本",
+      "pos": [
+        760,
+        80
+      ],
+      "size": [
+        220,
+        84
+      ]
+    },
+    {
+      "id": "app",
+      "type": "backend",
+      "label": "规划应用服务",
+      "sublabel": "LangChain Planner · 规则校验",
+      "pos": [
+        400,
+        350
+      ],
+      "size": [
+        220,
+        84
+      ]
+    },
+    {
+      "id": "model",
+      "type": "external",
+      "label": "模型服务",
+      "sublabel": "Qwen Plus · 配置化接入",
+      "pos": [
+        40,
+        350
+      ],
+      "size": [
+        220,
+        84
+      ]
+    },
+    {
+      "id": "tools",
+      "type": "backend",
+      "label": "旅行工具适配",
+      "sublabel": "地点 · 天气 · 路线",
+      "pos": [
+        760,
+        350
+      ],
+      "size": [
+        220,
+        84
+      ]
+    },
+    {
+      "id": "amap",
+      "type": "external",
+      "label": "高德开放平台",
+      "sublabel": "POI · 天气 · 路径服务",
+      "pos": [
+        760,
+        620
+      ],
+      "size": [
+        220,
+        84
+      ]
+    },
+    {
+      "id": "map",
+      "type": "external",
+      "label": "高德地图展示",
+      "sublabel": "浏览器地图 JS SDK",
+      "pos": [
+        40,
+        620
+      ],
+      "size": [
+        220,
+        84
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "id": "ui-api",
+      "from": "ui",
+      "to": "api",
+      "label": "HTTP / SSE"
+    },
+    {
+      "id": "api-db",
+      "from": "api",
+      "to": "db",
+      "label": "读写"
+    },
+    {
+      "id": "api-app",
+      "from": "api",
+      "to": "app",
+      "label": "运行"
+    },
+    {
+      "id": "app-model",
+      "from": "app",
+      "to": "model",
+      "label": "模型调用"
+    },
+    {
+      "id": "app-tools",
+      "from": "app",
+      "to": "tools",
+      "label": "查询"
+    },
+    {
+      "id": "tools-amap",
+      "from": "tools",
+      "to": "amap",
+      "label": "HTTPS"
+    },
+    {
+      "id": "ui-map",
+      "from": "ui",
+      "to": "map",
+      "label": "地图 SDK",
+      "fromSide": "left",
+      "toSide": "left"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "前端职责",
+      "items": [
+        "对话、行程、地图联动；SDK 地图直连高德",
+        "通过 API 获取业务数据与执行进度"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "后端职责",
+      "items": [
+        "应用服务驱动 Planner、校验与有限修复",
+        "API 层内的仓储模块保存行程版本与运行结果"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "首版执行边界",
+      "items": [
+        "请求内执行，断连尽力取消；重启后标记中断",
+        "RAG、Worker 与显式 LangGraph 编排按需增加"
+      ]
+    }
+  ]
+}

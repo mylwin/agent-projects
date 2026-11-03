@@ -1,0 +1,13 @@
+# 操作系统生成的文件（适用于所有子项目）
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+
+# 编辑器本地配置与临时文件
+.idea/
+*.swp
+*.swo
+*~
+
+# 各子项目的依赖、构建和环境配置规则由各自的 .gitignore 维护

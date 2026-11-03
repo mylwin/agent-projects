@@ -1,0 +1,55 @@
+# Python 虚拟环境与字节码
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Python 工具、测试与覆盖率缓存
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.hypothesis/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Python 打包产物
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# 前端依赖、构建与工具缓存
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/cache/
+.next/
+.nuxt/
+.output/
+.vite/
+.turbo/
+.parcel-cache/
+coverage/
+*.tsbuildinfo
+
+# 本地环境变量；保留可共享的配置模板
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.sample
+!.env.*.sample
+!.env.template
+!.env.*.template
+
+# 日志和通用缓存
+*.log
+logs/
+.cache/
+.uv-cache/
+
+# uv.lock、前端锁文件、.python-version 和 .vscode/settings.json 保持可跟踪
