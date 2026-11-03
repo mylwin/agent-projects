@@ -5,10 +5,10 @@
 
 ## 项目状态与设计依据
 
-- 当前已创建项目配置和前后端目录骨架，`backend/`、`frontend/` 尚未实现应用。
+- 当前已实现 React 前端原型及本地保存，`backend/` 仍为目录骨架。
   不将目标架构、建议接口或文档中的验收方案描述为已经完成的功能。
-- 技术方案以 `docs/architecture.md` 为基线；Agent 框架取舍见
-  `docs/agent-framework-decision.md`；文档索引见 `docs/README.md`。
+- 技术方案以 `docs/01-architecture/02-system-architecture.md` 为基线；Agent 框架取舍见
+  `docs/01-architecture/01-agent-framework-decision.md`；文档索引见 `docs/README.md`。
 - 目标前端为 TypeScript + React + Vite，目标后端为 Python + FastAPI；
   Agent 首版采用 LangChain 单 Planner。依赖是否安装以项目配置和锁文件为准。
 - 新增或调整架构时同步更新对应文档，区分已实现能力、目标设计和待验证假设。
@@ -17,8 +17,14 @@
 
 - `backend/`：后端入口、接口、规划编排、领域规则、外部服务适配与数据访问。
 - `frontend/`：前端页面、组件、地图联动与接口调用。
-- `docs/`：架构、技术决策、协议说明及验证记录。
-- `docs/architecture/`：交互架构图、图定义及配套生成和检查记录。
+- `docs/`：正式架构、技术决策、设计与协议说明、前端样本数据。
+- `tmp/`：本地校验报告、截图、日志、预览和中间产物，整个目录由 Git 忽略。
+  前端按 `tmp/frontend/YYYY-MM-DD/<任务名>/` 分开保存不同校验的内容。
+- `docs/README.md`：唯一文档总入口，README 不添加数字前缀，不在子目录重复建立。
+- `docs/01-architecture/`：Agent 框架探索、系统方案与 `03-diagrams/` 架构图源文件。
+- `docs/02-frontend/`：按 `01-planning/`、`02-design/`、`03-data/`、
+  `04-features/` 分级存放实施计划、界面设计、数据契约与样本、功能说明。
+  普通目录和文件按各层阅读顺序独立编号，新文档归入对应功能，避免重新平铺到 docs 根目录。
 - `pyproject.toml`、`uv.lock`、`.python-version` 位于子项目根目录，
   由 uv 管理 Python 环境和依赖；保持 `[tool.uv] package = false`。
 - 后端代码直接放在 `backend/`，不增加 `backend/app/`、Python 的 `src/`
@@ -31,7 +37,7 @@
 
 ## 模块职责
 
-目录职责以 `docs/architecture.md` 第 10 节为准，后续实现遵循以下边界：
+目录职责以 `docs/01-architecture/02-system-architecture.md` 第 10 节为准，后续实现遵循以下边界：
 
 - `backend/config/`：应用配置、数据库连接和会话工厂。
 - `backend/routers/`：参数校验、请求依赖、HTTP/SSE 协议及错误响应。
@@ -95,11 +101,14 @@
 ## 验证与交付
 
 - 当前可执行的环境检查为 `uv sync --offline`；缓存不足时使用 `uv sync`。
-- 目前未配置应用启动命令、测试与静态检查工具；不要声称其已经通过。
-  实现相关能力时同步补充 README 中的实际命令。
+- 前端在 `frontend/` 执行 `pnpm dev`，静态检查为 `pnpm typecheck`、`pnpm lint`。
+  后端尚未配置应用启动、测试与静态检查工具，不声称其已经通过。
 - 引入 Ruff、pytest 或前端检查工具后，运行与变更相关的检查；
   修改业务行为时覆盖关键边界、异常和接口契约，不编写仅重复实现细节的测试。
 - 重命名同步修改导入、调用、测试与文档；调整依赖后验证环境同步。
+- 校验结果和过程产物只写入 `tmp/` 下对应任务的子目录，不写入 `docs/`
+  或项目根目录，也不另建 `.oil-ui/` 等过程目录。`docs/` 可说明验证方法与
+  功能边界，不堆放逐轮测试结果、截图、日志或生成工具的校验回执。
 - 父目录 `.gitignore` 管理系统和编辑器临时文件，子项目 `.gitignore`
   管理虚拟环境、依赖、构建产物、缓存、日志及本地配置。
 - 保留源码、文档、配置模板、`uv.lock`、前端锁文件和可共享的编辑器设置。
