@@ -1,0 +1,16 @@
+{
+  "operation": "generate",
+  "instruction": "安排轻松一点，喜欢历史和当地小吃",
+  "requirements": {
+    "destination": {"query": "成都"},
+    "start_date": "2027-03-12",
+    "day_count": 3,
+    "travelers": 2,
+    "budget": {
+      "amount": "3000.00",
+      "currency": "CNY",
+      "scope": "group_excluding_intercity"
+    },
+    "preferences": {"pace": "relaxed", "interests": ["历史", "当地小吃"]}
+  }
+}
