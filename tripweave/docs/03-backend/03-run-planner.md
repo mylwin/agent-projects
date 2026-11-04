@@ -47,8 +47,9 @@ uv run --env-file .env python -m backend.agents.planner backend/agents/planner/e
 下层分工：`backend/agents/runtime.py` 只负责模型循环，
 `backend/agents/streaming.py` 负责流式事件转换，`backend/agents/planner/` 放本次
 Planner 的 Prompt 与 CLI；`backend/integrations/chat_model.py` 负责 OpenAI 兼容模型
-与思考链字段适配；`backend/services/planning.py` 负责需求准备、区域解析、地点查询、
-结果校验与装配。改业务流程不碰执行器，改执行器不影响业务规则。
+与思考链字段适配；`backend/services/planning.py` 负责需求准备、区域解析、地点查询
+与装配，`backend/validators/planner.py` 负责日期、地点引用和时间顺序校验。
+改业务流程不碰执行器，改执行器不影响业务规则。
 
 同名地区、过大的区域或数据源不覆盖时提示无法唯一解析；请直接使用
 `destination.query` 填写城市或区县。
@@ -118,7 +119,8 @@ uv run --offline python -m unittest discover -s backend/tests -v
 
 `tests/agents/` 使用真实 LangChain 循环、预设工具调用消息和 HTTP 替身，
 验证模型—工具—结构化结果的执行链；`tests/integrations/` 验证模型字段与地图适配；
-两者都不会付费调用真实模型或高德。
+`tests/validators/` 直接覆盖日期、地点引用和时间顺序校验；这些测试都不会付费调用
+真实模型或高德。
 `tests/agents/test_streaming.py` 额外验证思考链、回复正文和工具事件分别产生，
 并覆盖非流式替身只补发一次全文的路径。
 配置好密钥后，使用上面的启动命令单独进行真实服务联调。
