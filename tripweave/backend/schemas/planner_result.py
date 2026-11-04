@@ -93,9 +93,11 @@ class PlannerResult(ContractModel):
         itinerary: 经日期和地点引用检查的行程草稿。
         places: 行程实际引用的供应商地点及来源。
         warnings: 尚未核验的路线、费用及开放预约等事项。
+        reply: 可直接展示给用户的说明，来自模型正文或程序兜底摘要。
     """
 
     requirements: TravelRequirements
     itinerary: TravelDraft
     places: list[QueriedPlace]
     warnings: list[str]
+    reply: str

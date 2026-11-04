@@ -46,9 +46,9 @@
 - `backend/services/`：需求合并、规划用例、运行控制、校验与版本保存；
   在用例层明确事务边界，长时间模型和地图调用不占用数据库事务。
 - `backend/dependencies/`：数据库会话、身份校验等可复用请求依赖。
-- `backend/agents/`：Planner、Prompt 和模型循环适配，不直接写数据库。
-- `backend/tools/`：Agent 工具定义、参数与结果转换，复用 Service 和 Client。
-- `backend/clients/`：模型、地图、天气供应商协议、外部请求、超时与错误转换。
+- `backend/agents/`：通用 Agent 运行时、流式事件观察，以及 `planner/` 等具体 Agent 定义，不直接写数据库。
+- `backend/tools/`：Agent 工具定义、参数与结果转换，复用 Service 与 `integrations/` 适配。
+- `backend/integrations/`：模型、地图、天气等供应商协议、外部请求、超时与错误转换。
 - `backend/validators/`：预算、路线、地点与修改范围等纯业务校验。
 - `backend/utils/`：日志、错误等通用工具，不堆放业务逻辑。
 - `backend/tests/`：后端自动化测试与接口请求示例。

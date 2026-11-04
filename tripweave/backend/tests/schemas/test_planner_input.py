@@ -21,7 +21,10 @@ def make_example() -> dict:
 
     :return: 示例输入的可变字典副本。
     """
-    path = Path(__file__).resolve().parents[2] / "agents/examples/generate.json"
+    path = (
+        Path(__file__).resolve().parents[2]
+        / "agents/planner/examples/generate.json"
+    )
     return json.loads(path.read_text(encoding="utf-8"))
 
 

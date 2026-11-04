@@ -5,13 +5,16 @@ from unittest.mock import patch
 
 import httpx
 
-from backend.clients.amap import AmapClient
-from backend.clients.baidu import BaiduMapClient
-from backend.clients.map_client import create_map_client
 from backend.config.planner import PlannerSettings
+from backend.integrations.amap import AmapClient
+from backend.integrations.baidu import BaiduMapClient
+from backend.integrations.map_client import create_map_client
 from backend.services.planning import plan_trip
-
-from .test_planner import ToolCallingModel, draft_message, make_request
+from backend.tests.agents.planner.test_planner import (
+    ToolCallingModel,
+    draft_message,
+    make_request,
+)
 
 
 def baidu_response(request: httpx.Request) -> httpx.Response:

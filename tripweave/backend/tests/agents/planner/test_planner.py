@@ -12,9 +12,10 @@ import httpx
 from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
 from langchain_core.messages import AIMessage
 
-from backend.clients.amap import AmapClient
 from backend.config.planner import PlannerSettings
+from backend.integrations.amap import AmapClient
 from backend.schemas.planner_input import PlannerInput
+from backend.schemas.run_event import AgentEvent, MessageDelta
 from backend.services.planning import plan_trip, prepare_requirements
 
 
@@ -41,8 +42,11 @@ def make_request() -> PlannerInput:
 
     :return: 将运行天数缩为一天的完整请求。
     """
-    path = Path(__file__).resolve().parents[2] / "agents/examples/generate.json"
-    data = json.loads(path.read_text())
+    path = (
+        Path(__file__).resolve().parents[3]
+        / "agents/planner/examples/generate.json"
+    )
+    data = json.loads(path.read_text(encoding="utf-8"))
     data["requirements"]["day_count"] = 1
     return PlannerInput.model_validate(data)
 
@@ -130,16 +134,22 @@ class PlannerTests(unittest.IsolatedAsyncioTestCase):
         :param self: 当前异步测试实例。
         """
         model = ToolCallingModel(responses=[draft_message()])
+        events: list[AgentEvent] = []
         async with httpx.AsyncClient(
             transport=httpx.MockTransport(amap_response)
         ) as http:
             result = await plan_trip(
-                make_request(), model, AmapClient("test-key", http)
+                make_request(),
+                model,
+                AmapClient("test-key", http),
+                on_event=events.append,
             )
         self.assertEqual(result.places[0].id, "test-poi")
         self.assertEqual(result.places[0].name, "合成测试地点")
         self.assertEqual(result.requirements.end_date, date(2027, 3, 12))
         self.assertTrue(result.warnings)
+        self.assertIn("成都", result.reply)
+        self.assertTrue(any(isinstance(event, MessageDelta) for event in events))
         self.assertNotIn("test-key", result.model_dump_json())
 
     async def test_rejects_unqueried_place_and_wrong_date(self) -> None:

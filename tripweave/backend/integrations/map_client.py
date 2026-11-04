@@ -47,11 +47,11 @@ def create_map_client(
     if not api_key.strip():
         raise ValueError("地图服务密钥不能为空")
     if provider == "amap":
-        from backend.clients.amap import AmapClient
+        from backend.integrations.amap import AmapClient
 
         return AmapClient(api_key, http)
     if provider == "baidu":
-        from backend.clients.baidu import BaiduMapClient
+        from backend.integrations.baidu import BaiduMapClient
 
         return BaiduMapClient(api_key, http)
     raise ValueError("MAP_PROVIDER 仅支持 amap 或 baidu")

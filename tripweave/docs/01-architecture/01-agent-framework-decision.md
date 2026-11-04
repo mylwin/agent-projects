@@ -172,9 +172,9 @@ Pi 的上层 `pi-coding-agent` SDK 另外提供 `AgentSession`、持久会话和
 - `backend/routers/`、`backend/schemas/`：接口协议、请求与响应结构。
 - `backend/services/`：规划用例、行程业务及运行控制。
 - `backend/validators/`：预算、时间、地点与行程约束。
-- `backend/agents/`：Prompt、模型循环适配及 Planner 创建。
+- `backend/agents/`：通用模型循环、流式观察，以及 `planner/` 等业务 Agent 定义。
 - `backend/tools/`：工具定义与参数、结果转换。
-- `backend/clients/`：模型、地图、天气等供应商客户端。
+- `backend/integrations/`：模型、地图、天气等供应商适配。
 - `backend/models/`、`backend/crud/`、`backend/config/`：表模型、数据访问与数据库配置。
 
 显式 LangGraph 工作流在需求确认后再按需添加，不预先创建独立编排层。

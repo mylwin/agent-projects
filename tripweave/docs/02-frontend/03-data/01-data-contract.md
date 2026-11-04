@@ -43,7 +43,7 @@ TypeScript 类型位于 `frontend/src/types/trip.ts`。JSON 与类型通过 `pnp
 
 1. 用 `GET /api/v1/trips/{id}` 返回的数据替换初始行程样本；在 `frontend/src/api/` 完成字段适配。
 2. 为用户消息提交 `POST /api/v1/trips/{id}/runs:stream`，携带 `client_request_id`、`base_revision`、操作类型与指令。
-3. 解析 SSE，按运行 ID 与事件序号合并进度和对话；显示失败、取消和待补信息状态。
+3. 解析 SSE，按运行 ID 与事件序号合并进度和对话；`reasoning.delta` 只放入可折叠的临时过程区，`message.delta` 追加到助手回复，两者不能混成同一条消息；同时显示失败、取消和待补信息状态。
 4. 收到 `itinerary.committed` 后重新读取正式行程；流式说明和未校验草稿不覆盖已保存行程。
 5. 保存、取消、版本历史与身份归属以架构文档中的服务端协议为准。
 

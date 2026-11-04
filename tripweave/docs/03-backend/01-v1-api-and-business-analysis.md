@@ -371,7 +371,7 @@ Agent 与后端目标覆盖**全国国内目的地、1–5 天、1–12 人**，
 | 工作 | 执行者 | 约束 |
 | --- | --- | --- |
 | 理解自然语言、选择查询与活动组合 | LangChain Planner | 不直接写数据库，不生成权威坐标 |
-| 地点/天气/路线查询 | tools → clients/services | 来源、有效期、超时、可追溯 POI ID |
+| 地点/天气/路线查询 | tools → integrations/services | 来源、有效期、超时、可追溯 POI ID |
 | 时间、费用、候选集合、修改范围校验 | validators | 每次提交必经，不由模型决定是否调用 |
 | 版本、消息、要求、最终方案持久化 | services + crud | 事务控制；正式提交后才发成功事件 |
 | 未知信息与不可满足需求 | service + Planner 说明 | 不把无法验证写成已核验，不伪造成功 |
@@ -423,6 +423,7 @@ data: {"run_id":"run-example-1","seq":3,"type":"stage.changed","timestamp":"2026
 | --- | --- | --- |
 | `run.started` | `request_id,user_message_id,base_revision` | 已接收；以正式消息 ID 替换乐观消息 |
 | `stage.changed` | `stage,message` | thinking/planning 等进度，由真实阶段驱动 |
+| `reasoning.delta` | `text` | 运行期过程展示，默认折叠、不持久化；断线不补发 |
 | `tool.started/tool.finished` | `tool_execution_id,name,status` | 简短查询进度，不暴露密钥/原始供应商响应 |
 | `message.delta` | `message_id,delta` | 暂存面向用户回复，不写为正式行程 |
 | `input.required` | `request_id,fields` | 结束本轮、显示补充问题，不产生版本 |
@@ -431,7 +432,7 @@ data: {"run_id":"run-example-1","seq":3,"type":"stage.changed","timestamp":"2026
 | `run.cancelled` | `reason` | 已确认取消，而非仅收到取消请求 |
 | `run.completed` | `status,outcome,result_revision_id,reply_message_id` | 最终事件，停止 busy、刷新相关集合 |
 
-正常结束发 `run.completed`；失败/取消先发对应事件再发 completed。进程崩溃无法保证发出任何终态事件，必须通过查询恢复。心跳用 SSE 注释行，不增加业务消息。
+正常结束发 `run.completed`；失败/取消先发对应事件再发 completed。进程崩溃无法保证发出任何终态事件，必须通过查询恢复。心跳用 SSE 注释行，不增加业务消息。`reasoning.delta` 只用于运行期观察，不写入消息、版本或证据；前端默认折叠，断线恢复后不补发推理内容。
 
 成功修改典型顺序：started → stage/tool → 校验 → 数据库提交 → itinerary.committed → message.delta → completed。流式文本可在提交前用于状态说明，但“已成功修改”只能在提交后发出；最终完整回复在终态事务内持久化，片段丢失后可通过消息接口恢复。
 
@@ -542,7 +543,7 @@ SSE 以 `fetch` POST 解析，处理 UTF-8 跨分块、多行 data、心跳、�
 | `services/planning_service.py,run_service.py` | 调用编排、预算、取消、终态提交、事件转换 |
 | `agents/planner.py` | LangChain create_agent、Prompt 与结构化草稿适配 |
 | `tools/places.py,weather.py,routes.py` | 工具参数及结果适配；复用查询服务/客户端 |
-| `clients/model.py,amap.py` | 模型与地图供应商调用、超时及错误转换 |
+| `integrations/chat_model.py,amap.py` | 模型与地图供应商调用、超时及错误转换 |
 | `validators/itinerary.py,budget.py,scope.py` | 纯规则；地点、时间、费用、局部修改保护 |
 | `models/,crud/,config/,migrations/` | 表、查询、连接与会话、迁移；CRUD 不自行 commit |
 | `tests/` | 业务边界、接口契约、并发与外部替身验证 |

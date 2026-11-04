@@ -159,6 +159,7 @@ PostgreSQL 从首版使用，是因为行程版本、运行状态与并发更新
 | --- | --- |
 | `run.started` | 保存运行 ID，显示正在规划 |
 | `stage.changed` | 显示查询地点、整理行程、校验路线等阶段 |
+| `reasoning.delta` | 折叠展示模型思考过程；仅运行期推送，不持久化，断线后不补发 |
 | `tool.started` / `tool.finished` | 展示简短进度，不泄露供应商密钥或原始敏感参数 |
 | `message.delta` | 追加面向用户的说明文本 |
 | `input.required` | 展示待补充信息并结束本轮 |
@@ -166,7 +167,7 @@ PostgreSQL 从首版使用，是因为行程版本、运行状态与并发更新
 | `run.failed` / `run.cancelled` | 展示原因与后续操作 |
 | `run.completed` | 结束运行，可能是行程完成或等待下一轮输入 |
 
-流式说明、未完成的 JSON 和草稿不能直接覆盖已保存行程。前端收到提交事件后，以 API 中的持久化版本为准；不把模型内部推理过程作为产品展示内容。
+流式说明、未完成的 JSON 和草稿不能直接覆盖已保存行程。前端收到提交事件后，以 API 中的持久化版本为准。模型推理内容只能作为 `reasoning.delta` 运行期过程事件展示：默认折叠、不持久化、不写入版本，断线恢复后不补发；正式回复仍以 `message.delta` 和最终持久化消息为准。
 
 ### 6.3 首版执行可靠性边界
 
@@ -245,9 +246,10 @@ tripweave/
 │   ├── crud/                   # 数据查询与写入
 │   ├── services/               # 规划用例、运行控制、行程与版本业务
 │   ├── dependencies/           # 数据库会话、身份等请求依赖
-│   ├── agents/                 # Planner 创建、Prompt 与模型循环适配
+│   ├── agents/                 # 通用 Agent 运行时、流式观察与各业务 Agent
+│   │   └── planner/            # 首次行程生成的 Prompt、CLI 与示例
 │   ├── tools/                  # Agent 工具定义、参数与结果转换
-│   ├── clients/                # 模型、地图、天气供应商客户端
+│   ├── integrations/           # 模型、地图、天气供应商适配
 │   ├── validators/             # 预算、路线、地点与修改范围校验
 │   ├── utils/                  # 日志、错误等通用工具
 │   ├── migrations/             # 后续 Alembic 数据库迁移
@@ -268,7 +270,7 @@ tripweave/
 
 对应关系为：原 `api/` 拆为 `routers/` 和 `schemas/`，`application/` 对应
 `services/`，`domain/` 中的数据结构归入 `schemas/`、业务约束归入
-`validators/`，`integrations/` 对应 `clients/`，`persistence/` 拆为
+`validators/`，外部供应商适配归入 `integrations/`，`persistence/` 拆为
 `models/`、`crud/` 和 `config/`。这是本项目选择的命名约定，并非框架强制标准。
 
 路由只处理协议与请求依赖，通过 Service 编排业务；CRUD 不返回 HTTP 响应，

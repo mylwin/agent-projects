@@ -236,6 +236,8 @@ place_ref 为宿主创建的不透明 ID；route_key 含起终地点、方式、
 
 `ToolExecution={id,tool_name,args_summary,status,started_at,finished_at,evidence_ids,error}`。status=running/succeeded/failed/cancelled；error 可空，摘要脱敏。保留“查了什么、查到什么、为什么失败”，不记录模型私有思维过程。
 
+运行事件中的 `reasoning.delta` 只用于运行期过程展示，不属于 `ToolExecution`，也不写入证据或正式版本。它默认不持久化；后续前端即使展示也应默认折叠，断线恢复后不补发推理内容。阶段、回复和工具事件仍分别用 `stage.changed`、`message.delta`、`tool.started/finished` 表达。
+
 ## 7. 模型输出 PlannerDraft
 
 PlannerDraft 使用 `kind` 区分两种互斥结构：
