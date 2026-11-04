@@ -29,6 +29,12 @@
 - [版本与最终方案](02-frontend/04-features/02-final-selection.md)：自动记录、结果选择与旧数据兼容。
 - [返回提醒与出行信息](02-frontend/04-features/03-return-and-trip-info.md)：离开选择流程与弹窗信息层级。
 
+## 首版后端接口与业务
+
+- [接口与业务逻辑完整分析](03-backend/01-v1-api-and-business-analysis.md)：从当前前端源码反推的 13 个接口、请求响应契约、版本与最终方案、对话和要求管理、SSE 运行、事务幂等、前端迁移与验收清单；属于待实现方案。
+- [Agent State 与输入输出设计](03-backend/02-agent-state-and-contract.md)：全国国内目的地、独立 Planner 输入/运行上下文/状态/草稿/输出、证据与校验、修改边界和后端适配；先验证 Agent 再接业务。
+- [首次生成 Agent 的运行方式](03-backend/03-run-planner.md)：环境变量、终端启动、草稿输出及本地验证命令。
+
 ## 文档与临时产物约定
 
 `docs/` 只保留正式说明、样本数据及架构图源文件。新增内容归入对应主题；目录和普通文件按各层阅读顺序编号，README 不编号。

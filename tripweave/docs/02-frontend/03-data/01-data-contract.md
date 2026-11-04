@@ -39,6 +39,8 @@ TypeScript 类型位于 `frontend/src/types/trip.ts`。JSON 与类型通过 `pnp
 
 ## 4. 后端对接顺序
 
+首版完整契约与业务规则见 [后端接口与业务逻辑分析](../../03-backend/01-v1-api-and-business-analysis.md)。该方案依据当前页面补齐 13 个接口，并要求前端新增空行程状态、结构化时间编辑、未知费用展示及真实地图数据适配；当前样本类型不直接充当后端响应模型。以下为原接入顺序概述，创建与首次生成的细节以新分析为准。
+
 1. 用 `GET /api/v1/trips/{id}` 返回的数据替换初始行程样本；在 `frontend/src/api/` 完成字段适配。
 2. 为用户消息提交 `POST /api/v1/trips/{id}/runs:stream`，携带 `client_request_id`、`base_revision`、操作类型与指令。
 3. 解析 SSE，按运行 ID 与事件序号合并进度和对话；显示失败、取消和待补信息状态。
