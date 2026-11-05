@@ -22,19 +22,25 @@ def create_chat_model(
     :param callback: 可选的框架异步回调，用于显示流式进度。
     :return: 已配置流式输出、关闭自动重试的聊天模型，不在此发起请求。
     """
+    # 额外的参数
     extra_body: dict[str, object] = {}
+    # 如果配置了思考，则发送
     if settings.model_enable_thinking is not None:
         extra_body["enable_thinking"] = settings.model_enable_thinking
+    # 如果配置了思考预算，则发送
     if settings.model_thinking_budget is not None:
         extra_body["thinking_budget"] = settings.model_thinking_budget
-    return ChatOpenAI(
-        model=settings.model_name,
-        base_url=settings.model_base_url,
-        api_key=SecretStr(settings.model_api_key),
-        timeout=settings.model_timeout_seconds,
-        max_retries=0,
-        streaming=True,
-        extra_body=extra_body or None,
-        http_async_client=http,
-        callbacks=[callback] if callback is not None else None,
+    # 创建模型
+    return ChatOpenAI.model_validate(
+        {
+            "model": settings.model_name,
+            "base_url": settings.model_base_url,
+            "api_key": SecretStr(settings.model_api_key),
+            "timeout": settings.model_timeout_seconds,
+            "max_retries": 0,
+            "streaming": True,
+            "extra_body": extra_body or None,
+            "http_async_client": http,
+            "callbacks": [callback] if callback is not None else None,
+        }
     )

@@ -27,10 +27,12 @@ async def create_draft(
     :return: 通过结构校验的模型行程草稿。
     :raises PlanningError: 模型调用或草稿结构校验失败。
     """
+    # 候选地点列表
     candidates = [
         {"place_id": place.id, "name": place.name, "address": place.address}
         for place in places
     ]
+    # 拼装输入上下文
     content = (
         "# 旅行需求\n\n```json\n"
         + request.model_dump_json(indent=2)
@@ -38,6 +40,7 @@ async def create_draft(
         + json.dumps(candidates, ensure_ascii=False, indent=2)
         + "\n```"
     )
+    # 如果有研究资料，则附加到输入上下文中，供模型参考
     if research:
         content += (
             "\n\n# 研究资料\n\n工具原文优先于摘要，缺失事项保持未知。\n\n```json\n"
@@ -48,12 +51,15 @@ async def create_draft(
             indent=2,
         )
         content += "\n```"
+    # 固定模型输出结构
     planner = model.with_structured_output(TravelDraft, method="function_calling")
     try:
+        # 生成旅行计划草稿
         draft = await planner.ainvoke(
             [("system", PLANNER_SYSTEM_PROMPT), ("human", content)],
             config={"tags": ["agent:planner"]},
         )
+        # 校验草稿结构并返回
         return TravelDraft.model_validate(draft)
     except Exception as exc:
         raise PlanningError("行程生成", exc) from None

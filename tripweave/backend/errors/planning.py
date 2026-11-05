@@ -12,9 +12,12 @@ def redact(text: str, secrets: Sequence[str] = ()) -> str:
     :param secrets: 需要额外隐藏的已知凭据，空值忽略。
     :return: 隐藏已知凭据、URL 和常见认证字段后的文本。
     """
+    # 遍历需要额外隐藏的凭据
     for secret in secrets:
+        # 如果凭据非空，将凭据替换为 [已隐藏]
         if secret:
             text = text.replace(secret, "[已隐藏]")
+    # 隐藏 URL 和常见认证字段
     text = re.sub(r"https?://[^\s\"'<>]+", "[已隐藏地址]", text)
     text = re.sub(r"(?i)bearer\s+[^\s,;\"\']+", "Bearer [已隐藏]", text)
     text = re.sub(
@@ -44,8 +47,10 @@ class PlanningError(RuntimeError):
         :param error: 底层异常或异常组；异常组逐层取第一个异常。
         :param secrets: 构造诊断消息时需要隐藏的已知凭据。
         """
+        # 如果底层异常为异常组，则展开异常组并取第一个异常
         while isinstance(error, BaseExceptionGroup):
             error = error.exceptions[0]
+        # 如果当前异常为 PlanningError，则保留业务阶段并展开异常组
         if isinstance(error, PlanningError):
             stage, error = error.stage, error.original
         self.stage = stage

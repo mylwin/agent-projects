@@ -48,14 +48,17 @@ async def plan_trip(
     :raises PlanningError: 研究 Agent 或 Planner 调用失败。
     """
     try:
+        # 根据旅行起始日期和天数，计算旅行结束日期。
         end_date = request.start_date + timedelta(days=request.day_count - 1)
     except OverflowError:
         raise ValueError("旅行日期超出可表示范围") from None
+    # 调研报告
     reports = []
-    # 按教程顺序运行三个独立研究 Agent，便于从终端逐步定位问题。
+    # 顺序运行三个独立研究 Agent，便于从终端逐步定位问题。
     for topic in ("attractions", "weather", "hotels"):
         on_progress(f"研究 {topic}：{request.destination}")
         reports.append(await research_topic(topic, request, model, maps))
+    # 根据调研报告，从地图供应商中收集地点信息。
     places = collect_places(reports, maps.provider)
     if not places:
         raise ValueError("目的地没有查询到可用地点，无法生成行程")
@@ -63,9 +66,12 @@ async def plan_trip(
     on_progress(
         f"生成 {request.start_date} 至 {end_date} 的行程，候选地点 {len(places)} 个"
     )
+
+    # 创建行程草稿
     draft = await create_draft(request, list(places.values()), model, reports)
     on_progress("校验日期、活动时间和地点来源")
     validate_draft(draft, request, places)
+
     result = build_result(request, draft, places)
     result.research = reports
     result.warnings.extend(warning for report in reports for warning in report.warnings)
@@ -84,11 +90,14 @@ def validate_draft(
     :param places: 本轮有效候选地点，以地点 ID 索引。
     :raises ValueError: 日期不完整、活动时间无序或重复、引用未知地点。
     """
+    # 预期旅行计划的日期列表
     expected = [
         request.start_date + timedelta(days=i) for i in range(request.day_count)
     ]
+    # 如果模型返回的日期与输入不一致，则返回错误
     if [day.date for day in draft.days] != expected:
         raise ValueError("模型返回的日期或天数与输入不一致")
+    # 活动时间必须按顺序排列且不能重复
     for day in draft.days:
         times = [activity.time for activity in day.activities]
         if times != sorted(set(times)):
@@ -173,8 +182,10 @@ async def generate_trip(
     :raises PlanningError: 其他连接、模型或业务校验失败，保留阶段并脱敏。
     """
     stage = "MCP 连接与工具发现"
+    # 所需要的密钥
     secrets = (settings.model_api_key, settings.amap_api_key, settings.baidu_api_key)
     try:
+        # 异步创建 MCP 客户端并加载工具
         async with asyncio.timeout(settings.planner_timeout_seconds):
             client = create_map_mcp(settings)
             async with client.session(settings.map_provider) as session:

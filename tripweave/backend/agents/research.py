@@ -44,8 +44,12 @@ async def research_topic(
     :return: 研究摘要、成功工具证据与缺失警告；无可用工具时返回缺失说明。
     :raises PlanningError: Agent 执行失败或超过模型、工具调用上限。
     """
+    # 允许的工具范围：如果主题是天气，则只允许天气工具；否则只允许搜索工具。
     allowed = WEATHER_TOOLS | GEOCODE_TOOLS if topic == "weather" else SEARCH_TOOLS
+
+    # 筛选得到允许运行的工具
     tools = [tool for tool in maps.tools if tool.name in allowed]
+    # 如果工具不存在，或者主题为天气时没有任何工具
     if not tools or (
         topic == "weather" and not any(tool.name in WEATHER_TOOLS for tool in tools)
     ):
@@ -59,6 +63,7 @@ async def research_topic(
         ModelCallLimitMiddleware(run_limit=6, exit_behavior="error"),
         ToolCallLimitMiddleware(run_limit=8, exit_behavior="error"),
     ]
+    # 创建研究 Agent
     agent = create_agent(
         model=model,
         tools=tools,
@@ -67,6 +72,7 @@ async def research_topic(
         middleware=middleware,
     )
     try:
+        # agent 执行结果
         state = await agent.ainvoke(
             {"messages": [HumanMessage(content=request.model_dump_json(indent=2))]},
             config={
@@ -77,6 +83,8 @@ async def research_topic(
         )
     except Exception as exc:
         raise PlanningError(f"{topic} 研究", exc) from None
+
+    # 遍历结果消息，生成结构化证据 工具调用警告 总结信息
     evidence = []
     warnings = []
     summary = ""
