@@ -16,6 +16,11 @@ import { addProject, newProject } from "../api/workspaceStore";
 import { useWorkspace } from "../hooks/useWorkspace";
 import Brand from "../components/Brand";
 
+/**
+ * 展示、搜索和创建浏览器本地旅行项目。
+ *
+ * @returns 旅行计划列表及新建表单。
+ */
 export default function PlansPage() {
   const { workspace } = useWorkspace();
   const navigate = useNavigate();
@@ -24,6 +29,11 @@ export default function PlansPage() {
   const filtered = workspace.projects
     .filter((p) => `${p.name} ${p.trip.destination}`.includes(query.trim()))
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  /**
+   * 从表单读取需求，以样例行程创建项目并打开详情。
+   *
+   * @param event - 新建计划表单的提交事件。
+   */
   function create(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);

@@ -11,6 +11,11 @@ import { retrySave } from "../api/workspaceStore";
 import PlannerPage from "../pages/PlannerPage";
 import PlansPage from "../pages/PlansPage";
 
+/**
+ * 根据路由中的项目 ID 展示行程或缺失提示。
+ *
+ * @returns 当前项目详情或未找到页面。
+ */
 function PlanRoute() {
   const { id } = useParams();
   const { workspace } = useWorkspace();
@@ -28,6 +33,11 @@ function PlanRoute() {
   return <PlannerPage key={project.id} project={project} />;
 }
 
+/**
+ * 为子路由展示存储错误及重试入口。
+ *
+ * @returns 存储状态提示与当前子路由。
+ */
 function WorkspaceRoutes() {
   const { error } = useWorkspace();
   return (
@@ -55,6 +65,11 @@ const router = createBrowserRouter([
   },
 ]);
 
+/**
+ * 挂载旅行项目的浏览器路由。
+ *
+ * @returns 应用路由入口。
+ */
 export default function App() {
   return <RouterProvider router={router} />;
 }

@@ -12,14 +12,26 @@ from backend.config.planner import PlannerSettings
 
 @dataclass(frozen=True)
 class MapTools:
-    """同一 MCP 会话内发现的地图工具和供应商信息。"""
+    """
+    同一 MCP 会话内发现的地图工具和供应商信息。
+
+    Attributes:
+        provider: 官方地图供应商标识，amap 或 baidu。
+        tools: 当前会话发现的工具，研究 Agent 再按只读白名单筛选。
+    """
 
     provider: str
     tools: list[BaseTool]
 
 
 def create_map_mcp(settings: PlannerSettings) -> MultiServerMCPClient:
-    """工厂按供应商创建官方 Streamable HTTP 客户端，不在此发起连接。"""
+    """
+    工厂按供应商创建官方 Streamable HTTP 客户端，不在此发起连接。
+
+    :param settings: 地图供应商、对应凭据及整轮读取超时配置。
+    :return: 尚未连接的官方地图 MCP 客户端，由调用方管理会话。
+    :raises ValueError: 地图供应商不受支持或对应密钥为空。
+    """
     if settings.map_provider == "amap":
         endpoint = "https://mcp.amap.com/mcp"
         credentials = {"key": settings.amap_api_key}

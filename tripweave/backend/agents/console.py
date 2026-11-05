@@ -20,7 +20,14 @@ AGENT_LABELS = {
 
 
 class ConsoleCallback(AsyncCallbackHandler):
-    """显示正文、服务公开返回的推理与工具生命周期，最终 JSON 不经过此回调。"""
+    """
+    显示正文、服务公开返回的推理与工具生命周期，最终 JSON 不经过此回调。
+
+    Attributes:
+        stream: 终端输出流，默认 stderr。
+        debug_tools: 是否显示工具参数。
+        secrets: 输出前隐藏的已知凭据。
+    """
 
     def __init__(
         self,
@@ -29,7 +36,13 @@ class ConsoleCallback(AsyncCallbackHandler):
         debug_tools: bool = False,
         secrets: Sequence[str] = (),
     ) -> None:
-        """注入终端输出，默认 stderr；仅调试模式显示工具参数分片。"""
+        """
+        注入终端输出，默认 stderr；仅调试模式显示工具参数分片。
+
+        :param stream: 输出流；None 时使用 stderr。
+        :param debug_tools: 是否显示工具调用参数分片和执行参数。
+        :param secrets: 输出前需要隐藏的已知凭据。
+        """
         self.stream = stream if stream is not None else sys.stderr
         self.debug_tools = debug_tools
         self.secrets = secrets
@@ -37,7 +50,11 @@ class ConsoleCallback(AsyncCallbackHandler):
         self._tools: dict[UUID, tuple[str, str]] = {}
 
     def progress(self, message: str) -> None:
-        """与已有阶段回调共用同一输出，先结束未换行的模型分片。"""
+        """
+        与已有阶段回调共用同一输出，先结束未换行的模型分片。
+
+        :param message: 需要脱敏并独占一行显示的阶段进度。
+        """
         self.finish()
         print(redact(message, self.secrets), file=self.stream, flush=True)
 
@@ -48,7 +65,13 @@ class ConsoleCallback(AsyncCallbackHandler):
             self._channel = None
 
     def _write(self, role: str, channel: str, text: str) -> None:
-        """同一通道连续输出，切换 Agent 或内容类型时换行。"""
+        """
+        同一通道连续输出，切换 Agent 或内容类型时换行。
+
+        :param role: 当前 Agent 的中文展示名。
+        :param channel: 输出内容类型，如回复、推理或参数生成。
+        :param text: 供应商返回的增量文本；空字符串不输出。
+        """
         if not text:
             return
         if self._channel != (role, channel):
@@ -59,7 +82,12 @@ class ConsoleCallback(AsyncCallbackHandler):
 
     @staticmethod
     def _role(tags: list[str] | None) -> str:
-        """使用调用配置中的标签定位 Agent，不依赖全局当前角色。"""
+        """
+        使用调用配置中的标签定位 Agent，不依赖全局当前角色。
+
+        :param tags: 框架调用标签；通过 agent: 前缀识别角色。
+        :return: 角色的中文名称；无法识别时返回“模型”。
+        """
         for tag in tags or []:
             if tag.startswith("agent:"):
                 return AGENT_LABELS.get(tag.removeprefix("agent:"), "模型")
@@ -73,7 +101,14 @@ class ConsoleCallback(AsyncCallbackHandler):
         tags: list[str] | None = None,
         **kwargs: Any,
     ) -> None:
-        """展示每次模型请求的起点，包括只生成结构化工具参数的 Planner。"""
+        """
+        展示每次模型请求的起点，包括只生成结构化工具参数的 Planner。
+
+        :param serialized: 框架传入的模型序列化信息，本回调不读取。
+        :param messages: 本次请求的消息批次，本回调不读取。
+        :param tags: 用于识别 Agent 的调用标签。
+        :param kwargs: 框架提供的其他回调元数据，本回调不读取。
+        """
         self.progress(f"[{self._role(tags)}] 模型开始生成")
 
     async def on_llm_new_token(
@@ -84,7 +119,14 @@ class ConsoleCallback(AsyncCallbackHandler):
         tags: list[str] | None = None,
         **kwargs: Any,
     ) -> None:
-        """实时显示模型返回的增量，不拼接后重播，不增加模型调用。"""
+        """
+        实时显示模型返回的增量，不拼接后重播，不增加模型调用。
+
+        :param token: 原始增量；缺少聊天消息分片时仅显示字符串内容。
+        :param chunk: 框架提供的分片，用于读取公开推理、正文及工具参数。
+        :param tags: 用于识别 Agent 的调用标签。
+        :param kwargs: 框架提供的其他回调元数据，本回调不读取。
+        """
         role = self._role(tags)
         if not isinstance(chunk, ChatGenerationChunk) or not isinstance(
             chunk.message, AIMessageChunk
@@ -109,13 +151,24 @@ class ConsoleCallback(AsyncCallbackHandler):
                 self._write(role, "参数生成", call.get("args") or "")
 
     async def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
-        """完成一轮模型输出后换行，避免下一条进度挤到同一行。"""
+        """
+        完成一轮模型输出后换行，避免下一条进度挤到同一行。
+
+        :param response: 本轮模型的完整结果，本回调不读取。
+        :param kwargs: 框架提供的其他回调元数据，本回调不读取。
+        """
         self.finish()
 
     async def on_llm_error(
         self, error: BaseException, *, tags: list[str] | None = None, **kwargs: Any
     ) -> None:
-        """记录模型错误类型；最终业务异常负责给出脱敏原因。"""
+        """
+        记录模型错误类型；最终业务异常负责给出脱敏原因。
+
+        :param error: 模型抛出的底层异常，仅展示类型名。
+        :param tags: 用于识别 Agent 的调用标签。
+        :param kwargs: 框架提供的其他回调元数据，本回调不读取。
+        """
         self.progress(f"[{self._role(tags)}] 模型失败 [{type(error).__name__}]")
 
     async def on_tool_start(
@@ -127,7 +180,15 @@ class ConsoleCallback(AsyncCallbackHandler):
         tags: list[str] | None = None,
         **kwargs: Any,
     ) -> None:
-        """显示工具开始，只在调试模式打印参数。"""
+        """
+        显示工具开始，只在调试模式打印参数。
+
+        :param serialized: 工具序列化信息，从 name 字段读取工具名称。
+        :param input_str: 工具入参文本，仅在调试模式下脱敏显示。
+        :param run_id: 本次工具调用的唯一标识，用于匹配结束或错误事件。
+        :param tags: 用于识别 Agent 的调用标签。
+        :param kwargs: 框架提供的其他回调元数据，本回调不读取。
+        """
         role, name = self._role(tags), str(serialized.get("name", "未知工具"))
         self._tools[run_id] = (role, name)
         self.progress(f"[{role}] 工具开始：{name}")
@@ -135,7 +196,13 @@ class ConsoleCallback(AsyncCallbackHandler):
             self.progress(f"[{role}·执行参数] {input_str}")
 
     async def on_tool_end(self, output: Any, *, run_id: UUID, **kwargs: Any) -> None:
-        """区分成功结果和被框架转为 ToolMessage 的错误结果。"""
+        """
+        区分成功结果和被框架转为 ToolMessage 的错误结果。
+
+        :param output: 工具结果，包含错误状态的 ToolMessage 按失败展示。
+        :param run_id: 用于取回工具所属角色与名称的调用标识。
+        :param kwargs: 框架提供的其他回调元数据，本回调不读取。
+        """
         role, name = self._tools.pop(run_id, ("模型", "未知工具"))
         if isinstance(output, ToolMessage) and output.status == "error":
             self.progress(f"[{role}] 工具失败：{name}；{output.text}")
@@ -145,6 +212,12 @@ class ConsoleCallback(AsyncCallbackHandler):
     async def on_tool_error(
         self, error: BaseException, *, run_id: UUID, **kwargs: Any
     ) -> None:
-        """工具异常也显示脱敏原因，不输出原始堆栈。"""
+        """
+        工具异常也显示脱敏原因，不输出原始堆栈。
+
+        :param error: 工具抛出的异常，输出前由进度方法统一脱敏。
+        :param run_id: 用于取回工具所属角色与名称的调用标识。
+        :param kwargs: 框架提供的其他回调元数据，本回调不读取。
+        """
         role, name = self._tools.pop(run_id, ("模型", "未知工具"))
         self.progress(f"[{role}] 工具失败：{name} [{type(error).__name__}]；{error}")

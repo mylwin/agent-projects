@@ -108,7 +108,14 @@ map_weather 的 location 要传字符串 "104.06,30.67"，不能传数组 [104.0
 
 
 def get_research_prompt(topic: ResearchTopic, provider: str) -> str:
-    """合并当前角色的规则和供应商对应示例，不把其他角色的任务一起塞入。"""
+    """
+    合并当前角色的规则和供应商对应示例，不把其他角色的任务一起塞入。
+
+    :param topic: 景点、天气或住宿研究角色。
+    :param provider: 地图供应商标识，仅支持 amap 和 baidu。
+    :return: 包含共同规则、角色任务和供应商示例的系统提示词。
+    :raises ValueError: 地图供应商不受支持。
+    """
     if provider not in FEW_SHOTS:
         raise ValueError("提示词仅支持 amap 或 baidu")
     return "\n\n".join(

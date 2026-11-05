@@ -3,7 +3,14 @@ import type { Trip } from "../types/trip";
 
 export { examples };
 
-/** 本地规则仅演示明确支持的调整，不冒充大模型推理。 */
+/**
+ * 按本地规则演示支持的调整，不调用模型或外部服务。
+ *
+ * @param trip - 当前行程；发生调整时通过副本返回修改。
+ * @param dayId - 要调整的行程日期 ID。
+ * @param input - 用于匹配本地示例关键词的用户要求。
+ * @returns 行程、版本标题、是否发生修改及回复文本。
+ */
 export function planLocally(trip: Trip, dayId: number, input: string) {
   const match = /不想|不要|不吃|取消|别/.test(input)
     ? undefined

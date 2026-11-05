@@ -38,6 +38,14 @@ async def plan_trip(
     读完本函数即可看完规划主流程；模型与地图可注入测试替身。
 
     总超时由真实运行入口统一约束，包括地图查询和模型调用。
+
+    :param request: 已通过输入模型校验的旅行需求。
+    :param model: 可注入替身的聊天模型。
+    :param maps: 已发现的地图工具及供应商信息。
+    :param on_progress: 同步阶段回调；默认 print，CLI 注入写入 stderr 的回调。
+    :return: 包含行程、引用地点、研究证据和警告的完整结果。
+    :raises ValueError: 日期溢出、没有有效地点或草稿违反业务约束。
+    :raises PlanningError: 研究 Agent 或 Planner 调用失败。
     """
     try:
         end_date = request.start_date + timedelta(days=request.day_count - 1)
@@ -68,7 +76,14 @@ async def plan_trip(
 def validate_draft(
     draft: TravelDraft, request: TripRequest, places: dict[str, Place]
 ) -> None:
-    """校验模型不能保证的业务约束，失败即返回明确错误。"""
+    """
+    校验模型不能保证的业务约束，失败即返回明确错误。
+
+    :param draft: 模型返回的结构化行程草稿。
+    :param request: 用于确定完整日期范围的原始需求。
+    :param places: 本轮有效候选地点，以地点 ID 索引。
+    :raises ValueError: 日期不完整、活动时间无序或重复、引用未知地点。
+    """
     expected = [
         request.start_date + timedelta(days=i) for i in range(request.day_count)
     ]
@@ -85,7 +100,15 @@ def validate_draft(
 def build_result(
     request: TripRequest, draft: TravelDraft, places: dict[str, Place]
 ) -> PlanResult:
-    """将模型安排与地点事实组合为前端所需数据，不伪造费用或地图像素。"""
+    """
+    将模型安排与地点事实组合为前端所需数据，不伪造费用或地图像素。
+
+    :param request: 提供目的地、人数和全团预算的原始需求。
+    :param draft: 已通过 validate_draft 的行程草稿。
+    :param places: 覆盖草稿全部地点引用的事实索引。
+    :return: 供前端展示的行程与引用地点；附带尚未核验事项的警告。
+    :raises KeyError: 草稿引用的地点不在事实索引中。
+    """
     days: list[TripDay] = []
     used_places: dict[str, Place] = {}
     for index, day in enumerate(draft.days, 1):
@@ -138,7 +161,17 @@ async def generate_trip(
     on_progress: Callable[[str], None] = print,
     callback: AsyncCallbackHandler | None = None,
 ) -> PlanResult:
-    """装配真实依赖，总超时覆盖整轮；异常保留阶段、类型与脱敏原因。"""
+    """
+    装配真实依赖，总超时覆盖整轮；异常保留阶段、类型与脱敏原因。
+
+    :param request: 已校验的旅行需求。
+    :param settings: 模型、地图凭据及单次请求和整轮规划超时配置。
+    :param on_progress: 同步阶段进度回调，CLI 使用 stderr 输出。
+    :param callback: 可选的模型流式回调。
+    :return: 由真实地图证据和模型草稿装配的规划结果。
+    :raises TimeoutError: 整轮规划或底层请求超时。
+    :raises PlanningError: 其他连接、模型或业务校验失败，保留阶段并脱敏。
+    """
     stage = "MCP 连接与工具发现"
     secrets = (settings.model_api_key, settings.amap_api_key, settings.baidu_api_key)
     try:

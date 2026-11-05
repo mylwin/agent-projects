@@ -39,6 +39,13 @@ const icons: Record<string, LucideIcon> = {
   lotus: Flower2,
   hotel: Hotel,
 };
+/**
+ * 展示项目行程、历史版本和本地调整助手。
+ *
+ * @param props - 页面属性。
+ * @param props.project - 当前旅行项目及其行程、对话和历史版本。
+ * @returns 可编辑的行程详情页面。
+ */
 export default function PlannerPage({ project }: { project: PlanProject }) {
   const [params, setParams] = useSearchParams();
   const viewedRevision = project.revisions.find(
@@ -69,6 +76,12 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
   );
   const leaving = blocker.state === "blocked";
   const requests = project.requests;
+  /**
+   * 更新当前行程，内容变化时追加手动调整版本。
+   *
+   * @param next - 新行程或从当前行程计算新值的同步函数。
+   * @returns 是否成功写入浏览器本地存储。
+   */
   function setTrip(next: Trip | ((current: Trip) => Trip)) {
     return updateProject(project.id, (current) => {
       const trip = typeof next === "function" ? next(current.trip) : next;
@@ -76,15 +89,26 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
       return saveRevision(current, "手动调整行程", trip);
     });
   }
+  /**
+   * 将当前查看的版本写入 URL 查询参数。
+   *
+   * @param id - 要查看的历史版本 ID。
+   */
   function viewRevision(id: string) {
     setParams({ revision: id });
   }
+  /**
+   * 清除侧栏的悬停定时器。
+   */
   function cancelHover() {
     if (hoverTimer.current) {
       clearTimeout(hoverTimer.current);
       hoverTimer.current = null;
     }
   }
+  /**
+   * 切换助手侧栏折叠状态并恢复移动端行程标签。
+   */
   function toggleAssistant() {
     cancelHover();
     setCollapsed((value) => !value);
@@ -99,6 +123,13 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
   const weekday = new Intl.DateTimeFormat("zh-CN", { weekday: "long" }).format(
     date,
   );
+  /**
+   * 将行程日期格式化为中文展示文本。
+   *
+   * @param value - YYYY-MM-DD 格式的行程日期。
+   * @param year - 是否显示年份，默认 false。
+   * @returns 按中文区域格式显示的日期。
+   */
   const formatTripDate = (value: string, year = false) =>
     new Intl.DateTimeFormat("zh-CN", {
       ...(year ? { year: "numeric" as const } : {}),
@@ -136,6 +167,11 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
     focusables()[0]?.focus();
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    /**
+     * 处理弹窗 Escape 关闭与 Tab 焦点循环。
+     *
+     * @param event - 文档键盘事件。
+     */
     function handleKey(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setEditing(null);
@@ -163,12 +199,22 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
     };
   }, [editing, showInfo, leaving, blocker]);
 
+  /**
+   * 显示短暂通知并替换已有的通知定时器。
+   *
+   * @param text - 需要展示的通知内容。
+   */
   function inform(text: string) {
     setNotice(text);
     if (noticeTimer.current) clearTimeout(noticeTimer.current);
     noticeTimer.current = setTimeout(() => setNotice(""), 4500);
   }
 
+  /**
+   * 将当前查看版本设为最终方案并保存。
+   *
+   * @returns 是否成功写入浏览器本地存储。
+   */
   function chooseFinal() {
     let number = 0;
     const success = updateProject(project.id, (current) => {
@@ -191,22 +237,38 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
     return success;
   }
 
+  /**
+   * 取消离页导航并清除离页错误提示。
+   */
   function stayOnPlan() {
     if (blocker.state === "blocked") blocker.reset();
     setLeaveError("");
   }
 
+  /**
+   * 保存最终方案，成功后继续被阻止的导航。
+   */
   function finalizeAndLeave() {
     if (blocker.state !== "blocked" || busy) return;
     if (chooseFinal()) blocker.proceed();
     else setLeaveError("未能保存到浏览器，请重试。当前选择和行程仍在页面中。");
   }
 
+  /**
+   * 切换行程日期并清除活动选择。
+   *
+   * @param id - 要查看的日期 ID。
+   */
   function switchDay(id: number) {
     setDayId(id);
     setSelectedId(null);
   }
 
+  /**
+   * 选中活动并滚动到对应卡片。
+   *
+   * @param id - 活动标识，同时作为卡片 DOM ID。
+   */
   function selectActivity(id: string) {
     setSelectedId(id);
     document
@@ -214,6 +276,11 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
       ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
+  /**
+   * 读取活动编辑表单并保存新的行程版本。
+   *
+   * @param event - 活动编辑表单的提交事件。
+   */
   function updateActivity(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!editing) return;

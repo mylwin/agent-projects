@@ -12,7 +12,11 @@ from backend.services.planning import generate_trip
 
 
 def main() -> int:
-    """读取需求、运行一次规划，进度写 stderr，结果 JSON 写 stdout。"""
+    """
+    读取需求、运行一次规划，进度写 stderr，结果 JSON 写 stdout。
+
+    :return: 成功时返回 0；输入、配置、超时或服务错误时返回 1。
+    """
     parser = argparse.ArgumentParser(description="生成国内旅行行程草稿")
     parser.add_argument("input", type=Path, help="旅行需求 JSON 文件")
     parser.add_argument(

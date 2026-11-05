@@ -34,7 +34,16 @@ GEOCODE_TOOLS = {"maps_geo", "map_geocode"}
 async def research_topic(
     topic: ResearchTopic, request: TripRequest, model: BaseChatModel, maps: MapTools
 ) -> ResearchReport:
-    """一个主题运行一个独立 Agent，共享模型连接但各自保有消息和调用上限。"""
+    """
+    一个主题运行一个独立 Agent，共享模型连接但各自保有消息和调用上限。
+
+    :param topic: 研究主题，景点、天气或住宿。
+    :param request: 已校验的旅行需求。
+    :param model: 共享的聊天模型，各主题使用独立的 Agent 状态。
+    :param maps: 当前供应商在同一 MCP 会话中发现的工具。
+    :return: 研究摘要、成功工具证据与缺失警告；无可用工具时返回缺失说明。
+    :raises PlanningError: Agent 执行失败或超过模型、工具调用上限。
+    """
     allowed = WEATHER_TOOLS | GEOCODE_TOOLS if topic == "weather" else SEARCH_TOOLS
     tools = [tool for tool in maps.tools if tool.name in allowed]
     if not tools or (

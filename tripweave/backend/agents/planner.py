@@ -19,6 +19,13 @@ async def create_draft(
     将已查询事实交给模型，一次调用生成结构化草稿。
 
     工具查询由研究 Agent 完成，本函数只做最终汇总，不循环修复无效结果。
+
+    :param request: 已校验的旅行需求。
+    :param places: 本轮地图查询得到的候选地点，模型只能引用其中的 ID。
+    :param model: 支持结构化输出的聊天模型。
+    :param research: 可选的研究摘要与工具原文；为空时不附加研究资料。
+    :return: 通过结构校验的模型行程草稿。
+    :raises PlanningError: 模型调用或草稿结构校验失败。
     """
     candidates = [
         {"place_id": place.id, "name": place.name, "address": place.address}

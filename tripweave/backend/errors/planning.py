@@ -5,7 +5,13 @@ from collections.abc import Sequence
 
 
 def redact(text: str, secrets: Sequence[str] = ()) -> str:
-    """隐藏已知凭据、完整 URL 和常见认证字段，保留可定位问题的错误说明。"""
+    """
+    隐藏已知凭据、完整 URL 和常见认证字段，保留可定位问题的错误说明。
+
+    :param text: 待输出的诊断文本。
+    :param secrets: 需要额外隐藏的已知凭据，空值忽略。
+    :return: 隐藏已知凭据、URL 和常见认证字段后的文本。
+    """
     for secret in secrets:
         if secret:
             text = text.replace(secret, "[已隐藏]")
@@ -20,12 +26,24 @@ def redact(text: str, secrets: Sequence[str] = ()) -> str:
 
 
 class PlanningError(RuntimeError):
-    """保留失败阶段和底层异常类型，让 CLI 无需打印原始堆栈也能定位问题。"""
+    """
+    保留失败阶段和底层异常类型，让 CLI 无需打印原始堆栈也能定位问题。
+
+    Attributes:
+        stage: 原始失败阶段，重复包装时保持不变。
+        original: 展开异常组或业务包装后的底层异常。
+    """
 
     def __init__(
         self, stage: str, error: BaseException, secrets: Sequence[str] = ()
     ) -> None:
-        """展开 MCP 的异常组；再次包装时保留业务阶段并补充已知凭据脱敏。"""
+        """
+        展开 MCP 的异常组；再次包装时保留业务阶段并补充已知凭据脱敏。
+
+        :param stage: 当前失败阶段；包装已有 PlanningError 时沿用原阶段。
+        :param error: 底层异常或异常组；异常组逐层取第一个异常。
+        :param secrets: 构造诊断消息时需要隐藏的已知凭据。
+        """
         while isinstance(error, BaseExceptionGroup):
             error = error.exceptions[0]
         if isinstance(error, PlanningError):

@@ -8,7 +8,13 @@ from backend.schemas.trip import Place, ResearchReport
 
 
 def collect_places(reports: list[ResearchReport], provider: str) -> dict[str, Place]:
-    """只读取工具原文或 structuredContent，绝不从模型摘要提取地点和坐标。"""
+    """
+    只读取工具原文或 structuredContent，绝不从模型摘要提取地点和坐标。
+
+    :param reports: 本轮研究结果，只遍历非天气主题的成功工具证据。
+    :param provider: 地图供应商标识，用于记录来源和默认坐标系。
+    :return: 按地点 ID 索引的有效事实；重复 ID 使用后遍历到的记录。
+    """
     places: dict[str, Place] = {}
     for report in reports:
         if report.topic == "weather":
@@ -46,7 +52,14 @@ def collect_places(reports: list[ResearchReport], provider: str) -> dict[str, Pl
 def _read_place(
     item: dict[str, Any], provider: str, fetched_at: datetime
 ) -> Place | None:
-    """兼容两家 MCP 的地点字段名；缺 ID 或有效坐标时保留未知，不让模型补值。"""
+    """
+    兼容两家 MCP 的地点字段名；缺 ID 或有效坐标时保留未知，不让模型补值。
+
+    :param item: 从工具原文解析出的单个候选对象。
+    :param provider: 供应商标识，amap 默认 GCJ-02，baidu 默认 BD-09。
+    :param fetched_at: 接收该工具证据的时间，沿用到地点事实。
+    :return: 校验通过的地点；字段缺失、坐标或声明的坐标系无效时返回 None。
+    """
     location = item.get("location")
     if isinstance(location, str):
         coordinates = location.split(",")

@@ -4,14 +4,28 @@ import type { PlanProject } from "../types/trip";
 import { saveRevision, updateProject } from "../api/workspaceStore";
 import { examples, planLocally } from "../utils/localPlanner";
 
+/** 本地调整助手的项目上下文和状态回调。 */
 interface Props {
+  /** 当前项目及历史消息、待处理要求。 */
   project: PlanProject;
+  /** 当前选中的行程日期 ID。 */
   dayId: number;
+  /** 面板是否处于活动状态，用于同步滚动。 */
   active: boolean;
+  /** 查看历史版本时禁止提交调整。 */
   readOnly: boolean;
+  /** 请求查看指定版本时接收版本 ID 的回调。 */
   onRevision: (id: string) => void;
+  /** 本地演示开始和结束时通知父组件忙碌状态。 */
   onBusy: (busy: boolean) => void;
 }
+/**
+ * 为本地演示提供可取消的等待。
+ *
+ * @param ms - 等待时长，单位毫秒。
+ * @param signal - 取消信号；取消时 Promise 以 AbortError 拒绝。
+ * @returns 等待完成后兑现的 Promise。
+ */
 function delay(ms: number, signal: AbortSignal) {
   return new Promise<void>((resolve, reject) => {
     if (signal.aborted) {
@@ -30,6 +44,12 @@ function delay(ms: number, signal: AbortSignal) {
   });
 }
 
+/**
+ * 展示项目对话并执行本地规则调整演示。
+ *
+ * @param props - 当前项目、日期、显示状态及回调，字段含义见 Props。
+ * @returns 对话记录、调整输入框与演示进度。
+ */
 export default function AssistantPanel({
   project,
   dayId,
@@ -53,6 +73,13 @@ export default function AssistantPanel({
     bottom.current?.scrollIntoView({ block: "nearest", behavior: "instant" });
   }, [project.messages.length, stream, phase, active]);
 
+  /**
+   * 执行或恢复一次本地调整，逐步显示回复并保存结果。
+   *
+   * @param text - 本次调整要求。
+   * @param resume - 是否恢复项目中尚未完成的要求，默认 false。
+   * @returns 处理结束的 Promise；取消时保留待处理要求。
+   */
   async function run(text: string, resume = false) {
     if (
       busy ||
@@ -145,6 +172,11 @@ export default function AssistantPanel({
       }
     }
   }
+  /**
+   * 阻止表单默认提交，并执行非空调整要求。
+   *
+   * @param event - 对话输入表单的提交事件。
+   */
   function submit(event: FormEvent) {
     event.preventDefault();
     const text = input.trim();

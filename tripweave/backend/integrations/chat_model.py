@@ -14,7 +14,14 @@ def create_chat_model(
     http: httpx.AsyncClient,
     callback: AsyncCallbackHandler | None = None,
 ) -> BaseChatModel:
-    """复用调用方的 HTTP 连接；兼容思考模型的配置只在明确设置时发送。"""
+    """
+    复用调用方的 HTTP 连接；兼容思考模型的配置只在明确设置时发送。
+
+    :param settings: 模型名称、凭据、服务地址、超时和可选思考配置。
+    :param http: 由调用方创建和关闭的异步 HTTP 客户端。
+    :param callback: 可选的框架异步回调，用于显示流式进度。
+    :return: 已配置流式输出、关闭自动重试的聊天模型，不在此发起请求。
+    """
     extra_body: dict[str, object] = {}
     if settings.model_enable_thinking is not None:
         extra_body["enable_thinking"] = settings.model_enable_thinking

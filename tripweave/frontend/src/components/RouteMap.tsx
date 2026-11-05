@@ -1,12 +1,21 @@
 import type { Activity } from "../types/trip";
 
+/** 路线示意图的输入与选择事件。 */
 interface Props {
+  /** 当日活动；仅绘制具有像素坐标的地点。 */
   activities: Activity[];
+  /** 当前选中活动 ID，未选择时为 null。 */
   selectedId: string | null;
+  /** 选择地点时接收活动 ID 的回调。 */
   onSelect: (id: string) => void;
 }
 
-/** 路线概览使用独立绘制的街区底图，不充当导航地图。 */
+/**
+ * 用独立绘制的街区底图展示路线概览，不充当导航地图。
+ *
+ * @param props - 当日活动、选中标识及选择回调，字段含义见 Props。
+ * @returns 仅标记具有 SVG 像素坐标的活动的路线示意图。
+ */
 export default function RouteMap({ activities, selectedId, onSelect }: Props) {
   const stops = activities.filter((activity) => activity.point);
   return (
