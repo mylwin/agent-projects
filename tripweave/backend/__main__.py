@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from backend.agents.console import ConsoleCallback
+from backend.config.env import load_env
 from backend.config.planner import PlannerSettings
 from backend.schemas.trip import TripRequest
 from backend.services.planning import generate_trip
@@ -17,6 +18,7 @@ def main() -> int:
 
     :return: 成功时返回 0；输入、配置、超时或服务错误时返回 1。
     """
+    load_env()
     parser = argparse.ArgumentParser(description="生成国内旅行行程草稿")
     parser.add_argument("input", type=Path, help="旅行需求 JSON 文件")
     parser.add_argument(
