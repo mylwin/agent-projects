@@ -28,6 +28,19 @@ uv run --env-file .env python -m backend examples/trip-request.json > tmp/agent/
 该命令会调用真实模型和地图，可能消耗额度。程序不自动执行真实联调。
 进度写标准错误，JSON 写标准输出；失败以非零状态退出。
 
+终端现在会即时显示各 Agent 的正文分片和工具开始、完成或失败信息。
+模型客户端统一使用 ChatOpenAI，服务地址和模型名称仍由 .env 配置。
+`MODEL_ENABLE_THINKING=true` 只请求供应商启用思考；终端仅显示 SDK 实际透传的推理块，
+不保证第三方 reasoning_content 字段可见。正文与工具进度不受该开关影响。
+
+默认不展开工具 JSON 参数。调试 Planner 的结构化生成过程时执行：
+
+```bash
+uv run --env-file .env python -m backend examples/trip-request.json --debug-tools
+```
+
+失败会显示阶段、底层异常类型及脱敏原因，便于区分天气 Agent 调用超限、模型拒绝与 MCP 故障。
+
 ## 离线检查
 
 ```bash

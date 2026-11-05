@@ -16,7 +16,10 @@
 - `backend/__main__.py`：命令行入口，只做文件读取、配置装配和错误提示。
 - `backend/schemas/trip.py`：需求、地点、模型草稿、前端展示结果。
 - `backend/services/planning.py`：顺序编排、业务校验与结果装配。
-- `backend/agents/planner.py`：最终行程提示词和一次结构化模型调用；`research.py` 负责景点、天气、住宿研究 Agent。
+- `backend/agents/planner.py`：一次结构化行程汇总；`research.py` 负责景点、天气、住宿研究 Agent。
+- `backend/agents/prompts.py`：集中存放角色提示词、供应商参数示例与 Planner few-shot。
+- `backend/agents/console.py`：单个原生异步回调，显示模型分片与工具进度。
+- `backend/errors/`：集中存放业务异常，`planning.py` 定义规划异常及诊断脱敏，保留失败阶段与底层类型。
 - `backend/integrations/`：模型和现有地图供应商适配。
 - `backend/config/`：环境变量配置。
 - `backend/tests/`：自动化测试；`examples/`：可直接执行的输入样例。
@@ -53,6 +56,8 @@ Python 使用 snake_case，TypeScript 函数和变量 camelCase，组件 PascalC
 当前输出为首次生成草稿，research 包含工具证据与研究摘要。
 天气查询不保证覆盖出行日期，酒店查询不保证实时房价和可订状态；费用、路线和预约仍未核验。
 模型单次请求与整轮规划均有超时，整轮超时必须覆盖地图查询。
+终端过程写 stderr，最终 JSON 写 stdout；只有 --debug-tools 才显示工具参数分片。
+推理仅显示服务公开返回的字段，不伪造推理，也不为了流式显示额外调用模型。
 密钥仅从环境变量读取，不写源码、文档、日志或前端；只提交 `.env.example`。
 自动测试使用替身；真实服务联调需明确授权并确认供应商、输入和调用范围。
 

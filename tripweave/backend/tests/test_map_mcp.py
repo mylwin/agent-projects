@@ -15,6 +15,7 @@ from langchain_mcp_adapters.tools import load_mcp_tools
 
 from backend.agents.research import research_topic
 from backend.config.planner import PlannerSettings
+from backend.errors import PlanningError
 from backend.integrations.map_mcp import MapTools, create_map_mcp
 from backend.integrations.place_evidence import collect_places
 from backend.schemas.trip import ResearchReport, ToolEvidence
@@ -173,7 +174,7 @@ def test_model_call_limit() -> None:
             for index in range(7)
         ]
     )
-    with pytest.raises(ModelCallLimitExceededError):
+    with pytest.raises(PlanningError) as caught:
         asyncio.run(
             research_topic(
                 "attractions",
@@ -182,6 +183,8 @@ def test_model_call_limit() -> None:
                 MapTools("amap", [maps_text_search]),
             )
         )
+    assert isinstance(caught.value.original, ModelCallLimitExceededError)
+    assert "attractions" in str(caught.value) and "6 次" in str(caught.value)
     assert len(calls) == 6
 
 

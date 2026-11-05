@@ -6,12 +6,14 @@ from datetime import timedelta
 from uuid import uuid4
 
 import httpx
+from langchain_core.callbacks import AsyncCallbackHandler
 from langchain_core.language_models import BaseChatModel
 from langchain_mcp_adapters.tools import load_mcp_tools
 
 from backend.agents.planner import create_draft
 from backend.agents.research import research_topic
 from backend.config.planner import PlannerSettings
+from backend.errors import PlanningError
 from backend.integrations.chat_model import create_chat_model
 from backend.integrations.map_mcp import MapTools, create_map_mcp
 from backend.integrations.place_evidence import collect_places
@@ -134,26 +136,27 @@ async def generate_trip(
     request: TripRequest,
     settings: PlannerSettings,
     on_progress: Callable[[str], None] = print,
+    callback: AsyncCallbackHandler | None = None,
 ) -> PlanResult:
-    """装配真实依赖，用一个总超时覆盖整轮流程，结束时关闭连接。"""
-    async with asyncio.timeout(settings.planner_timeout_seconds):
-        client = create_map_mcp(settings)
-        try:
+    """装配真实依赖，总超时覆盖整轮；异常保留阶段、类型与脱敏原因。"""
+    stage = "MCP 连接与工具发现"
+    secrets = (settings.model_api_key, settings.amap_api_key, settings.baidu_api_key)
+    try:
+        async with asyncio.timeout(settings.planner_timeout_seconds):
+            client = create_map_mcp(settings)
             async with client.session(settings.map_provider) as session:
                 tools = await load_mcp_tools(session)
+                stage = "行程规划"
                 async with httpx.AsyncClient(
                     timeout=settings.model_timeout_seconds
                 ) as model_http:
                     return await plan_trip(
                         request,
-                        create_chat_model(settings, model_http),
+                        create_chat_model(settings, model_http, callback),
                         MapTools(settings.map_provider, tools),
                         on_progress,
                     )
-        except TimeoutError:
-            raise
-        except Exception:
-            # MCP 连接异常可能包含 query 中的密钥，只向调用方返回固定安全信息。
-            raise RuntimeError(
-                "MCP 或模型运行失败，请检查服务权限、工具支持与网络。"
-            ) from None
+    except TimeoutError:
+        raise
+    except Exception as exc:
+        raise PlanningError(stage, exc, secrets) from None

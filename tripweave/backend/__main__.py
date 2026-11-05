@@ -5,6 +5,7 @@ import asyncio
 import sys
 from pathlib import Path
 
+from backend.agents.console import ConsoleCallback
 from backend.config.planner import PlannerSettings
 from backend.schemas.trip import TripRequest
 from backend.services.planning import generate_trip
@@ -14,6 +15,11 @@ def main() -> int:
     """读取需求、运行一次规划，进度写 stderr，结果 JSON 写 stdout。"""
     parser = argparse.ArgumentParser(description="生成国内旅行行程草稿")
     parser.add_argument("input", type=Path, help="旅行需求 JSON 文件")
+    parser.add_argument(
+        "--debug-tools",
+        action="store_true",
+        help="显示流式工具参数（含 Planner JSON 参数）",
+    )
     args = parser.parse_args()
     try:
         request = TripRequest.model_validate_json(
@@ -23,12 +29,17 @@ def main() -> int:
     except (OSError, ValueError) as exc:
         print(f"输入或配置错误：{exc}", file=sys.stderr)
         return 1
+    console = ConsoleCallback(
+        debug_tools=args.debug_tools,
+        secrets=(settings.model_api_key, settings.amap_api_key, settings.baidu_api_key),
+    )
     try:
         result = asyncio.run(
             generate_trip(
                 request,
                 settings,
-                lambda message: print(message, file=sys.stderr, flush=True),
+                console.progress,
+                console,
             )
         )
     except TimeoutError:
@@ -44,6 +55,8 @@ def main() -> int:
             file=sys.stderr,
         )
         return 1
+    finally:
+        console.finish()
     print(result.model_dump_json(indent=2))
     return 0
 

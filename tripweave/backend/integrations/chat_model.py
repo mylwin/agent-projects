@@ -1,6 +1,7 @@
 """创建标准 OpenAI 兼容模型，不依赖 SDK 私有方法。"""
 
 import httpx
+from langchain_core.callbacks import AsyncCallbackHandler
 from langchain_core.language_models import BaseChatModel
 from langchain_openai import ChatOpenAI
 from pydantic import SecretStr
@@ -9,7 +10,9 @@ from backend.config.planner import PlannerSettings
 
 
 def create_chat_model(
-    settings: PlannerSettings, http: httpx.AsyncClient
+    settings: PlannerSettings,
+    http: httpx.AsyncClient,
+    callback: AsyncCallbackHandler | None = None,
 ) -> BaseChatModel:
     """复用调用方的 HTTP 连接；兼容思考模型的配置只在明确设置时发送。"""
     extra_body: dict[str, object] = {}
@@ -26,4 +29,5 @@ def create_chat_model(
         streaming=True,
         extra_body=extra_body or None,
         http_async_client=http,
+        callbacks=[callback] if callback is not None else None,
     )

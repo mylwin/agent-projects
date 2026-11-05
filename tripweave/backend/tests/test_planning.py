@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 import httpx
 import pytest
+from langchain_core.callbacks import AsyncCallbackHandler
 from langchain_mcp_adapters.tools import load_mcp_tools
 from mcp.server.fastmcp import FastMCP
 from mcp.shared.memory import create_connected_server_and_client_session
@@ -289,6 +290,7 @@ def test_cli_stdout_contains_only_result(
         request: TripRequest,
         settings: PlannerSettings,
         on_progress: Callable[[str], None],
+        callback: AsyncCallbackHandler | None = None,
     ) -> PlanResult:
         """按真实入口的签名验证进度回调。"""
         on_progress("测试进度")
