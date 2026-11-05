@@ -12,3 +12,6 @@ Desktop.ini
 
 # 各子项目的依赖、构建和环境配置规则由各自的 .gitignore 维护
 tripweave/.oil-ui/
+
+# pnpm 在工作区根目录生成的依赖缓存
+.pnpm-store/

@@ -105,10 +105,13 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
       month: "long",
       day: "numeric",
     }).format(new Date(`${value}T12:00:00`));
+  const hasUnknownCost = trip.days.some((entry) =>
+    entry.activities.some((activity) => activity.cost === null),
+  );
   const activityCost = trip.days.reduce(
     (total, entry) =>
       total +
-      entry.activities.reduce((cost, activity) => cost + activity.cost, 0),
+      entry.activities.reduce((cost, activity) => cost + (activity.cost ?? 0), 0),
     0,
   );
   const dayRequests = requests.filter((request) => request.dayId === dayId);
@@ -800,8 +803,8 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
               <div>
                 <dt>活动费用估计</dt>
                 <dd>
-                  <span>¥</span>
-                  {activityCost.toLocaleString()}
+                  {!hasUnknownCost && <span>¥</span>}
+                  {hasUnknownCost ? "待核实" : activityCost.toLocaleString()}
                 </dd>
                 <p>不含住宿与未列项目</p>
               </div>

@@ -1,4 +1,4 @@
-import examples from "../../../docs/02-frontend/03-data/03-assistant-examples.json";
+import examples from "../data/assistant-examples.json";
 import type { Trip } from "../types/trip";
 
 export { examples };
@@ -51,7 +51,7 @@ export function planLocally(trip: Trip, dayId: number, input: string) {
   } else {
     target.activities = target.activities.map((a) => {
       if (a.kind !== "food") return a;
-      if (match.id === "budget" && a.cost <= 40 * trip.travelers) return a;
+      if (match.id === "budget" && a.cost !== null && a.cost <= 40 * trip.travelers) return a;
       const updated =
         match.id === "budget"
           ? {

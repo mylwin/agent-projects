@@ -1,7 +1,7 @@
 [project]
 name = "tripweave"
 version = "0.1.0"
-description = "Add your description here"
+description = "独立旅行规划 Agent 与行程展示原型"
 readme = "README.md"
 authors = [
     { name = "mylwin", email = "2232802210@qq.com" }
@@ -9,7 +9,7 @@ authors = [
 requires-python = ">=3.13.15"
 dependencies = [
     "httpx>=0.28,<1",
-    "langchain>=1.4.8",
+    "langchain-core>=1,<2",
     "langchain-openai>=1,<2",
     "pydantic>=2.14.2,<3",
 ]

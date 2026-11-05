@@ -5,7 +5,7 @@ from typing import Any
 
 import httpx
 
-from backend.schemas.planner_result import QueriedPlace
+from backend.schemas.trip import Place
 
 
 class BaiduMapClient:
@@ -79,7 +79,7 @@ class BaiduMapClient:
         # 百度地点检索接受区域名称；不能将高德行政区编码当作百度 cityCode。
         return matches[0]["name"]
 
-    async def search_places(self, region: str, keywords: str) -> list[QueriedPlace]:
+    async def search_places(self, region: str, keywords: str) -> list[Place]:
         """
         限定行政区域查询候选地点，返回国测局经纬度。
 
@@ -107,7 +107,7 @@ class BaiduMapClient:
             try:
                 location = item["location"]
                 places.append(
-                    QueriedPlace(
+                    Place(
                         id=item["uid"],
                         name=item["name"],
                         address=item.get("address")

@@ -1,4 +1,4 @@
-import fixture from "../../../docs/02-frontend/03-data/02-trip-fixture.json";
+import fixture from "../data/trip.json";
 import type { Message, PlanProject, Trip } from "../types/trip";
 
 const key = "tripweave:workspace:v2";
@@ -41,7 +41,7 @@ function isTrip(value: unknown): value is Trip {
             typeof a.description === "string" &&
             typeof a.location === "string" &&
             typeof a.kind === "string" &&
-            Number.isFinite(a.cost) &&
+            (a.cost === null || Number.isFinite(a.cost)) &&
             (a.point === null ||
               (Array.isArray(a.point) &&
                 a.point.length === 2 &&

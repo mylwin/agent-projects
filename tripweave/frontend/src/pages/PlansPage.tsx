@@ -11,7 +11,7 @@ import {
   UsersRound,
   X,
 } from "lucide-react";
-import fixture from "../../../docs/02-frontend/03-data/02-trip-fixture.json";
+import fixture from "../data/trip.json";
 import { addProject, newProject } from "../api/workspaceStore";
 import { useWorkspace } from "../hooks/useWorkspace";
 import Brand from "../components/Brand";

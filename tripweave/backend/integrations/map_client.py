@@ -4,7 +4,7 @@ from typing import Protocol
 
 import httpx
 
-from backend.schemas.planner_result import QueriedPlace
+from backend.schemas.trip import Place
 
 
 class MapClient(Protocol):
@@ -20,7 +20,7 @@ class MapClient(Protocol):
         """
         ...
 
-    async def search_places(self, region: str, keywords: str) -> list[QueriedPlace]:
+    async def search_places(self, region: str, keywords: str) -> list[Place]:
         """
         在已解析区域内查询地点。
 

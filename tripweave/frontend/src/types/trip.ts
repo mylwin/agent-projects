@@ -5,7 +5,7 @@ export interface Activity {
   description: string;
   location: string;
   kind: string;
-  cost: number;
+  cost: number | null;
   point: number[] | null;
 }
 

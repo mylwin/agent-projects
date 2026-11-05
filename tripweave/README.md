@@ -1,15 +1,25 @@
 # TripWeave
 
-旅行规划应用。已实现暖白酒红的计划列表与旅行日笺前端，支持独立对话和结果归档；后端目前为目录骨架。
+旅行规划应用，当前优先把独立 Agent 调通，再接后端接口与前端。
 
-- `frontend/`：TypeScript + React + Vite，真实 Lucide 图标，支持行程编辑与浏览器保存。
-- `backend/`：计划采用 Python + FastAPI，代码直接按技术职责分层。
-- [项目目录与系统架构](docs/01-architecture/02-system-architecture.md#10-项目目录与部署)
-- [文档索引](docs/README.md)
-- [开发与提交约定](AGENTS.md)
+前端已有旅行计划列表、每日行程、手动编辑、版本选择和浏览器保存，仍使用本地示例。
+独立 Agent 已实现需求校验、地图地点查询、单次 LangChain 结构化规划、结果校验与 JSON 输出。
+当前没有 HTTP 服务，前端没有连接真实 Agent。
 
-在本目录执行 `uv sync` 同步 Python 环境；已有缓存时可使用 `uv sync --offline`。
-前端启动：
+## 运行独立 Agent
+
+```bash
+uv sync --offline
+cp .env.example .env
+# 在 .env 中填写模型和选定地图供应商凭据。
+uv run --env-file .env python -m backend examples/trip-request.json
+```
+
+真实运行会向所选地图发送城市及搜索关键词，向所选模型发送旅行需求和候选地点，
+可能消耗服务额度。输出是草稿，不保证路线、费用、预约或营业情况。
+参数和结果见 [Agent 使用说明](docs/02-agent.md)。
+
+## 运行前端
 
 ```bash
 cd frontend
@@ -17,11 +27,17 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-打开终端显示的本地地址（默认 `http://127.0.0.1:5173`）。在 `frontend/` 执行
-`pnpm typecheck`、`pnpm lint` 检查代码。
+前端新建计划和助手仍为本地示例，不需要运行 Agent。
 
-当前使用 [前端样本数据](docs/02-frontend/03-data/02-trip-fixture.json)，没有接入真实模型、后端或地图服务。
-提供三个本地示例调整及处理动效，未知要求保留为待处理项；各计划的行程、对话和版本保存仅限当前浏览器。
-后端与 Compose 尚未实现。数据字段和接入步骤见 [前端数据约定](docs/02-frontend/03-data/01-data-contract.md)。
+## 检查
 
-空目录通过 `.gitkeep` 跟踪，添加实际文件后可删除对应占位文件。
+```bash
+uv run ruff check backend
+uv run ruff format --check backend
+uv run pytest backend/tests -q
+```
+
+前端检查：在 frontend/ 执行 `pnpm typecheck`、`pnpm lint`、`pnpm build`。
+自动化测试使用地图与模型的 HTTP 协议替身，不消耗外部调用额度。
+
+[文档入口](docs/README.md) · [开发约定](AGENTS.md)

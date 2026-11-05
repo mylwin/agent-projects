@@ -5,7 +5,7 @@ from typing import Any
 
 import httpx
 
-from backend.schemas.planner_result import QueriedPlace
+from backend.schemas.trip import Place
 
 
 class AmapClient:
@@ -90,7 +90,7 @@ class AmapClient:
             )
         return matches[0]["adcode"]
 
-    async def search_places(self, region: str, keywords: str) -> list[QueriedPlace]:
+    async def search_places(self, region: str, keywords: str) -> list[Place]:
         """
         在已确定的行政区中检索有限数量的真实地点。
 
@@ -125,7 +125,7 @@ class AmapClient:
                     continue
                 longitude, latitude = item["location"].split(",")
                 places.append(
-                    QueriedPlace(
+                    Place(
                         id=item["id"],
                         name=item["name"],
                         address=(

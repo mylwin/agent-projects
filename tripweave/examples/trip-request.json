@@ -1,0 +1,10 @@
+{
+  "destination": "成都",
+  "start_date": "2027-03-12",
+  "day_count": 3,
+  "travelers": 2,
+  "budget": "3000.00",
+  "pace": "relaxed",
+  "interests": ["历史", "当地小吃"],
+  "instruction": "安排轻松一点，喜欢历史和当地小吃"
+}
