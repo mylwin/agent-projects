@@ -78,4 +78,4 @@ uv run pytest backend/tests -q
 前端在 frontend/ 执行 `pnpm dev`，检查为 `pnpm typecheck`、`pnpm lint`、`pnpm build`。
 页面仍展示本地样例，不会自动读取 CLI 的生成结果。
 
-[文档入口](docs/README.md) · [Agent 使用说明](docs/02-agent.md) · [开发约定](AGENTS.md)
+[文档入口](docs/README.md) · [Agent 使用说明](docs/02-agent.md) · [数据库设计](docs/05-database.md) · [开发约定](AGENTS.md)
