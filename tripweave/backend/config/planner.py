@@ -14,11 +14,11 @@ class PlannerSettings:
 
     Attributes:
         model_api_key: 模型密钥，不参与对象的文本展示。
-        amap_api_key: 高德 Web 服务密钥，不参与对象的文本展示。
+        amap_api_key: 高德 MCP 服务密钥，不参与对象的文本展示。
         model_name: 支持工具调用的模型名称。
         model_base_url: 模型服务的 OpenAI 兼容接口地址。
         map_provider: 地图供应商，默认 amap，也支持 baidu。
-        baidu_api_key: 百度地图 Web 服务 AK，不参与对象的文本展示。
+        baidu_api_key: 百度地图 MCP 服务 AK，不参与对象的文本展示。
         model_timeout_seconds: 单次模型请求的超时秒数，默认 60。
         planner_timeout_seconds: 整轮规划的总超时秒数，默认 300。
         model_enable_thinking: 是否开启思考链；None 表示不发送该参数。

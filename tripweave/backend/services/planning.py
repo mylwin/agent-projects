@@ -1,4 +1,4 @@
-"""顺序执行需求检查、地点查询、模型规划、业务校验和结果装配。"""
+"""顺序执行景点、天气、住宿研究，再由 Planner 汇总、校验和装配结果。"""
 
 import asyncio
 from collections.abc import Callable
@@ -7,11 +7,14 @@ from uuid import uuid4
 
 import httpx
 from langchain_core.language_models import BaseChatModel
+from langchain_mcp_adapters.tools import load_mcp_tools
 
 from backend.agents.planner import create_draft
+from backend.agents.research import research_topic
 from backend.config.planner import PlannerSettings
 from backend.integrations.chat_model import create_chat_model
-from backend.integrations.map_client import MapClient, create_map_client
+from backend.integrations.map_mcp import MapTools, create_map_mcp
+from backend.integrations.place_evidence import collect_places
 from backend.schemas.trip import (
     Place,
     PlanResult,
@@ -26,7 +29,7 @@ from backend.schemas.trip import (
 async def plan_trip(
     request: TripRequest,
     model: BaseChatModel,
-    map_client: MapClient,
+    maps: MapTools,
     on_progress: Callable[[str], None] = print,
 ) -> PlanResult:
     """
@@ -38,28 +41,24 @@ async def plan_trip(
         end_date = request.start_date + timedelta(days=request.day_count - 1)
     except OverflowError:
         raise ValueError("旅行日期超出可表示范围") from None
-    on_progress(f"解析目的地：{request.destination}")
-    region = await map_client.resolve_region(request.destination)
-
-    # 景点、美食各查一次，再补充一种兴趣，保持调用数量直观可控。
-    keywords = ["景点", "当地美食"]
-    if request.interests and request.interests[0] not in keywords:
-        keywords.append(request.interests[0])
-    places: dict[str, Place] = {}
-    for keyword in keywords:
-        on_progress(f"查询地点：{keyword}")
-        results = await map_client.search_places(region, keyword)
-        places.update({place.id: place for place in results})
+    reports = []
+    # 按教程顺序运行三个独立研究 Agent，便于从终端逐步定位问题。
+    for topic in ("attractions", "weather", "hotels"):
+        on_progress(f"研究 {topic}：{request.destination}")
+        reports.append(await research_topic(topic, request, model, maps))
+    places = collect_places(reports, maps.provider)
     if not places:
         raise ValueError("目的地没有查询到可用地点，无法生成行程")
 
     on_progress(
         f"生成 {request.start_date} 至 {end_date} 的行程，候选地点 {len(places)} 个"
     )
-    draft = await create_draft(request, list(places.values()), model)
+    draft = await create_draft(request, list(places.values()), model, reports)
     on_progress("校验日期、活动时间和地点来源")
     validate_draft(draft, request, places)
     result = build_result(request, draft, places)
+    result.research = reports
+    result.warnings.extend(warning for report in reports for warning in report.warnings)
     on_progress("行程草稿已生成")
     return result
 
@@ -125,7 +124,7 @@ def build_result(
         warnings=[
             "活动费用尚未查询，cost 为 null；全团预算不含往返大交通。",
             "地点坐标来自地图查询；point 尚未投影，路线与交通耗时待核实。",
-            "天气、住宿、开放时间、预约与营业情况尚未核验。",
+            "天气预报是否覆盖出行日期、酒店价格与可订状态、开放时间和预约仍需确认。",
         ],
         reply=f"已为{request.destination}生成{request.day_count}天行程草稿，引用{len(used_places)}个查询地点。",
     )
@@ -137,19 +136,24 @@ async def generate_trip(
     on_progress: Callable[[str], None] = print,
 ) -> PlanResult:
     """装配真实依赖，用一个总超时覆盖整轮流程，结束时关闭连接。"""
-    key = (
-        settings.amap_api_key
-        if settings.map_provider == "amap"
-        else settings.baidu_api_key
-    )
     async with asyncio.timeout(settings.planner_timeout_seconds):
-        async with (
-            httpx.AsyncClient() as map_http,
-            httpx.AsyncClient(timeout=settings.model_timeout_seconds) as model_http,
-        ):
-            return await plan_trip(
-                request,
-                create_chat_model(settings, model_http),
-                create_map_client(settings.map_provider, key, map_http),
-                on_progress,
-            )
+        client = create_map_mcp(settings)
+        try:
+            async with client.session(settings.map_provider) as session:
+                tools = await load_mcp_tools(session)
+                async with httpx.AsyncClient(
+                    timeout=settings.model_timeout_seconds
+                ) as model_http:
+                    return await plan_trip(
+                        request,
+                        create_chat_model(settings, model_http),
+                        MapTools(settings.map_provider, tools),
+                        on_progress,
+                    )
+        except TimeoutError:
+            raise
+        except Exception:
+            # MCP 连接异常可能包含 query 中的密钥，只向调用方返回固定安全信息。
+            raise RuntimeError(
+                "MCP 或模型运行失败，请检查服务权限、工具支持与网络。"
+            ) from None

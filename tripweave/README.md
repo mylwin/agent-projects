@@ -1,43 +1,45 @@
 # TripWeave
 
-旅行规划应用，当前优先把独立 Agent 调通，再接后端接口与前端。
+旅行规划应用。当前独立运行多 Agent + 官方地图 MCP，验证通过后再接后端和前端。
 
-前端已有旅行计划列表、每日行程、手动编辑、版本选择和浏览器保存，仍使用本地示例。
-独立 Agent 已实现需求校验、地图地点查询、单次 LangChain 结构化规划、结果校验与 JSON 输出。
-当前没有 HTTP 服务，前端没有连接真实 Agent。
+景点、美食、天气、住宿分别由研究 Agent 查询，Planner 汇总并返回行程草稿。
+高德和百度通过工厂切换官方 MCP 服务，不再维护手写地图 REST 客户端。
+前端仍为本地示例，尚无 HTTP 接口或真实 Agent 接入。
 
-## 运行独立 Agent
+## 运行
 
 ```bash
 uv sync --offline
-cp .env.example .env
-# 在 .env 中填写模型和选定地图供应商凭据。
+# 已有 .env 时直接核对配置，不要覆盖。
 uv run --env-file .env python -m backend examples/trip-request.json
 ```
 
-真实运行会向所选地图发送城市及搜索关键词，向所选模型发送旅行需求和候选地点，
-可能消耗服务额度。输出是草稿，不保证路线、费用、预约或营业情况。
-参数和结果见 [Agent 使用说明](docs/02-agent.md)。
+首次配置可复制 .env.example 为 .env，填写模型与选定地图供应商密钥。
+`MAP_PROVIDER=amap` 使用 AMAP_API_KEY；`MAP_PROVIDER=baidu` 使用 BAIDU_MAP_API_KEY。
+密钥必须具备官方地图 MCP 服务权限，旧 Web API 权限不保证可直接使用 MCP。
 
-## 运行前端
+输出保存：
 
 ```bash
-cd frontend
-pnpm install --frozen-lockfile
-pnpm dev
+mkdir -p tmp/agent
+uv run --env-file .env python -m backend examples/trip-request.json > tmp/agent/result.json
 ```
 
-前端新建计划和助手仍为本地示例，不需要运行 Agent。
+该命令会调用真实模型和地图，可能消耗额度。程序不自动执行真实联调。
+进度写标准错误，JSON 写标准输出；失败以非零状态退出。
 
-## 检查
+## 离线检查
 
 ```bash
 uv run ruff check backend
 uv run ruff format --check backend
+uv run pyright
 uv run pytest backend/tests -q
 ```
 
-前端检查：在 frontend/ 执行 `pnpm typecheck`、`pnpm lint`、`pnpm build`。
-自动化测试使用地图与模型的 HTTP 协议替身，不消耗外部调用额度。
+测试使用内存 MCP、Streamable HTTP 的 ASGI 替身及模型 HTTP 替身，不访问真实供应商。
 
-[文档入口](docs/README.md) · [开发约定](AGENTS.md)
+前端在 frontend/ 执行 `pnpm dev`，检查为 `pnpm typecheck`、`pnpm lint`、`pnpm build`。
+页面仍展示本地样例，不会自动读取 CLI 的生成结果。
+
+[文档入口](docs/README.md) · [Agent 使用说明](docs/02-agent.md) · [开发约定](AGENTS.md)

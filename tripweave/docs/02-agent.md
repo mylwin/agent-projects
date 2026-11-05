@@ -1,66 +1,60 @@
-# 独立旅行规划 Agent
+# Agent 与地图 MCP 运行
 
-## 准备环境
+## 配置与命令
 
-在项目根目录执行 `uv sync --offline`，缓存不足时执行 `uv sync`。
-复制 `.env.example` 为 `.env`，填写以下配置：
+在项目根目录运行 `uv sync --offline`，缺缓存时执行 `uv sync`。
+已有 .env 时保留并核对配置；首次运行才从 .env.example 复制。
 
 | 变量 | 用途 |
 | --- | --- |
-| MODEL_API_KEY、MODEL_BASE_URL、MODEL_NAME | 支持工具结构化输出的 OpenAI 兼容模型 |
-| MAP_PROVIDER | amap 或 baidu，沿用已有适配器 |
-| AMAP_API_KEY / BAIDU_MAP_API_KEY | 只填选定供应商的 Web 服务密钥 |
-| MODEL_TIMEOUT_SECONDS | 单次请求超时，默认 60 秒 |
-| PLANNER_TIMEOUT_SECONDS | 地图到结果装配的整轮超时，默认 300 秒 |
-| MODEL_ENABLE_THINKING | auto / true / false；auto 不发送供应商扩展参数 |
-| MODEL_THINKING_BUDGET | 可选，供应商支持时使用 |
-
-不依赖模块导入时读取 `.env`，由 `uv run --env-file .env` 明确加载。
-模型可内部思考，但程序不收集或展示思考链，不使用 SDK 私有方法补字段。
-
-## 输入与执行
-
-修改 examples/trip-request.json：目的地、出发日期、1–5 天、1–12 人、全团预算必填。
-预算以人民币计，不含往返大交通。pace 为 relaxed/balanced/packed，兴趣和补充说明可选。
-只支持一次一个国内城市或区县，目的地歧义时返回错误。
+| MODEL_API_KEY / MODEL_BASE_URL / MODEL_NAME | 支持工具调用的 OpenAI 兼容模型 |
+| MAP_PROVIDER | amap 或 baidu |
+| AMAP_API_KEY / BAIDU_MAP_API_KEY | 选中供应商具备 MCP 权限的密钥 |
+| MODEL_TIMEOUT_SECONDS | 单次模型请求超时，默认 60 秒 |
+| PLANNER_TIMEOUT_SECONDS | MCP 连接、研究、汇总的总超时，默认 300 秒 |
+| MODEL_ENABLE_THINKING / MODEL_THINKING_BUDGET | 可选供应商参数，不采集或展示思考链 |
 
 ```bash
 mkdir -p tmp/agent
 uv run --env-file .env python -m backend examples/trip-request.json > tmp/agent/result.json
 ```
 
-进度写标准错误，结果 JSON 写标准输出。成功退出码 0，输入、配置、供应商、模型、
-校验或超时失败退出码 1；失败不会伪造成功结果。旧的 backend.agents.planner 启动入口已移除。
+进度依次显示 attractions、weather、hotels 和生成/校验阶段，写标准错误。
+成功 JSON 写标准输出，退出码 0；失败退出码 1。输入格式不变：目的地、日期、
+1–5 天、1–12 人、全团人民币预算必填，节奏、兴趣和补充可选。
+预算不含往返大交通，模型和地图的真实调用可能消耗额度。
 
-## 一次运行具体做什么
+## 连接官方 MCP
 
-1. Pydantic 检查输入，确认日期区间可表示。
-2. 地图解析城市/区县，查询景点和当地美食；有兴趣则追加第一种兴趣，最多三次检索。
-3. 每类最多五个地点，按供应商 ID 去重；没有地点直接停止。
-4. 将需求、候选地点名称、地址和 ID 交给模型一次，使用 LangChain 标准结构化输出。
-5. 检查完整连续日期、时间递增且不重复、活动只引用本轮地点。
-6. 程序装配前端需要的 Trip、地点来源、回复摘要及未核验说明。
+- [高德快速接入](https://lbs.amap.com/api/mcp-server/gettingstarted)：使用 Streamable HTTP；旧 SSE 已下线。
+- [百度快速开始](https://lbsyun.baidu.com/docs/ai?title=mcpserver%2Fquickstart)：使用推荐的 Streamable HTTP。
+- [LangChain MCP Adapters](https://github.com/langchain-ai/langchain-mcp-adapters)：负责会话与工具适配。
 
-不循环纠错，不自动重试模型，不让模型编造坐标。结果无效时直接显示失败原因，
-调整需求或模型后人工重跑。总超时包住地图阶段，单次地图请求另限 15 秒。
+无需安装 Node 地图进程，当前使用远程官方服务；代码不把 MCP 降级为旧 REST 请求。
+密钥由工厂写入官方 URL 的 query，不发送给模型，不输出连接 URL 或 SDK 原始连接错误。
+CLI 的 .env 只由 uv 明确加载，不在导入模块时自动读文件。
 
-## 能力边界
+## Agent 分工与调用上限
 
-现阶段只生成首次行程。instruction 是首次生成的偏好补充，不是局部修改接口。
-预算只是安排时的参考，没有费用数据就返回 null，不能验证预算是否满足。
-地点真实存在不代表开放或可预约；未接入天气、住宿、路线、营业时间和票价查询。
-没有 HTTP 接口、服务端保存、版本运行状态、用户系统或流式输出协议。
+- 景点 Agent：景点、美食和兴趣候选，缺坐标时使用详情查询。
+- 天气 Agent：天气/预报及必要的地理编码工具，资料不覆盖出行日期时保留未知。
+- 住宿 Agent：搜索酒店候选，不承诺实时房价、余房或可订状态。
+- Planner：综合三份研究报告和候选地点，一次结构化调用安排每一天。
 
-## 验证
+每个研究 Agent 最多 6 次模型调用、8 次工具调用，通过 LangChain 内置中间件限制。
+因此整轮最多 19 次模型、24 次工具调用；这是上限，不是固定消费。总超时仍会提前结束运行。
+每轮使用一个 MCP 会话，退出或超时后关闭。没有自动模型重试、后台任务或额外纠错循环。
 
-```bash
-uv run ruff check backend
-uv run ruff format --check backend
-uv run pytest backend/tests -q
-```
+缺少某类工具或工具返回错误时，该主题写入缺失说明；不会采用无工具证据的模型结论。
+传输故障或框架预算耗尽会使本轮失败。不存在可用地点则停止，不调用最终 Planner。
 
-测试经过真实 ChatOpenAI SDK、流式 HTTP 解析和结构化结果解析，使用合成响应替代外部网络；
-覆盖两家地图、1/3/5 天、无地点、虚构地点、错位日期、重复时间、输入边界与整轮超时。
-这能验证程序和协议路径，不证明真实服务权限、额度、模型工具输出质量或目的地覆盖。
-用户当前选择暂不调用真实服务。后续恢复在线联调时，应单独检查阶段输出及结果，
-确认后再开始后端接口。
+## 结果与边界
+
+PlanResult 包含 trip、places、reply、warnings，新增 research 保存每个主题的摘要与工具原文。
+只有工具成功返回的地点 ID、名称、坐标才进入 places；模型只能引用这些 ID。
+高德默认 GCJ-02，百度默认 BD-09，不把坐标写入当前 SVG 的 point 字段。
+费用仍为 null，距离待核实。天气查询与酒店搜索不等于天气日期覆盖或价格核验。
+
+自动测试覆盖内存 MCP、Streamable HTTP ASGI 传输替身、真实模型 SDK 和多 Agent 工具循环；
+它们不证明真实供应商的权限、在线工具名、回包形状或模型效果已验证。
+按用户选择尚未进行真实服务联调，也没有实现 HTTP 后端接口或前端接入。

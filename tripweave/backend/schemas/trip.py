@@ -2,7 +2,7 @@
 
 from datetime import date
 from decimal import Decimal
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import AwareDatetime, BaseModel, ConfigDict, Field
 
@@ -31,7 +31,7 @@ class Place(BaseModel):
     address: str
     longitude: float = Field(ge=-180, le=180, allow_inf_nan=False)
     latitude: float = Field(ge=-90, le=90, allow_inf_nan=False)
-    coordinate_system: Literal["GCJ-02"] = "GCJ-02"
+    coordinate_system: Literal["GCJ-02", "BD-09"] = "GCJ-02"
     source: Literal["amap", "baidu"] = "amap"
     fetched_at: AwareDatetime
 
@@ -99,6 +99,24 @@ class Trip(BaseModel):
     days: list[TripDay]
 
 
+class ToolEvidence(BaseModel):
+    """MCP 工具成功返回的原始证据，不包含连接地址或密钥。"""
+
+    tool: str
+    content: str
+    structured_content: dict[str, Any] | None = None
+    fetched_at: AwareDatetime
+
+
+class ResearchReport(BaseModel):
+    """独立研究 Agent 的摘要、工具证据和缺失说明。"""
+
+    topic: Literal["attractions", "weather", "hotels"]
+    summary: str
+    evidence: list[ToolEvidence] = Field(default_factory=list)
+    warnings: list[str] = Field(default_factory=list)
+
+
 class PlanResult(BaseModel):
     """独立 Agent 的完整结果，供 CLI 检查和后续后端接入。"""
 
@@ -106,3 +124,4 @@ class PlanResult(BaseModel):
     places: list[Place]
     warnings: list[str]
     reply: str
+    research: list[ResearchReport] = Field(default_factory=list)

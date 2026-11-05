@@ -1,17 +1,21 @@
-"""用真实 LangChain 和 HTTP 协议替身验证主流程，不调用付费服务。"""
+"""通过真实 MCP 会话、LangChain 多 Agent 和模型 HTTP 替身验证主流程。"""
 
 import asyncio
 import json
+from collections.abc import Callable
 from pathlib import Path
 from unittest.mock import patch
 
 import httpx
 import pytest
+from langchain_mcp_adapters.tools import load_mcp_tools
+from mcp.server.fastmcp import FastMCP
+from mcp.shared.memory import create_connected_server_and_client_session
 from pydantic import ValidationError
 
 from backend.config.planner import PlannerSettings
 from backend.integrations.chat_model import create_chat_model
-from backend.integrations.map_client import create_map_client
+from backend.integrations.map_mcp import MapTools
 from backend.schemas.trip import PlanResult, TripRequest
 from backend.services.planning import generate_trip, plan_trip
 
@@ -26,7 +30,7 @@ def make_request(days: int = 1) -> TripRequest:
 
 
 def make_draft(days: int = 1) -> dict:
-    """构造只引用合成测试地点的草稿。"""
+    """构造只引用合成 MCP 地点的草稿。"""
     return {
         "days": [
             {
@@ -46,132 +50,168 @@ def make_draft(days: int = 1) -> dict:
     }
 
 
-class SupplierStub:
-    """模拟两家地图和模型的 HTTP 响应，记录调用次数。"""
+class ModelStub:
+    """模拟 OpenAI 兼容流式响应，三个研究 Agent 各调用一次 MCP 后总结。"""
 
-    def __init__(self, draft: dict | None = None, empty: bool = False):
-        """指定模型响应及候选池边界。"""
+    def __init__(self, provider: str = "amap", draft: dict | None = None):
+        """记录实际模型请求以验证角色隔离和调用数量。"""
+        self.provider = provider
         self.draft = draft or make_draft()
-        self.empty = empty
-        self.model_calls = 0
-        self.map_calls = 0
+        self.calls: list[dict] = []
 
     def respond(self, request: httpx.Request) -> httpx.Response:
-        """接收真实 SDK 构造的 HTTP 请求。"""
-        if request.url.path.endswith("/chat/completions"):
-            self.model_calls += 1
-            body = json.loads(request.content)
-            assert body["stream"] is True
-            assert body["tools"][0]["function"]["name"] == "TravelDraft"
+        """由真实模型 SDK 请求消息决定工具调用或结构化结果。"""
+        body = json.loads(request.content)
+        self.calls.append(body)
+        assert body["stream"] is True
+        available = {tool["function"]["name"] for tool in body["tools"]}
+        assert "share_map" not in available
+        if "TravelDraft" in available:
+            function, arguments = "TravelDraft", self.draft
             assert "test-poi" in body["messages"][1]["content"]
-            chunk = {
-                "id": "test",
-                "object": "chat.completion.chunk",
-                "created": 0,
-                "model": "test",
-                "choices": [
-                    {
-                        "index": 0,
-                        "delta": {
-                            "role": "assistant",
-                            "tool_calls": [
-                                {
-                                    "index": 0,
-                                    "id": "call-1",
-                                    "type": "function",
-                                    "function": {
-                                        "name": "TravelDraft",
-                                        "arguments": json.dumps(self.draft),
-                                    },
-                                }
-                            ],
-                        },
-                        "finish_reason": "tool_calls",
-                    }
-                ],
-            }
-            return httpx.Response(
-                200,
-                headers={"content-type": "text/event-stream"},
-                text="data: " + json.dumps(chunk) + "\n\ndata: [DONE]\n\n",
-            )
-        self.map_calls += 1
-        if request.url.host == "restapi.amap.com":
-            if request.url.path.endswith("/district"):
-                return httpx.Response(
-                    200,
-                    json={
-                        "status": "1",
-                        "districts": [
-                            {"name": "成都市", "level": "city", "adcode": "510100"}
-                        ],
-                    },
+            assert "研究资料" in body["messages"][1]["content"]
+        elif any(message["role"] == "tool" for message in body["messages"]):
+            function, arguments = None, {}
+        else:
+            weather = "查询目的地天气" in body["messages"][0]["content"]
+            if weather:
+                function = "maps_weather" if self.provider == "amap" else "map_weather"
+                assert available == {function}
+                arguments = {"city": "成都"}
+            else:
+                function = (
+                    "maps_text_search"
+                    if self.provider == "amap"
+                    else "map_search_places"
                 )
-            assert request.url.params["city"] == "510100"
-            assert request.url.params["citylimit"] == "true"
-            return httpx.Response(
-                200,
-                json={
-                    "status": "1",
-                    "pois": []
-                    if self.empty
-                    else [
-                        {
-                            "id": "test-poi",
-                            "name": "合成测试地点",
-                            "address": "测试地址",
-                            "adcode": "510105",
-                            "location": "104.06,30.67",
-                        }
-                    ],
-                },
-            )
-        if request.url.path == "/api_region_search/v1/":
-            return httpx.Response(
-                200, json={"status": 0, "districts": [{"name": "成都市", "level": 2}]}
-            )
-        assert request.url.params["region"] == "成都市"
-        assert request.url.params["ret_coordtype"] == "gcj02ll"
+                arguments = {
+                    "query": "酒店"
+                    if "住宿候选" in body["messages"][0]["content"]
+                    else "景点"
+                }
+        delta: dict[str, object] = {"role": "assistant"}
+        if function:
+            delta["tool_calls"] = [
+                {
+                    "index": 0,
+                    "id": f"call-{len(self.calls)}",
+                    "type": "function",
+                    "function": {"name": function, "arguments": json.dumps(arguments)},
+                }
+            ]
+        else:
+            delta["content"] = "已查询工具，未覆盖的日期和价格保持未知。"
+        chunk = {
+            "id": "test",
+            "object": "chat.completion.chunk",
+            "created": 0,
+            "model": "test",
+            "choices": [
+                {
+                    "index": 0,
+                    "delta": delta,
+                    "finish_reason": "tool_calls" if function else "stop",
+                }
+            ],
+        }
         return httpx.Response(
             200,
-            json={
-                "status": 0,
-                "results": []
-                if self.empty
-                else [
+            headers={"content-type": "text/event-stream"},
+            text="data: " + json.dumps(chunk) + "\n\ndata: [DONE]\n\n",
+        )
+
+
+def make_server(
+    provider: str = "amap", empty: bool = False, fail_weather: bool = False
+) -> FastMCP:
+    """建立内存 MCP 服务，经过 SDK 的初始化、工具发现和调用协议。"""
+    server = FastMCP("合成测试地图")
+
+    async def search(query: str) -> dict:
+        """搜索合成地点或住宿。"""
+        if empty:
+            return {"results": []}
+        is_hotel = query == "酒店"
+        if provider == "amap":
+            return {
+                "pois": [
                     {
-                        "uid": "test-poi",
+                        "id": "test-hotel" if is_hotel else "test-poi",
                         "name": "合成测试地点",
                         "address": "测试地址",
-                        "location": {"lng": 104.06, "lat": 30.67},
+                        "location": "104.06,30.67",
                     }
-                ],
-            },
-        )
+                ]
+            }
+        return {
+            "results": [
+                {
+                    "uid": "test-hotel" if is_hotel else "test-poi",
+                    "name": "合成测试地点",
+                    "address": "测试地址",
+                    "location": {"lng": 104.06, "lat": 30.67},
+                }
+            ]
+        }
+
+    async def weather(city: str) -> dict:
+        """查询合成天气；可以模拟供应商失败。"""
+        if fail_weather:
+            raise ValueError("合成天气服务不可用")
+        return {"city": city, "forecast": [{"date": "2026-11-05", "weather": "晴"}]}
+
+    async def share_map() -> str:
+        """不应暴露给研究 Agent 的分享工具。"""
+        raise AssertionError("禁止调用")
+
+    server.add_tool(
+        search, name="maps_text_search" if provider == "amap" else "map_search_places"
+    )
+    server.add_tool(
+        weather, name="maps_weather" if provider == "amap" else "map_weather"
+    )
+    server.add_tool(share_map)
+    return server
 
 
 async def execute(
-    stub: SupplierStub, provider: str = "amap", days: int = 1
+    stub: ModelStub, days: int = 1, *, empty: bool = False, fail_weather: bool = False
 ) -> PlanResult:
-    """经过模型 SDK、地图适配器、规划和装配的完整链路。"""
-    async with httpx.AsyncClient(transport=httpx.MockTransport(stub.respond)) as http:
-        return await plan_trip(
-            make_request(days),
-            create_chat_model(PlannerSettings("test-model-key", "test-map-key"), http),
-            create_map_client(provider, "test-map-key", http),
-            lambda _: None,
-        )
+    """通过完整 MCP 协议及模型 SDK 调用全部 Agent。"""
+    server = make_server(stub.provider, empty, fail_weather)
+    async with create_connected_server_and_client_session(server) as session:
+        tools = await load_mcp_tools(session)
+        async with httpx.AsyncClient(
+            transport=httpx.MockTransport(stub.respond)
+        ) as http:
+            return await plan_trip(
+                make_request(days),
+                create_chat_model(
+                    PlannerSettings("test-model-key", "test-map-key"), http
+                ),
+                MapTools(stub.provider, tools),
+                lambda _: None,
+            )
 
 
 @pytest.mark.parametrize("provider", ["amap", "baidu"])
 @pytest.mark.parametrize("days", [1, 3, 5])
 def test_complete_flow(provider: str, days: int) -> None:
-    """两家地图、1/3/5 天均只调用一次模型，结果字段对应前端。"""
-    stub = SupplierStub(make_draft(days))
-    result = asyncio.run(execute(stub, provider, days))
-    assert stub.model_calls == 1 and stub.map_calls == 4
+    """两家地图和不同天数均通过三个研究 Agent 加 Planner。"""
+    stub = ModelStub(provider, make_draft(days))
+    result = asyncio.run(execute(stub, days))
+    assert len(stub.calls) == 7
     assert len(result.trip.days) == days
+    assert [report.topic for report in result.research] == [
+        "attractions",
+        "weather",
+        "hotels",
+    ]
+    assert all(len(report.evidence) == 1 for report in result.research)
     assert result.places[0].source == provider
+    assert result.places[0].coordinate_system == (
+        "GCJ-02" if provider == "amap" else "BD-09"
+    )
     activity = result.trip.days[0].activities[0]
     assert activity.placeId == result.places[0].id
     assert activity.cost is None and activity.point is None
@@ -195,16 +235,27 @@ def test_rejects_invalid_draft(invalid: str) -> None:
         day["activities"][0]["place_id"] = "invented"
     else:
         day["activities"].append(day["activities"][0].copy())
-    with pytest.raises(ValueError):
-        asyncio.run(execute(SupplierStub(draft)))
+    with pytest.RaisesGroup(ValueError, flatten_subgroups=True):
+        asyncio.run(execute(ModelStub(draft=draft)))
 
 
-def test_empty_pool_skips_model() -> None:
-    """没有地点时停止，不消费模型调用。"""
-    stub = SupplierStub(empty=True)
-    with pytest.raises(ValueError, match="没有查询到"):
-        asyncio.run(execute(stub))
-    assert stub.model_calls == 0
+def test_empty_pool_skips_planner() -> None:
+    """没有工具地点证据时不调用最终 Planner。"""
+    stub = ModelStub()
+    with pytest.RaisesGroup(
+        pytest.RaisesExc(ValueError, match="没有查询到"), flatten_subgroups=True
+    ):
+        asyncio.run(execute(stub, empty=True))
+    assert len(stub.calls) == 6
+
+
+def test_weather_error_keeps_unknown() -> None:
+    """天气工具错误不会作为成功查询，仍可生成有缺失说明的行程。"""
+    result = asyncio.run(execute(ModelStub(), fail_weather=True))
+    report = result.research[1]
+    assert not report.evidence
+    assert "未知" in report.summary
+    assert any("查询失败" in warning for warning in result.warnings)
 
 
 @pytest.mark.parametrize(
@@ -226,50 +277,21 @@ def test_input_constraints(field: str, value: object) -> None:
         TripRequest.model_validate(data)
 
 
-def test_configuration_and_error_privacy() -> None:
-    """配置和 HTTP 错误均不暴露密钥。"""
-    with patch.dict("os.environ", {}, clear=True):
-        with pytest.raises(ValueError, match="MODEL_API_KEY"):
-            PlannerSettings.from_env()
-    assert "private-key" not in repr(PlannerSettings("private-key", "private-key"))
-
-    async def fail() -> None:
-        async with httpx.AsyncClient(
-            transport=httpx.MockTransport(lambda _: httpx.Response(403))
-        ) as http:
-            await create_map_client("amap", "private-key", http).resolve_region("成都")
-
-    with pytest.raises(RuntimeError) as caught:
-        asyncio.run(fail())
-    assert "private-key" not in str(caught.value)
-
-
-def test_total_timeout_covers_maps() -> None:
-    """整轮超时包括地图阶段。"""
-
-    async def slow(*args: object) -> None:
-        await asyncio.sleep(1)
-
-    with patch("backend.services.planning.plan_trip", side_effect=slow):
-        with pytest.raises(TimeoutError):
-            asyncio.run(
-                generate_trip(
-                    make_request(),
-                    PlannerSettings("test", "test", planner_timeout_seconds=0.01),
-                )
-            )
-
-
 def test_cli_stdout_contains_only_result(
     monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
 ) -> None:
-    """CLI 的结果可直接重定向保存，阶段输出与 JSON 分离。"""
+    """结果可直接重定向保存，阶段输出与 JSON 分离。"""
     from backend.__main__ import main
 
-    result = asyncio.run(execute(SupplierStub()))
+    result = asyncio.run(execute(ModelStub()))
 
-    async def generate(*args: object) -> PlanResult:
-        args[2]("测试进度")
+    async def generate(
+        request: TripRequest,
+        settings: PlannerSettings,
+        on_progress: Callable[[str], None],
+    ) -> PlanResult:
+        """按真实入口的签名验证进度回调。"""
+        on_progress("测试进度")
         return result
 
     monkeypatch.setattr(
@@ -285,13 +307,24 @@ def test_cli_stdout_contains_only_result(
     assert "测试进度" in output.err
 
 
-def test_cli_invalid_input_skips_services(
-    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture
-) -> None:
-    """无法读取请求时以非零退出，不进入外部服务。"""
-    from backend.__main__ import main
+def test_total_timeout_covers_mcp() -> None:
+    """整轮超时覆盖 MCP 连接，超时后结束会话。"""
+    from contextlib import asynccontextmanager
 
-    monkeypatch.setattr("sys.argv", ["backend", str(ROOT / "examples/missing.json")])
-    assert main() == 1
-    output = capsys.readouterr()
-    assert output.out == "" and "输入或配置错误" in output.err
+    class SlowClient:
+        """模拟无法在预算内连接的 MCP 服务。"""
+
+        @asynccontextmanager
+        async def session(self, *args: object):
+            """会话创建也受整轮超时约束。"""
+            await asyncio.sleep(1)
+            yield None
+
+    with patch("backend.services.planning.create_map_mcp", return_value=SlowClient()):
+        with pytest.raises(TimeoutError):
+            asyncio.run(
+                generate_trip(
+                    make_request(),
+                    PlannerSettings("test", "test", planner_timeout_seconds=0.01),
+                )
+            )

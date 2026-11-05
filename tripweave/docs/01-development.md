@@ -1,54 +1,58 @@
 # 开发路线与目录
 
-## 依据与取舍
+## 按教程拆分任务
 
-参考 [Hello-Agents 第十三章智能旅行助手](https://hello-agents.datawhale.cc/#/./chapter13/第十三章%20智能旅行助手)
-的需求表单、结构化数据、外部查询和结果展示流程，保留项目现有 React 前端。
-当前无需多 Agent 或 MCP：程序直接查地点，一个 Planner 负责组合安排。
-
-## 按数据流阅读代码
+参考 [Hello-Agents 第十三章](https://hello-agents.datawhale.cc/#/./chapter13/第十三章%20智能旅行助手)，
+采用研究资料后统一规划的分工。保留现有 React 前端，当前只实现独立 CLI。
 
 ```text
-examples/trip-request.json        完整旅行需求
-          ↓
-backend/__main__.py               读取文件与环境变量
-          ↓
-backend/schemas/trip.py           需求校验
-          ↓
-backend/services/planning.py      规划主流程
-          ├─ integrations/        区域解析 → 景点、美食、兴趣检索
-          ├─ agents/planner.py    一次结构化模型调用
-          ├─ validate_draft       日期、时间、地点引用检查
-          └─ build_result         前端 Trip + 地点来源 + 未核验说明
+需求 JSON → TripRequest 校验 → 地图 MCP 工厂 → 建立会话并发现工具
+                                              ↓
+                            景点/美食 Agent → 天气 Agent → 住宿 Agent
+                                              ↓
+                           工具事实提取 + 研究资料 → Planner
+                                              ↓
+                                日期/时间/地点校验 → PlanResult JSON
 ```
 
-源码按职责保留少量目录。schemas 不再拆输入、通用标量、状态、事件、草稿等多套契约；
-Agent 不再通过通用图运行器、事件观察器和预算中间件运行。
-两种地图是已有实际实现，保留其协议和选择函数，避免要求用户更换现有凭据。
+三个研究 Agent 使用 LangChain create_agent，各有独立消息与调用上限；顺序运行便于定位问题。
+Planner 使用结构化模型调用汇总。没有自研 Agent 框架、Supervisor、任务队列或自定义状态图。
+LangChain 底层图运行机制由框架提供，不在业务代码重复实现。
 
-## 层层递进
+## 工厂与 MCP
 
-| 阶段 | 交付 | 验收条件 | 当前状态 |
-| --- | --- | --- | --- |
-| 1. 数据与地点 | 完整需求、有限查询、来源坐标 | 无效输入被拒绝，两种适配器协议验证 | 已实现，真实服务待验证 |
-| 2. 独立 Agent | 一次规划、校验、前端展示数据 JSON | 有效需求输出完整日期及真实地点引用 | 替身验证通过，用户选择暂缓在线联调 |
-| 3. 后端 | 薄接口调用现有规划函数 | 请求/响应和异常映射通过接口测试 | 未开始 |
-| 4. 前端接入 | 表单调用后端并展示、保存结果 | 失败保留原行程，未知费用正确显示 | 未开始 |
-| 5. 按需优化 | 天气、酒店、路线、预算核验等 | 每项有可验证数据来源 | 未开始 |
+`create_map_mcp(settings)` 根据 MAP_PROVIDER 创建 MultiServerMCPClient：
 
-先完成当前阶段，不提前设计 13 个接口、运行状态机、幂等键、数据库事务、队列和部署系统。
-只有单 Agent 确实无法满足任务时，再评估多 Agent；需要接现成工具服务时再评估 MCP。
+| 供应商 | 官方入口 | 凭据参数 |
+| --- | --- | --- |
+| 高德 | https://mcp.amap.com/mcp | key |
+| 百度 | https://mcp.map.baidu.com/mcp | ak |
 
-## 目录职责
+工厂不连接服务、不查询行政区、不解析 REST 回包。会话由用例入口统一打开和关闭，
+工具通过 load_mcp_tools 动态发现，不手写 MCP 握手、工具定义或地图请求。
 
-- backend/config：环境变量与服务配置。
-- backend/schemas：需求、查询事实、草稿和结果结构。
-- backend/integrations：外部服务的请求、超时、响应转换和安全错误。
-- backend/agents：提示词与模型调用。
-- backend/services：可从上往下读完的业务流程。
-- backend/tests：离线验证，不存真实服务回包或凭据。
-- examples：可直接修改并运行的 JSON 需求。
-- frontend/src/data：页面样例，属于运行数据而非文档。
-- docs：当前项目说明；tmp：忽略的过程材料。
+研究 Agent 只获得已知的只读搜索、详情、地理编码或天气工具，不获得分享、打车等工具。
+现阶段服务端更改工具名时会出现缺失说明，不能声称兼容所有未来版本。
+没有候选地点 ID 与有效坐标时停止；不从 Agent 摘要捏造地点填补结果。
 
-运行产物保存在 tmp/ 下。前端校验产物继续使用 tmp/frontend/日期/任务名/。
+## 源码阅读顺序
+
+| 文件 | 职责 |
+| --- | --- |
+| examples/trip-request.json | 可执行需求样例 |
+| backend/__main__.py | 读取请求、加载配置、输出进度和 JSON |
+| backend/services/planning.py | 顺序编排、校验与前端结果装配 |
+| backend/integrations/map_mcp.py | 工厂选择官方 MCP 服务 |
+| backend/agents/research.py | 三个研究角色、工具范围、框架调用限制 |
+| backend/integrations/place_evidence.py | MCP JSON/structuredContent 到 Place 的最小字段映射 |
+| backend/agents/planner.py | 用研究证据生成完整行程 |
+| backend/schemas/trip.py | 请求、草稿、前端结构和研究证据 |
+
+地点映射仍需兼容供应商的 id/uid、字符串/对象坐标；这是展示数据转换，
+不再维护底层 HTTP、地图查询参数或供应商 REST 错误处理。
+
+## 后续顺序
+
+先验证真实 MCP 工具清单、权限、回包形状及模型工具调用质量，再增加薄后端接口。
+前端随后提交需求并消费结果，保留原有编辑与浏览器保存。
+天气日期覆盖、酒店价格、交通和预算核验逐项增强，不把查询到候选等同于完成预订或可出行保证。

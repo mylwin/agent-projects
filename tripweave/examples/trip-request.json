@@ -5,6 +5,6 @@
   "travelers": 2,
   "budget": "3000.00",
   "pace": "relaxed",
-  "interests": ["历史", "当地小吃"],
-  "instruction": "安排轻松一点，喜欢历史和当地小吃"
+  "interests": ["当地小吃"],
+  "instruction": "安排轻松一点，喜欢当地小吃"
 }

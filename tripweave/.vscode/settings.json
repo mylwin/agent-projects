@@ -4,6 +4,7 @@
         "amap",
         "geocoder",
         "mylwin",
+        "pytest",
         "qwen",
         "tripweave"
     ]
