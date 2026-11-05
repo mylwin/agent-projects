@@ -40,6 +40,8 @@ def create_chat_model(
             "max_retries": 0,
             "streaming": True,
             "extra_body": extra_body or None,
+            # 禁用 langchain-openai 的 socket-option transport，保留 httpx 的代理自动检测。
+            "http_socket_options": (),
             "http_async_client": http,
             "callbacks": [callback] if callback is not None else None,
         }

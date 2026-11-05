@@ -192,7 +192,8 @@ async def generate_trip(
                 tools = await load_mcp_tools(session)
                 stage = "行程规划"
                 async with httpx.AsyncClient(
-                    timeout=settings.model_timeout_seconds
+                    timeout=settings.model_timeout_seconds,
+                    trust_env=False,
                 ) as model_http:
                     return await plan_trip(
                         request,

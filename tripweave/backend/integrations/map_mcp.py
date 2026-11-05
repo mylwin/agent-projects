@@ -3,6 +3,7 @@
 from dataclasses import dataclass
 from urllib.parse import urlencode
 
+import httpx
 from langchain_core.tools import BaseTool
 from langchain_mcp_adapters.client import MultiServerMCPClient
 from langchain_mcp_adapters.sessions import StreamableHttpConnection
@@ -22,6 +23,27 @@ class MapTools:
 
     provider: str
     tools: list[BaseTool]
+
+
+def _create_http_client(
+    headers: dict[str, str] | None = None,
+    timeout: httpx.Timeout | None = None,
+    auth: httpx.Auth | None = None,
+) -> httpx.AsyncClient:
+    """
+    创建不读取系统代理的地图 MCP 客户端。
+
+    :param headers: MCP 适配器传入的请求头。
+    :param timeout: MCP 适配器传入的超时配置。
+    :param auth: MCP 适配器传入的认证配置。
+    :return: 不使用环境或系统代理的异步 HTTP 客户端。
+    """
+    return httpx.AsyncClient(
+        trust_env=False,
+        headers=headers,
+        timeout=timeout,
+        auth=auth,
+    )
 
 
 def create_map_mcp(settings: PlannerSettings) -> MultiServerMCPClient:
@@ -47,5 +69,6 @@ def create_map_mcp(settings: PlannerSettings) -> MultiServerMCPClient:
         "url": endpoint + "?" + urlencode(credentials),
         "timeout": 30,
         "sse_read_timeout": settings.planner_timeout_seconds,
+        "httpx_client_factory": _create_http_client,
     }
     return MultiServerMCPClient({settings.map_provider: connection})
