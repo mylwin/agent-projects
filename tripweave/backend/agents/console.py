@@ -106,7 +106,7 @@ class ConsoleCallback(AsyncCallbackHandler):
         self._write(role, "回复", message.text)
         if self.debug_tools:
             for call in message.tool_call_chunks:
-                self._write(role, "工具参数", call.get("args") or "")
+                self._write(role, "参数生成", call.get("args") or "")
 
     async def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
         """完成一轮模型输出后换行，避免下一条进度挤到同一行。"""
@@ -132,7 +132,7 @@ class ConsoleCallback(AsyncCallbackHandler):
         self._tools[run_id] = (role, name)
         self.progress(f"[{role}] 工具开始：{name}")
         if self.debug_tools:
-            self.progress(f"[{role}·工具参数] {input_str}")
+            self.progress(f"[{role}·执行参数] {input_str}")
 
     async def on_tool_end(self, output: Any, *, run_id: UUID, **kwargs: Any) -> None:
         """区分成功结果和被框架转为 ToolMessage 的错误结果。"""

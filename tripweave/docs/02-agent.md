@@ -49,7 +49,9 @@ CLI 的 .env 只由 uv 明确加载，不在导入模块时自动读文件。
 正文分片、工具进度、异常脱敏和最终 JSON 输出均保留。
 
 Planner 通常只返回 TravelDraft 工具参数，因此默认显示生成进度，完成后返回结构化行程。
-需要看原始参数分片时加 `--debug-tools`，此时参数同样写 stderr：
+需要看原始参数分片时加 `--debug-tools`，此时参数同样写 stderr。
+“参数生成”表示模型正在生成参数，尚未执行；“执行参数”表示工具开始时使用的完整参数。
+这两个阶段展示同一次调用，实际执行次数按“工具开始”计数：
 
 ```bash
 uv run --env-file .env python -m backend examples/trip-request.json --debug-tools > tmp/agent/result.json
