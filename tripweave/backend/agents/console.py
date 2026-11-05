@@ -48,6 +48,7 @@ class ConsoleCallback(AsyncCallbackHandler):
         self.secrets = secrets
         self._channel: tuple[str, str] | None = None
         self._tools: dict[UUID, tuple[str, str]] = {}
+        self._wrote_reply = False
 
     def progress(self, message: str) -> None:
         """
@@ -79,7 +80,29 @@ class ConsoleCallback(AsyncCallbackHandler):
             self.finish()
             print(f"[{role}·{channel}] ", end="", file=self.stream)
             self._channel = (role, channel)
+        if channel == "回复" and text.strip():
+            self._wrote_reply = True
         print(redact(text, self.secrets), end="", file=self.stream, flush=True)
+
+    @staticmethod
+    def _response_text(response: LLMResult) -> str:
+        """
+        读取最终响应中的正文，供未收到流式分片时兜底显示。
+
+        :param response: 模型完整响应。
+        :return: 第一条非空正文；没有正文时返回空字符串。
+        """
+        for batch in response.generations:
+            for generation in batch:
+                message = getattr(generation, "message", None)
+                text = (
+                    message.text
+                    if isinstance(message, BaseMessage)
+                    else generation.text
+                )
+                if text:
+                    return text
+        return ""
 
     @staticmethod
     def _role(tags: list[str] | None) -> str:
@@ -110,6 +133,7 @@ class ConsoleCallback(AsyncCallbackHandler):
         :param tags: 用于识别 Agent 的调用标签。
         :param kwargs: 框架提供的其他回调元数据，本回调不读取。
         """
+        self._wrote_reply = False
         self.progress(f"[{self._role(tags)}] 模型开始生成")
 
     async def on_llm_new_token(
@@ -157,13 +181,24 @@ class ConsoleCallback(AsyncCallbackHandler):
             for call in message.tool_call_chunks:
                 self._write(role, "参数生成", call.get("args") or "")
 
-    async def on_llm_end(self, response: LLMResult, **kwargs: Any) -> None:
+    async def on_llm_end(
+        self,
+        response: LLMResult,
+        *,
+        tags: list[str] | None = None,
+        **kwargs: Any,
+    ) -> None:
         """
-        完成一轮模型输出后换行，避免下一条进度挤到同一行。
+        完成一轮模型输出后换行；没有流式正文时补打最终响应。
 
-        :param response: 本轮模型的完整结果，本回调不读取。
+        :param response: 本轮模型的完整结果。
+        :param tags: 用于识别 Agent 的调用标签。
         :param kwargs: 框架提供的其他回调元数据，本回调不读取。
         """
+        if not self._wrote_reply:
+            text = self._response_text(response)
+            if text:
+                self._write(self._role(tags), "回复", text)
         self.finish()
 
     async def on_llm_error(

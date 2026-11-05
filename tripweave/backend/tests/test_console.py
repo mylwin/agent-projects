@@ -96,6 +96,21 @@ def test_text_streams_before_completion_with_openai_only(thinking: bool) -> None
     assert "[天气研究·推理]" not in output.getvalue()
 
 
+def test_final_response_printed_when_streaming_has_no_text() -> None:
+    """没有流式正文时，回调补打最终响应，避免终端只显示工具进度。"""
+    from langchain_core.messages import AIMessage
+    from langchain_core.outputs import ChatGeneration, LLMResult
+
+    output = io.StringIO()
+    console = ConsoleCallback(output)
+    asyncio.run(console.on_chat_model_start({}, [], tags=["agent:weather"]))
+    response = LLMResult(
+        generations=[[ChatGeneration(message=AIMessage(content="天气研究结论"))]]
+    )
+    asyncio.run(console.on_llm_end(response, tags=["agent:weather"]))
+    assert "[天气研究·回复] 天气研究结论" in output.getvalue()
+
+
 @pytest.mark.parametrize("debug", [False, True])
 def test_planner_tool_arguments_are_optional(debug: bool) -> None:
     """同一次规划可选择显示 JSON 参数，最终结构化结果和调用次数不变。"""

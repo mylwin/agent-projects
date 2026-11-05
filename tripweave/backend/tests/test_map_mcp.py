@@ -7,7 +7,6 @@ from urllib.parse import parse_qs, urlsplit
 
 import httpx
 import pytest
-from langchain.agents.middleware.model_call_limit import ModelCallLimitExceededError
 from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
 from langchain_core.messages import AIMessage
 from langchain_core.tools import tool
@@ -15,7 +14,6 @@ from langchain_mcp_adapters.tools import load_mcp_tools
 
 from backend.agents.research import research_topic
 from backend.config.planner import PlannerSettings
-from backend.errors import PlanningError
 from backend.integrations.map_mcp import MapTools, create_map_mcp
 from backend.integrations.place_evidence import collect_places
 from backend.schemas.trip import ResearchReport, ToolEvidence
@@ -41,6 +39,11 @@ def test_factory(provider: str, host: str, key_name: str) -> None:
     parsed = urlsplit(connection["url"])
     assert parsed.scheme == "https" and parsed.netloc == host and parsed.path == "/mcp"
     assert parse_qs(parsed.query) == {key_name: [key]}
+    factory = connection.get("httpx_client_factory")
+    assert factory is not None
+    http_client = factory()
+    assert http_client.trust_env is False
+    asyncio.run(http_client.aclose())
 
 
 @pytest.mark.parametrize("provider", ["unsupported", "amap", "baidu"])
@@ -141,8 +144,95 @@ def test_research_without_tools_returns_unknown() -> None:
     assert not report.evidence and report.warnings
 
 
-def test_model_call_limit() -> None:
-    """反复调用工具的 Agent 在框架的六次模型调用上限停止。"""
+def test_weather_location_array_is_normalized() -> None:
+    """模型把坐标传成数组时，工具执行前转换为字符串。"""
+
+    class WeatherModel(FakeMessagesListChatModel):
+        """先调用天气工具，再给出总结。"""
+
+        def bind_tools(self, *args: object, **kwargs: object):
+            """保留假消息，让真实 Agent 执行工具循环。"""
+            return self
+
+    @tool
+    async def map_weather(location: str) -> str:
+        """验证位置参数已经是供应商要求的字符串。"""
+        assert location == "104.06,30.67"
+        return '{"forecast": []}'
+
+    model = WeatherModel(
+        responses=[
+            AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "map_weather",
+                        "id": "weather",
+                        "args": {"location": [104.06, 30.67]},
+                    }
+                ],
+            ),
+            AIMessage(content="天气资料已查询，预报日期未覆盖。"),
+        ]
+    )
+    report = asyncio.run(
+        research_topic(
+            "weather",
+            make_request(),
+            model,
+            MapTools("baidu", [map_weather]),
+        )
+    )
+    assert len(report.evidence) == 1
+    assert report.evidence[0].tool == "map_weather"
+    assert "未覆盖" in report.summary
+
+
+def test_empty_summary_keeps_evidence_and_warns() -> None:
+    """模型以空总结结束时保留工具证据并给出明确摘要。"""
+
+    class EmptyModel(FakeMessagesListChatModel):
+        """先调用工具，再返回空正文结束。"""
+
+        def bind_tools(self, *args: object, **kwargs: object):
+            """保留假消息，让真实 Agent 执行工具循环。"""
+            return self
+
+    @tool
+    async def maps_text_search(query: str) -> str:
+        """返回合成的空搜索结果。"""
+        return "{}"
+
+    model = EmptyModel(
+        responses=[
+            AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "maps_text_search",
+                        "id": "empty-summary",
+                        "args": {"query": "合成搜索"},
+                    }
+                ],
+            ),
+            AIMessage(content=""),
+        ]
+    )
+    report = asyncio.run(
+        research_topic(
+            "attractions",
+            make_request(),
+            model,
+            MapTools("amap", [maps_text_search]),
+        )
+    )
+    assert len(report.evidence) == 1
+    assert "未给出研究摘要" in report.summary
+    assert any("未输出最终摘要" in warning for warning in report.warnings)
+
+
+def test_model_call_limit_ends_research() -> None:
+    """反复调用工具的研究 Agent 在六次模型调用后结束并保留证据。"""
 
     class LoopModel(FakeMessagesListChatModel):
         """始终返回同一个搜索请求。"""
@@ -174,18 +264,18 @@ def test_model_call_limit() -> None:
             for index in range(7)
         ]
     )
-    with pytest.raises(PlanningError) as caught:
-        asyncio.run(
-            research_topic(
-                "attractions",
-                make_request(),
-                model,
-                MapTools("amap", [maps_text_search]),
-            )
+    report = asyncio.run(
+        research_topic(
+            "attractions",
+            make_request(),
+            model,
+            MapTools("amap", [maps_text_search]),
         )
-    assert isinstance(caught.value.original, ModelCallLimitExceededError)
-    assert "attractions" in str(caught.value) and "6 次" in str(caught.value)
+    )
     assert len(calls) == 6
+    assert len(report.evidence) == 6
+    assert "调用上限" in report.summary
+    assert any("调用上限" in warning for warning in report.warnings)
 
 
 def test_mcp_failure_does_not_expose_credentials() -> None:
