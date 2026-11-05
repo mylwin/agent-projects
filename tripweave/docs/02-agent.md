@@ -16,7 +16,7 @@
 
 ```bash
 mkdir -p tmp/agent
-uv run --env-file .env python -m backend examples/trip-request.json > tmp/agent/result.json
+uv run python -m backend examples/trip-request.json > tmp/agent/result.json
 ```
 
 进度依次显示 attractions、weather、hotels 和生成/校验阶段，写标准错误。
@@ -32,7 +32,7 @@ uv run --env-file .env python -m backend examples/trip-request.json > tmp/agent/
 
 无需安装 Node 地图进程，当前使用远程官方服务；代码不把 MCP 降级为旧 REST 请求。
 密钥由工厂写入官方 URL 的 query，不发送给模型，终端对连接 URL、已知密钥和认证字段脱敏，不打印原始堆栈。
-CLI 的 .env 只由 uv 明确加载，不在导入模块时自动读文件。
+进程入口会读取项目根目录 .env；已存在的环境变量优先，不在业务模块导入时读取。
 
 ## 终端流式显示与错误定位
 
@@ -54,11 +54,11 @@ Planner 通常只返回 TravelDraft 工具参数，因此默认显示生成进�
 这两个阶段展示同一次调用，实际执行次数按“工具开始”计数：
 
 ```bash
-uv run --env-file .env python -m backend examples/trip-request.json --debug-tools > tmp/agent/result.json
+uv run python -m backend examples/trip-request.json --debug-tools > tmp/agent/result.json
 ```
 
 `PlanningError` 保留失败阶段和底层异常类型，展开 MCP 异常组后输出脱敏原因。
-例如天气 Agent 超限会显示 `weather 研究失败 [ModelCallLimitExceededError]` 和 6 次上限说明；
+研究 Agent 达到调用上限时会结束该主题并写入 warning，保留已有工具证据，不让整轮规划失败；
 模型返回 400/401/429 等错误时保留 SDK 的状态与说明；整轮超时仍单独提示。
 异常组含多个失败时显示第一条底层原因，不输出完整堆栈或连接地址。
 
@@ -83,15 +83,17 @@ Planner 使用独立的结构化输出示例，不重新研究或调用地图。
 工具 schema 与服务端校验冲突时应说明不兼容；预报不覆盖出行日期时停止查询并保留未知。
 所有示例地点、ID、日期与工具结果都是虚构的格式示例，不能进入本轮地点证据。
 
-上述次数与纠错规则是模型行为指引，本轮未增加参数自动转换或重复调用拦截器；
-实际是否遵循仍需真实模型验证。程序继续通过以下框架硬限制兜底：
+上述次数与纠错规则是模型行为指引；程序只对天气工具的 location 做数组/对象到字符串的归一化，
+未增加其他参数自动转换或重复调用拦截器。实际是否遵循仍需真实模型验证。
+程序继续通过以下框架硬限制兜底：
 
 每个研究 Agent 最多 6 次模型调用、8 次工具调用，通过 LangChain 内置中间件限制。
+达到上限时结束该研究主题，保留已有工具证据并记入 warnings，不使整轮规划失败。
 因此整轮最多 19 次模型、24 次工具调用；这是上限，不是固定消费。总超时仍会提前结束运行。
 每轮使用一个 MCP 会话，退出或超时后关闭。没有自动模型重试、后台任务或额外纠错循环。
 
 缺少某类工具或工具返回错误时，该主题写入缺失说明；不会采用无工具证据的模型结论。
-传输故障或框架预算耗尽会使本轮失败。不存在可用地点则停止，不调用最终 Planner。
+传输故障会使本轮失败；调用预算耗尽只结束对应研究主题。不存在可用地点则停止，不调用最终 Planner。
 
 ## 结果与边界
 
@@ -104,4 +106,4 @@ PlanResult 包含 trip、places、reply、warnings，新增 research 保存每�
 
 新增 few-shot 参数通过合成 MCP 的 schema 校验，Planner 示例通过真实草稿模型和业务校验。
 它们不证明真实供应商的权限、在线工具名、回包形状或模型遵循提示词的效果已验证。
-按用户选择尚未进行真实服务联调，也没有实现 HTTP 后端接口或前端接入。
+按用户选择尚未进行真实服务联调；已实现薄 HTTP 入口，前端尚未接入。

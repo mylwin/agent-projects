@@ -41,6 +41,11 @@ LangChain 底层图运行机制由框架提供，不在业务代码重复实现�
 | --- | --- |
 | examples/trip-request.json | 可执行需求样例 |
 | backend/__main__.py | 读取请求、加载配置、输出进度和 JSON |
+| backend/api/app.py | FastAPI 应用装配、生命周期和路由注册 |
+| backend/api/exception_handlers.py | 全局异常处理器 |
+| backend/api/routes/ | health 与 plans 路由 |
+| backend/errors/api.py | API 异常与规划失败映射 |
+| backend/schemas/api.py | 通用成功与失败响应 |
 | backend/services/planning.py | 顺序编排、校验与前端结果装配 |
 | backend/integrations/map_mcp.py | 工厂选择官方 MCP 服务 |
 | backend/agents/research.py | 三个研究角色、工具范围、框架调用限制 |
@@ -53,6 +58,6 @@ LangChain 底层图运行机制由框架提供，不在业务代码重复实现�
 
 ## 后续顺序
 
-先验证真实 MCP 工具清单、权限、回包形状及模型工具调用质量，再增加薄后端接口。
+薄后端接口已增加，真实 MCP 工具清单、权限、回包形状及模型工具调用质量仍需验证。
 前端随后提交需求并消费结果，保留原有编辑与浏览器保存。
 天气日期覆盖、酒店价格、交通和预算核验逐项增强，不把查询到候选等同于完成预订或可出行保证。

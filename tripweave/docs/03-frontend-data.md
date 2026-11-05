@@ -16,7 +16,8 @@ React + TypeScript + Vite，样式为现有暖白酒红旅行日笺，图标使�
 TripRequest 保持扁平结构，字段 destination、start_date、day_count、travelers、budget
 可直接来自新建计划表单。pace、interests、instruction 可选。
 计划名称仅用于页面保存，不参与规划，不需要传给模型。
-未来接入时需要把现在写死的苏州改成目的地输入；后端接口尚未定义。
+未来接入时需要把现在写死的苏州改成目的地输入；薄后端接口已定义
+`POST /api/plans/generate`，前端尚未接入。
 
 ## 独立 Agent 的输出
 
@@ -44,9 +45,8 @@ Trip 和 TripDay 的基础字段与现有前端相同，活动增加 placeId 便
 
 ## 后续接入次序
 
-Agent 真实联调通过后，再增加一个调用规划函数的薄后端入口，确定请求响应和失败状态。
-前端随后提交需求、显示等待和错误，成功后用 result.trip 建立计划，用 reply 和 warnings
-展示来源边界，继续沿用现有浏览器保存与版本机制。
+薄后端入口已增加，真实联调通过后前端再提交需求、显示等待和错误；
+成功后用 result.trip 建立计划，用 reply 和 warnings 展示来源边界，继续沿用现有浏览器保存与版本机制。
 
 真实地图展示另行决定：根据 places 中经纬度进行 SVG 投影，或者接地图 SDK。
 高德默认 GCJ-02，百度默认 BD-09，必须按 coordinate_system 处理；当前未做坐标转换。
