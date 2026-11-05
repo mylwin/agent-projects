@@ -2,7 +2,7 @@
 
 状态：设计稿，尚未实现。当前后端没有数据库，前端计划仍保存在 localStorage。
 
-初始化脚本见 [resource/schema.sql](../resource/schema.sql)。
+初始化脚本见 [resource/schema.sql](../resource/schema.sql)。接口请求/响应契约见 [06-api-schema.md](06-api-schema.md)。
 
 目标：
 
