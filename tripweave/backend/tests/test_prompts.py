@@ -64,7 +64,9 @@ def test_few_shot_calls_pass_mcp_validation(
 ) -> None:
     """提取模型实际收到的调用示例，送入真实 MCP 校验，防止示例本身类型错误。"""
     prompt = get_research_prompt(topic, provider)
-    calls = re.findall(r"^调用 ([a-z_]+)：(\{.*\})$", prompt, re.MULTILINE)
+    calls = re.findall(
+        r"^### 调用 ([a-z_]+)\n\n```json\n(.*?)\n```", prompt, re.MULTILINE | re.DOTALL
+    )
     assert calls
 
     async def run() -> None:
@@ -104,7 +106,9 @@ def test_logged_invalid_types_are_rejected(tool_name: str, arguments: dict) -> N
 
 def test_planner_few_shot_passes_business_validation() -> None:
     """Planner 的示例也必须满足真实草稿模型、日期、时间和候选引用约束。"""
-    example = PLANNER_SYSTEM_PROMPT.split("TravelDraft 参数：\n", 1)[1].splitlines()[0]
+    match = re.search(r"```json\n(.*?)\n```", PLANNER_SYSTEM_PROMPT, re.DOTALL)
+    assert match is not None
+    example = match.group(1)
     draft = TravelDraft.model_validate_json(example)
     request = TripRequest(
         destination="示例市",

@@ -32,15 +32,22 @@ async def create_draft(
         for place in places
     ]
     content = (
-        request.model_dump_json()
-        + "\n候选地点："
-        + json.dumps(candidates, ensure_ascii=False)
+        "# 旅行需求\n\n```json\n"
+        + request.model_dump_json(indent=2)
+        + "\n```\n\n# 候选地点\n\n```json\n"
+        + json.dumps(candidates, ensure_ascii=False, indent=2)
+        + "\n```"
     )
     if research:
-        content += "\n研究资料（工具原文优先于摘要，缺失事项保持未知）："
-        content += json.dumps(
-            [report.model_dump(mode="json") for report in research], ensure_ascii=False
+        content += (
+            "\n\n# 研究资料\n\n工具原文优先于摘要，缺失事项保持未知。\n\n```json\n"
         )
+        content += json.dumps(
+            [report.model_dump(mode="json") for report in research],
+            ensure_ascii=False,
+            indent=2,
+        )
+        content += "\n```"
     planner = model.with_structured_output(TravelDraft, method="function_calling")
     try:
         draft = await planner.ainvoke(

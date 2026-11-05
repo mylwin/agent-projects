@@ -74,6 +74,7 @@ class ConsoleCallback(AsyncCallbackHandler):
         """
         if not text:
             return
+        # 如果通道不同，则先结束当前通道
         if self._channel != (role, channel):
             self.finish()
             print(f"[{role}·{channel}] ", end="", file=self.stream)
@@ -128,24 +129,30 @@ class ConsoleCallback(AsyncCallbackHandler):
         :param kwargs: 框架提供的其他回调元数据，本回调不读取。
         """
         role = self._role(tags)
+        # 如果模型返回的分片不是聊天产生的分片，或者分片不是 AIMessageChunk
         if not isinstance(chunk, ChatGenerationChunk) or not isinstance(
             chunk.message, AIMessageChunk
         ):
+            # 如果是字符串，则直接显示
             if isinstance(token, str):
                 self._write(role, "回复", token)
             return
         message = chunk.message
+        # 获取模型推理思考的内容
         reasoning = [
             block.get("reasoning")
             for block in message.content_blocks
             if block["type"] == "reasoning"
         ]
+        # 如果没有推理内容，则尝试从额外参数中获取
         if not reasoning:
             reasoning = [message.additional_kwargs.get("reasoning_content")]
+        # 如果有推理内容，则显示
         for text in reasoning:
             if isinstance(text, str):
                 self._write(role, "推理", text)
         self._write(role, "回复", message.text)
+        # 如果显示工具参数，则显示
         if self.debug_tools:
             for call in message.tool_call_chunks:
                 self._write(role, "参数生成", call.get("args") or "")

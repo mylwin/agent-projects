@@ -70,6 +70,8 @@ uv run --env-file .env python -m backend examples/trip-request.json --debug-tool
 - Planner：综合三份研究报告和候选地点，一次结构化调用安排每一天。
 
 提示词集中在 backend/agents/prompts.py，按“共同调用纪律 + 当前角色 + 当前供应商 few-shot”组合。
+各部分使用 Markdown 标题分层，区分任务、规则、调用示例、工具返回和结论；JSON 示例使用代码块及两空格缩进。
+送入模型的旅行需求、候选地点与研究资料也使用独立标题和格式化 JSON。
 景点提示不评价酒店或天气，天气提示不搜索景点或住宿，住宿提示不判断全程预算可行性；
 Planner 使用独立的结构化输出示例，不重新研究或调用地图。
 

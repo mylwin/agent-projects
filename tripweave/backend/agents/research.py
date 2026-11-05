@@ -68,7 +68,7 @@ async def research_topic(
     )
     try:
         state = await agent.ainvoke(
-            {"messages": [HumanMessage(content=request.model_dump_json())]},
+            {"messages": [HumanMessage(content=request.model_dump_json(indent=2))]},
             config={
                 "recursion_limit": 40,
                 "callbacks": model.callbacks,

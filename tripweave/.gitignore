@@ -58,3 +58,6 @@ logs/
 # uv.lock、前端锁文件、.python-version 和 .vscode/settings.json 保持可跟踪
 
 .oip-ui/
+
+# Archify 源码快照、候选规格和校验中间产物
+/.archify/
