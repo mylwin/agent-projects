@@ -26,6 +26,7 @@
 - `frontend/src/`：沿用 pages、components、api、hooks、types、utils、styles；
   `data/` 保存前端样例，不从 docs 导入运行数据。
 - `docs/`：唯一入口 README，加少量按阅读顺序编号的正式说明，不多层嵌套。
+- `docs/04-flowcharts/`：正式流程图 HTML；Archify 规格、源码快照与校验中间产物放在忽略的 `.archify/`。
 - `tmp/`：忽略的日志、结果、截图和重构备份，不作为运行依赖。
 
 不保留空占位目录，不为后续阶段提前创建模块。
