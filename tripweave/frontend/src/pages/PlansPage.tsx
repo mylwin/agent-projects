@@ -15,6 +15,7 @@ import fixture from "../data/trip.json";
 import { addProject, newProject } from "../api/workspaceStore";
 import { useWorkspace } from "../hooks/useWorkspace";
 import Brand from "../components/Brand";
+import AccountChip from "../components/AccountChip";
 
 /**
  * 展示、搜索和创建浏览器本地旅行项目。
@@ -93,8 +94,9 @@ export default function PlansPage() {
           onClick={() => setCreating(true)}
         >
           <Plus size={17} />
-          新建计划
+          <span className="new-plan-label">新建计划</span>
         </button>
+        <AccountChip />
       </header>
       <main className="plans-main">
         <div className="plans-intro">
