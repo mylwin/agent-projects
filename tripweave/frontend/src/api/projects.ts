@@ -38,25 +38,40 @@ export interface ProjectDetail extends ProjectSummary {
 
 export interface RevisionDetail extends RevisionSummary {
   project_id: number;
-  result: {
-    trip: Trip;
-    places: unknown[];
-    warnings: string[];
-    reply: string;
-    research: ResearchReport[];
-  };
+  result: SavedPlanResult;
+}
+
+export interface SavedPlace {
+  id: string;
+  name: string;
+  address: string;
+  longitude: number;
+  latitude: number;
+  coordinate_system: "GCJ-02" | "BD-09";
+  source: "amap" | "baidu";
+  fetched_at: string;
+}
+
+export interface ToolEvidence {
+  tool: string;
+  content: string;
+  structured_content: Record<string, unknown> | null;
+  fetched_at: string;
 }
 
 export interface ResearchReport {
-  topic: string;
+  topic: "attractions" | "weather" | "hotels";
   summary: string;
   warnings: string[];
-  evidence: {
-    tool: string;
-    content: string;
-    structured_content: unknown;
-    fetched_at: string;
-  }[];
+  evidence: ToolEvidence[];
+}
+
+export interface SavedPlanResult {
+  trip: Trip;
+  places: SavedPlace[];
+  warnings: string[];
+  reply: string;
+  research: ResearchReport[];
 }
 
 export interface RunTrace {
@@ -74,7 +89,7 @@ export interface RunTrace {
     provider: string | null;
     reasoning: string | null;
     content: string | null;
-    tool_calls: unknown;
+    tool_calls: { name: string; id: string }[] | null;
     started_at: string;
     finished_at: string | null;
     duration_ms: number | null;
@@ -93,11 +108,10 @@ export interface GeneratePlanInput {
   instruction: string;
 }
 
-export interface GeneratedPlan {
+export interface GeneratedPlan extends SavedPlanResult {
   project_id: number;
   revision_id: number;
   run_id: number;
-  trip: Trip;
 }
 
 /** 读取统一响应；服务失败时保留后端错误码与说明。 */

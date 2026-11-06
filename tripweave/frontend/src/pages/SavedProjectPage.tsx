@@ -3,6 +3,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Check, History, MapPin } from "lucide-react";
 import AccountChip from "../components/AccountChip";
 import Brand from "../components/Brand";
+import SavedPlanResult from "../components/SavedPlanResult";
 import { useAuth } from "../auth/AuthProvider";
 import {
   getSavedProject,
@@ -212,57 +213,7 @@ export default function SavedProjectPage() {
                         {notice}
                       </p>
                     )}
-                    <p className="saved-reply">{activeRevision.result.reply}</p>
-                    <div className="saved-trip-meta">
-                      <span>{activeRevision.result.trip.travelers} 人同行</span>
-                      <span>
-                        {activeRevision.result.trip.days.length} 天行程
-                      </span>
-                      <span>
-                        预算 ¥
-                        {activeRevision.result.trip.budget.toLocaleString()}
-                      </span>
-                    </div>
-                    {activeRevision.result.trip.days.map((day) => (
-                      <article className="saved-day" key={day.id}>
-                        <div className="saved-day-heading">
-                          <span>
-                            {day.label} · {day.date}
-                          </span>
-                          <h3>{day.title}</h3>
-                          <p>{day.description}</p>
-                        </div>
-                        <ol>
-                          {day.activities.map((activity) => (
-                            <li key={activity.id}>
-                              <time>{activity.time}</time>
-                              <div>
-                                <strong>{activity.title}</strong>
-                                <p>{activity.description}</p>
-                                <small>{activity.location}</small>
-                              </div>
-                              <span>
-                                {activity.cost === null
-                                  ? "费用待核实"
-                                  : `¥${activity.cost}`}
-                              </span>
-                            </li>
-                          ))}
-                        </ol>
-                      </article>
-                    ))}
-                    {activeRevision.result.warnings.length > 0 && (
-                      <div className="saved-warnings">
-                        <h3>待核实事项</h3>
-                        <ul>
-                          {activeRevision.result.warnings.map(
-                            (warning, index) => (
-                              <li key={index}>{warning}</li>
-                            ),
-                          )}
-                        </ul>
-                      </div>
-                    )}
+                    <SavedPlanResult result={activeRevision.result} />
                     {activeRevision.generation_run_id && (
                       <button
                         className="saved-trace-button"
@@ -271,39 +222,62 @@ export default function SavedProjectPage() {
                         查看生成轨迹
                       </button>
                     )}
-                    {trace && (
-                      <section className="saved-trace" aria-label="生成轨迹">
-                        <h3>生成轨迹 · {trace.status}</h3>
-                        {trace.error_message && <p>{trace.error_message}</p>}
-                        {trace.research.map((report) => (
-                          <details key={report.topic}>
-                            <summary>
-                              {report.topic} · {report.summary}
-                            </summary>
-                            {report.evidence.map((evidence, index) => (
-                              <pre key={index}>
-                                {evidence.tool}: {evidence.content}
-                              </pre>
-                            ))}
-                          </details>
-                        ))}
-                        {trace.model_calls.map((call) => (
-                          <details key={`${call.agent}-${call.call_index}`}>
-                            <summary>
-                              {call.agent} · 第 {call.call_index} 次调用
-                            </summary>
-                            {call.content && <p>{call.content}</p>}
-                            {call.reasoning && (
-                              <p>公开推理：{call.reasoning}</p>
-                            )}
-                          </details>
-                        ))}
-                        {!trace.research.length &&
-                          !trace.model_calls.length && (
-                            <p>这次运行没有保存公开轨迹。</p>
+                    {trace &&
+                      trace.run_id === activeRevision.generation_run_id && (
+                        <section className="saved-trace" aria-label="生成轨迹">
+                          <h3>
+                            生成轨迹 · 第 {trace.run_id} 次运行 ·
+                            {trace.status === "succeeded" ? "已完成" : "失败"}
+                          </h3>
+                          {trace.error_message && <p>{trace.error_message}</p>}
+                          {trace.error_stage && (
+                            <p>失败阶段：{trace.error_stage}</p>
                           )}
-                      </section>
-                    )}
+                          {trace.error_code && (
+                            <p>错误码：{trace.error_code}</p>
+                          )}
+                          <p>调研资料与工具证据见上方“调研资料”。</p>
+                          {trace.model_calls.map((call) => (
+                            <details key={`${call.agent}-${call.call_index}`}>
+                              <summary>
+                                {call.agent} · 第 {call.call_index} 次调用 ·{" "}
+                                {call.model_name}
+                              </summary>
+                              <p>
+                                {new Date(call.started_at).toLocaleString(
+                                  "zh-CN",
+                                )}
+                                {call.finished_at &&
+                                  ` 至 ${new Date(call.finished_at).toLocaleString("zh-CN")}`}
+                                {call.duration_ms !== null &&
+                                  ` · ${call.duration_ms} 毫秒`}
+                                {call.provider && ` · ${call.provider}`}
+                              </p>
+                              {call.content && <pre>{call.content}</pre>}
+                              {call.reasoning && (
+                                <>
+                                  <strong>公开推理</strong>
+                                  <pre>{call.reasoning}</pre>
+                                </>
+                              )}
+                              {call.tool_calls &&
+                                call.tool_calls.length > 0 && (
+                                  <ul>
+                                    {call.tool_calls.map((tool, index) => (
+                                      <li key={`${tool.id}-${index}`}>
+                                        工具调用：{tool.name}
+                                        {tool.id && `（${tool.id}）`}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                )}
+                            </details>
+                          ))}
+                          {!trace.model_calls.length && (
+                            <p>这次运行没有保存公开模型调用。</p>
+                          )}
+                        </section>
+                      )}
                   </>
                 )}
               </section>

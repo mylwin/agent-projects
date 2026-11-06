@@ -1551,9 +1551,9 @@
   font-size: 13px;
 }
 .saved-project-main {
-  max-width: 1120px;
-  margin: 0 auto;
+  /* 覆盖 .plans-main 的留白；不要给含视口内边距的元素设置 max-width。 */
   width: 100%;
+  padding-inline: max(32px, calc((100vw - 1120px) / 2));
 }
 .saved-heading {
   display: flex;
@@ -1586,6 +1586,7 @@
 }
 .saved-revisions,
 .saved-content {
+  min-width: 0;
   background: var(--paper);
   border: 1px solid var(--line);
   border-radius: 10px;
@@ -1651,6 +1652,22 @@
   font-size: 13px;
   color: var(--muted);
 }
+.saved-trip-meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.saved-section-title {
+  margin: 30px 0 14px;
+  font-size: 18px;
+  color: #57404c;
+}
+.saved-section-title small {
+  margin-left: 6px;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 400;
+}
 .saved-day {
   margin-top: 25px;
 }
@@ -1658,12 +1675,16 @@
   color: var(--wine);
   font-size: 12px;
 }
-.saved-day-heading h3 {
+.saved-day-heading h4 {
   font-size: 21px;
   margin: 8px 0;
 }
 .saved-day-heading p {
   color: var(--muted);
+}
+.saved-day-heading small {
+  color: var(--muted);
+  font-size: 12px;
 }
 .saved-day ol {
   padding-left: 0;
@@ -1691,6 +1712,108 @@
 .saved-day li > span {
   color: var(--muted);
   font-size: 12px;
+}
+.saved-day li .saved-activity-kind {
+  display: inline-block;
+  margin-left: 9px;
+  color: var(--wine);
+  font-size: 11px;
+}
+.saved-day li .saved-activity-source {
+  display: block;
+  margin-top: 6px;
+}
+.saved-activity-cost {
+  text-align: right;
+  white-space: nowrap;
+}
+.saved-fact-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.saved-fact,
+.saved-report {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fffdfa;
+}
+.saved-fact h4,
+.saved-report h4 {
+  margin: 0 0 8px;
+  font-size: 15px;
+  color: #57404c;
+}
+.saved-fact p,
+.saved-report p {
+  margin: 0 0 10px;
+  color: #68565e;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+.saved-fact dl {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  font-size: 11px;
+}
+.saved-fact dl div {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  gap: 6px;
+}
+.saved-fact dt {
+  color: var(--muted);
+}
+.saved-fact dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.saved-report + .saved-report {
+  margin-top: 12px;
+}
+.saved-report ul,
+.saved-warnings ul {
+  margin: 9px 0;
+  padding-left: 20px;
+  line-height: 1.7;
+}
+.saved-evidence-list details {
+  margin-top: 8px;
+  border-top: 1px solid var(--line);
+  padding-top: 8px;
+}
+.saved-evidence-list summary {
+  color: var(--wine);
+  cursor: pointer;
+  font-size: 12px;
+}
+.saved-evidence-list strong {
+  font-size: 12px;
+}
+.saved-evidence-list pre,
+.saved-trace pre {
+  max-height: 360px;
+  overflow: auto;
+  padding: 10px;
+  border-radius: 6px;
+  background: #f8f4f2;
+  color: #59434e;
+  font-size: 11px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.saved-result-meta {
+  margin-top: 20px;
+  color: var(--muted);
+  font-size: 12px;
+}
+.saved-result-meta summary {
+  cursor: pointer;
 }
 .saved-warnings {
   padding-top: 12px;
@@ -1736,5 +1859,14 @@
   .saved-version-header {
     align-items: flex-start;
     flex-direction: column;
+  }
+  .saved-fact-grid {
+    grid-template-columns: 1fr;
+  }
+  .saved-day li {
+    flex-wrap: wrap;
+  }
+  .saved-activity-cost {
+    margin-left: 63px;
   }
 }

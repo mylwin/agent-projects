@@ -16,6 +16,8 @@ export interface Activity {
   cost: number | null;
   /** 示意图 SVG 像素坐标，未知时为 null，不是经纬度。 */
   point: number[] | null;
+  /** 生成行程引用的地图地点 ID；旧版本地草稿可缺省。 */
+  placeId?: string;
 }
 
 /** 单日行程与活动集合。 */
