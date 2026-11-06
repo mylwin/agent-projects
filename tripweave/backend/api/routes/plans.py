@@ -61,11 +61,14 @@ async def generate(
     :param limit: 应用级并发生成限制。
     :return: 包含 PlanResult 的统一成功响应。
     """
+    # 如果请求中计划名称不为 None，或者项目 ID 不为 None，则保存计划。
     save = request.name is not None or request.project_id is not None
+    # 如果计划名称和项目 ID 都不为 None，则返回错误。
     if request.name is not None and request.project_id is not None:
         raise ApiException(
             422, ApiError(code="invalid_request", message="已有计划不需要 name")
         )
+    # 获取当前用户。
     user = http_request.state.current_user
     if save and user is None:
         raise ApiException(401, ApiError(code="unauthorized", message="请先登录"))
@@ -87,6 +90,7 @@ async def generate(
     if limit.locked():
         raise ApiException.busy()
     async with limit:
+        # 单独提交运行记录并返回运行的ID。
         run_id = (
             await saved_generation.start_run(
                 factory,
@@ -99,6 +103,7 @@ async def generate(
             if save
             else None
         )
+        # 创建模型调用追踪器
         trace = (
             ModelTrace(
                 settings.model_name,
@@ -108,6 +113,7 @@ async def generate(
             else None
         )
         try:
+            # 生成旅途规划
             result = await generate_trip(
                 request,
                 settings,
@@ -115,12 +121,14 @@ async def generate(
                 callback=trace,
             )
         except TimeoutError:
+            # 如果是规划超时，则保存失败记录并返回超时错误。
             if run_id is not None:
                 await saved_generation.mark_failed(
                     factory, run_id, "planning_timeout", None
                 )
             raise ApiException.timeout() from None
         except PlanningError as exc:
+            # 如果是规划错误，则保存失败记录并返回错误。
             error = ApiException.from_planning(exc)
             if run_id is not None:
                 await saved_generation.mark_failed(
@@ -128,10 +136,12 @@ async def generate(
                 )
             raise error from None
         except Exception as exc:
+            # 如果是系统内部错误，则保存失败记录并返回错误。
             if run_id is not None:
                 await saved_generation.mark_failed(
                     factory, run_id, "internal_error", None
                 )
+            # 系统密钥
             secrets = (
                 settings.model_api_key,
                 settings.amap_api_key,
@@ -143,6 +153,8 @@ async def generate(
                 redact(str(exc), secrets),
             )
             raise ApiException.internal() from None
+
+    # 如果运行记录不为 None，则保存结果并返回结果。
     if run_id is not None:
         try:
             saved = await saved_generation.save_result(
