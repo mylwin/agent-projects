@@ -195,7 +195,7 @@ export default function AssistantPanel({
         </span>
       </div>
       <div className="conversation-project">
-        <span>{project.name}</span>
+        <span title={project.name}>当前计划：{project.name}</span>
         <small>
           {project.messages.length} 条对话 · {project.revisions.length} 个版本
         </small>

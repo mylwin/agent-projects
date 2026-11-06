@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+  type FormEvent,
+} from "react";
 import {
   BookOpen,
   CalendarDays,
@@ -17,6 +23,8 @@ import {
   Hotel,
   Landmark,
   MapPin,
+  Map,
+  Image,
   MessageCircle,
   Pencil,
   Utensils,
@@ -60,6 +68,7 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
   const [leaveError, setLeaveError] = useState("");
   const [mobileTab, setMobileTab] = useState<"trip" | "assistant">("trip");
   const [collapsed, setCollapsed] = useState(false);
+  const [visualView, setVisualView] = useState<"map" | "photo">("map");
   const [busy, setBusy] = useState(false);
   const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -142,7 +151,10 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
   const activityCost = trip.days.reduce(
     (total, entry) =>
       total +
-      entry.activities.reduce((cost, activity) => cost + (activity.cost ?? 0), 0),
+      entry.activities.reduce(
+        (cost, activity) => cost + (activity.cost ?? 0),
+        0,
+      ),
     0,
   );
   const dayRequests = requests.filter((request) => request.dayId === dayId);
@@ -271,6 +283,7 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
    */
   function selectActivity(id: string) {
     setSelectedId(id);
+    setVisualView("map");
     document
       .getElementById(id)
       ?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -321,9 +334,11 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
   }
 
   return (
-    <div className="app-shell">
+    <div className="app-shell planner-shell">
       <header className="topbar">
         <Brand />
+        <span className="brand-divider" aria-hidden="true" />
+        <span className="product-label">旅行计划</span>
         <div className="detail-nav-actions">
           <button
             className="detail-info-button"
@@ -371,52 +386,33 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
                 <button onClick={() => setParams({})}>返回当前计划</button>
               </div>
             )}
-            <div className="project-breadcrumb">
-              <div className="project-path">
-                <Link className="plans-back" to="/plans">
-                  <ArrowLeft size={14} />
-                  全部计划
-                </Link>
-                <span className="path-divider">/</span>
-                <span>{project.name}</span>
-              </div>{" "}
-              <label>
-                <History size={14} />
-                <span className="sr-only">行程版本</span>
-                <select
-                  aria-label="行程版本"
-                  value={viewedRevision?.id ?? ""}
-                  disabled={busy}
-                  onChange={(event) =>
-                    event.target.value
-                      ? viewRevision(event.target.value)
-                      : setParams({})
-                  }
-                >
-                  <option value="">
-                    当前计划 · {project.revisions.length} 个版本
-                  </option>
-                  {project.revisions
-                    .slice()
-                    .reverse()
-                    .map((revision) => (
-                      <option key={revision.id} value={revision.id}>
-                        第 {revision.number} 版 · {revision.title}
-                      </option>
-                    ))}
-                </select>
-              </label>
-            </div>
+            <nav className="project-breadcrumb" aria-label="计划导航">
+              <Link className="plans-back" to="/plans">
+                <ArrowLeft size={18} />
+                返回全部计划
+              </Link>
+              <span className="plan-kind">旅行计划</span>
+            </nav>
             <div className="journal-heading">
-              <h1>
-                {trip.destination} · {trip.days.length} 天游{" "}
-                <span>
-                  （{trip.travelers} 人 · ¥{trip.budget}）
-                </span>
-              </h1>
+              <h1>{project.name}</h1>
               {isFinal && <span className="draft-status">最终方案</span>}
             </div>
-            <div className="day-tabs" role="tablist" aria-label="选择旅行日期">
+            <p className="plan-trip-summary">
+              <span>
+                <MapPin size={15} />
+                目的地：{trip.destination}
+              </span>
+              <span>
+                {trip.days.length} 天游 · {trip.travelers} 人
+              </span>
+              <span>预算 ¥{trip.budget.toLocaleString("zh-CN")}</span>
+            </p>
+            <div
+              className="day-tabs"
+              role="tablist"
+              aria-label="选择旅行日期"
+              style={{ "--day-count": trip.days.length } as CSSProperties}
+            >
               <div
                 className="tab-indicator"
                 style={{ transform: `translateX(${(dayId - 1) * 100}%)` }}
@@ -503,7 +499,73 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
                   })}
                 </ol>
                 <aside className="visual-column" aria-label="目的地与路线">
-                  <figure className="garden-photo">
+                  <div
+                    className="visual-switch"
+                    role="group"
+                    aria-label="目的地视图"
+                  >
+                    <button
+                      aria-pressed={visualView === "map"}
+                      aria-controls="destination-map"
+                      onClick={() => setVisualView("map")}
+                    >
+                      <Map size={16} />
+                      路线地图
+                    </button>
+                    <button
+                      aria-pressed={visualView === "photo"}
+                      aria-controls="destination-photo"
+                      onClick={() => setVisualView("photo")}
+                    >
+                      <Image size={16} />
+                      目的地照片
+                    </button>
+                  </div>
+                  <div
+                    className="visual-pane"
+                    hidden={visualView !== "map"}
+                    id="destination-map"
+                  >
+                    <div className="map-heading">
+                      <h3>当日路线</h3>
+                      <span>
+                        {
+                          day.activities.filter((activity) => activity.point)
+                            .length
+                        }{" "}
+                        个地点
+                      </span>
+                    </div>
+                    <div className="map-frame">
+                      <RouteMap
+                        activities={day.activities}
+                        selectedId={selectedId}
+                        onSelect={selectActivity}
+                      />
+                      <div className="map-legend">
+                        <span>
+                          <i />
+                          当日动线（
+                          {day.distance === "待核实"
+                            ? "里程待核实"
+                            : `约 ${day.distance} 公里`}
+                          ）
+                        </span>
+                        <span>
+                          <Footprints size={13} />
+                          步行为主 · 慢慢逛
+                        </span>
+                      </div>
+                    </div>
+                    <p className="route-caption">
+                      路线为示意，出发前请核实具体位置。
+                    </p>
+                  </div>
+                  <figure
+                    className="garden-photo visual-pane"
+                    hidden={visualView !== "photo"}
+                    id="destination-photo"
+                  >
                     <img
                       src="/images/suzhou-garden.png"
                       alt="白墙黛瓦的月洞门框住一院春色与水中倒影"
@@ -513,38 +575,6 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
                       <span>江南 · 春日</span>
                     </figcaption>
                   </figure>
-                  <div className="map-heading">
-                    <h3>当日路线</h3>
-                    <span>
-                      {
-                        day.activities.filter((activity) => activity.point)
-                          .length
-                      }{" "}
-                      个地点
-                    </span>
-                  </div>
-                  <div className="map-frame">
-                    <RouteMap
-                      activities={day.activities}
-                      selectedId={selectedId}
-                      onSelect={selectActivity}
-                    />
-                    <div className="map-legend">
-                      <span>
-                        <i />
-                        当日动线（
-                        {day.distance === "待核实"
-                          ? "里程待核实"
-                          : `约 ${day.distance} 公里`}
-                        ）
-                      </span>
-                      <span>
-                        <Footprints size={13} />
-                        步行为主 · 慢慢逛
-                      </span>
-                    </div>
-                  </div>
-                  <p className="route-caption">路上不赶时间，也是一种旅行。</p>
                 </aside>
               </div>
               {dayRequests.length > 0 && (
@@ -577,18 +607,48 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
             </div>
           </div>
           <div className="journal-footnote final-selection-bar">
-            <span className={isFinal ? "final-label selected" : "final-label"}>
-              {isFinal ? (
-                <>
-                  <CircleCheck size={15} />
-                  这是选定的最终方案
-                </>
-              ) : finalRevision ? (
-                `最终方案：第 ${finalRevision.number} 版`
-              ) : (
-                "挑选满意的版本，作为最终方案"
-              )}
-            </span>
+            <div className="version-control">
+              <label className="revision-picker">
+                <History size={17} />
+                <span className="sr-only">行程版本</span>
+                <select
+                  aria-label="行程版本"
+                  value={viewedRevision?.id ?? ""}
+                  disabled={busy}
+                  onChange={(event) =>
+                    event.target.value
+                      ? viewRevision(event.target.value)
+                      : setParams({})
+                  }
+                >
+                  <option value="">
+                    当前计划 · {project.revisions.length} 个版本
+                  </option>
+                  {project.revisions
+                    .slice()
+                    .reverse()
+                    .map((revision) => (
+                      <option key={revision.id} value={revision.id}>
+                        第 {revision.number} 版 · {revision.title}
+                      </option>
+                    ))}
+                </select>
+              </label>
+              <span
+                className={isFinal ? "final-label selected" : "final-label"}
+              >
+                {isFinal ? (
+                  <>
+                    <CircleCheck size={15} />
+                    这是选定的最终方案
+                  </>
+                ) : finalRevision ? (
+                  `最终方案：第 ${finalRevision.number} 版`
+                ) : (
+                  "挑选满意的版本，作为最终方案"
+                )}
+              </span>
+            </div>
             <button
               className="choose-final-button"
               onClick={chooseFinal}

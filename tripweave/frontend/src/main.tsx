@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./router/App";
 import "./styles/global.css";
 import "./styles/projects.css";
+import "./styles/planner.css";
 import "./styles/auth.css";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
