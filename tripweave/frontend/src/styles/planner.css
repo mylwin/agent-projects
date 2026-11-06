@@ -17,7 +17,7 @@
 }
 .planner-shell .project-breadcrumb {
   min-height: 44px;
-  margin-bottom: 18px;
+  margin-bottom: 8px;
 }
 .planner-shell .plans-back {
   display: inline-flex;
@@ -26,7 +26,7 @@
   min-height: 44px;
   padding: 8px 12px;
   border: 1px solid #d6c5cc;
-  border-radius: 7px;
+  border-radius: var(--control-radius);
   color: var(--wine-dark);
   font-size: 15px;
   line-height: 1.6;
@@ -37,10 +37,6 @@
 .planner-shell .plans-back:hover {
   background: var(--rose);
   border-color: #b79ba9;
-}
-.plan-kind {
-  font-size: 13px;
-  color: #77666d;
 }
 .planner-shell .journal-heading h1 {
   font-size: clamp(24px, 1.8vw, 32px);
@@ -60,8 +56,8 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px 18px;
-  margin: 12px 0 0;
-  color: #75645d;
+  margin: 8px 0 0;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1.7;
 }
@@ -71,7 +67,7 @@
   gap: 5px;
 }
 .planner-shell .day-tabs {
-  margin-top: 24px;
+  margin-top: 16px;
   width: min(100%, calc(var(--day-count) * 174px));
   grid-template-columns: repeat(var(--day-count), minmax(0, 1fr));
   border-bottom: 0;
@@ -84,11 +80,38 @@
   font-size: 12px;
 }
 .planner-shell .day-intro {
-  padding-block: 26px;
+  padding-block: 12px;
+}
+.planner-shell .day-intro h2 {
+  font-size: 28px;
+  line-height: 1.35;
+  margin: 6px 0;
+}
+.day-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+.planner-shell .day-tabs button {
+  padding: 6px 14px 8px;
+  gap: 2px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.planner-shell .day-panel {
+  animation: day-change 150ms ease-out;
+}
+.planner-shell .journal {
+  background: var(--paper);
 }
 .planner-shell .day-description {
   font-size: 14px;
-  color: #75645d;
+  color: var(--text-secondary);
 }
 .planner-shell .day-content {
   grid-template-columns: minmax(0, 1.2fr) minmax(300px, 1fr);
@@ -111,7 +134,9 @@
 .planner-shell .activity-time {
   grid-column: 2;
   grid-row: 1;
-  font-size: 14px;
+  font-size: 13px;
+  font-family: var(--font-ui);
+  font-weight: 500;
 }
 .planner-shell .activity-content {
   grid-column: 3;
@@ -123,7 +148,7 @@
 .planner-shell .activity-content > p {
   font-size: 14px;
   line-height: 1.8;
-  color: #75645d;
+  color: var(--text-secondary);
   max-width: 42ch;
 }
 .planner-shell .location-link {
@@ -243,7 +268,7 @@
   min-height: 44px;
   padding: 11px 18px;
   border: 1px solid var(--wine);
-  border-radius: 7px;
+  border-radius: var(--control-radius);
   color: #fffdfa;
   background: var(--wine);
   font-size: 15px;
@@ -260,17 +285,54 @@
   color: var(--wine);
 }
 .planner-shell .assistant {
-  padding: 26px 22px 18px;
+  padding: 22px 22px 18px;
+  background: var(--assistant-paper);
+}
+.planner-shell .assistant-heading {
+  margin-bottom: 20px;
+  flex-wrap: nowrap;
+}
+.assistant-collapse-button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--line);
+  border-radius: var(--control-radius);
+  background: var(--paper);
+}
+.planner-shell .message-bubble {
+  background: var(--paper);
+}
+.message-summary {
+  display: block;
+  font-weight: 600;
+  line-height: 1.7;
+}
+.message-detail {
+  margin: 10px 0 0;
+  color: var(--text-secondary);
+}
+.planner-shell .assistant-examples button {
+  min-height: 36px;
+  padding: 7px 9px;
+  border-radius: var(--control-radius);
+}
+.planner-shell .assistant-footer,
+.planner-shell .message time {
+  color: var(--text-secondary);
+  font-family: var(--font-ui);
+}
+.planner-shell .compact-composer {
+  background: var(--paper);
 }
 .planner-shell .conversation-project {
   flex-wrap: wrap;
   font-size: 13px;
-  color: #75645d;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 .planner-shell .conversation-project small {
   font-size: 12px;
-  color: #75645d;
+  color: var(--text-secondary);
 }
 .planner-shell .message-bubble {
   font-size: 14px;
@@ -278,7 +340,7 @@
 }
 .planner-shell .assistant-heading > span {
   font-size: 12px;
-  color: #75645d;
+  color: var(--text-secondary);
 }
 .planner-shell .compact-composer input {
   font-size: 14px;
@@ -314,6 +376,9 @@
   .planner-shell .plan-workspace {
     width: 100%;
     border-inline: 0;
+  }
+  .assistant-collapse-button {
+    display: none;
   }
   .planner-shell .journal-heading {
     align-items: flex-start;
@@ -365,5 +430,82 @@
   .visual-switch::before,
   .planner-shell .choose-final-button {
     transition: none;
+  }
+}
+
+/* 地点序号与时间轴一致，不把无坐标活动伪装成已定位地点。 */
+.activity-number {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  min-width: 17px;
+  height: 17px;
+  padding-inline: 3px;
+  border: 1px solid var(--paper);
+  border-radius: 50%;
+  background: var(--wine);
+  color: var(--paper);
+  font: 600 10px var(--font-ui);
+}
+.planner-shell .route-map {
+  font-family: var(--font-ui);
+}
+.planner-shell .activity-content {
+  position: relative;
+}
+.just-updated .activity-content::after {
+  content: "";
+  position: absolute;
+  inset: -5px -8px;
+  border-radius: var(--control-radius);
+  background: rgb(112 64 91 / 12%);
+  box-shadow: inset 3px 0 var(--wine);
+  pointer-events: none;
+  animation: activity-updated 1800ms ease-out both;
+}
+.choose-final-button[data-confirmed="true"] svg {
+  animation: confirm-selection 220ms ease-out;
+}
+@media (min-width: 1251px) {
+  .planner-shell .visual-column {
+    position: sticky;
+    top: 16px;
+  }
+}
+@keyframes day-change {
+  from {
+    opacity: 0.75;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes activity-updated {
+  0%,
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes confirm-selection {
+  from {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .just-updated .activity-content::after {
+    animation: none;
+    opacity: 1;
   }
 }

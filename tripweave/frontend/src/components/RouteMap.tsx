@@ -128,13 +128,23 @@ export default function RouteMap({ activities, selectedId, onSelect }: Props) {
           <circle
             cx={stop.point![0]}
             cy={stop.point![1]}
-            r="4.5"
-            fill="#fff"
-            stroke="#78445e"
-            strokeWidth="2.5"
+            r="9"
+            fill={selectedId === stop.id ? "var(--wine)" : "var(--paper)"}
+            stroke="var(--wine)"
+            strokeWidth="1.5"
           />
           <text
-            x={stop.point![0] + 12}
+            x={stop.point![0]}
+            y={stop.point![1] + 3.5}
+            textAnchor="middle"
+            fontSize="10"
+            fontWeight="600"
+            fill={selectedId === stop.id ? "var(--paper)" : "var(--wine)"}
+          >
+            {activities.findIndex((activity) => activity.id === stop.id) + 1}
+          </text>
+          <text
+            x={stop.point![0] + 16}
             y={stop.point![1] + 4}
             fontSize="12"
             fill="#41353b"

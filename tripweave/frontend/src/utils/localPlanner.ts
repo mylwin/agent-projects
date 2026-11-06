@@ -58,7 +58,12 @@ export function planLocally(trip: Trip, dayId: number, input: string) {
   } else {
     target.activities = target.activities.map((a) => {
       if (a.kind !== "food") return a;
-      if (match.id === "budget" && a.cost !== null && a.cost <= 40 * trip.travelers) return a;
+      if (
+        match.id === "budget" &&
+        a.cost !== null &&
+        a.cost <= 40 * trip.travelers
+      )
+        return a;
       const updated =
         match.id === "budget"
           ? {
@@ -83,7 +88,7 @@ export function planLocally(trip: Trip, dayId: number, input: string) {
     title: match.title,
     changed,
     reply: changed
-      ? `已为第 ${dayId} 天${match.title}，其他日期保持原样。`
+      ? `第 ${dayId} 天${match.id === "lunch" ? "午餐已换成清淡苏帮菜" : match.id === "budget" ? "餐饮费用估计已调整" : "已留出一段自由时光"}。其他日期保持原样。`
       : "当前安排已经符合这项调整，没有重复生成新版本。可以换个要求，或直接编辑具体活动。",
   };
 }

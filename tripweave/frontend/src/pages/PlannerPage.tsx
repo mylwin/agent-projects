@@ -10,8 +10,6 @@ import {
   CalendarDays,
   Check,
   CircleAlert,
-  ChevronLeft,
-  ChevronRight,
   ArrowLeft,
   Info,
   CircleCheck,
@@ -70,7 +68,9 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
   const [collapsed, setCollapsed] = useState(false);
   const [visualView, setVisualView] = useState<"map" | "photo">("map");
   const [busy, setBusy] = useState(false);
-  const hoverTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
+  const [changedIds, setChangedIds] = useState<string[]>([]);
+  const changeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const finalRevision = project.revisions.find(
     (revision) => revision.id === project.finalRevisionId,
@@ -106,22 +106,20 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
   function viewRevision(id: string) {
     setParams({ revision: id });
   }
-  /**
-   * 清除侧栏的悬停定时器。
-   */
-  function cancelHover() {
-    if (hoverTimer.current) {
-      clearTimeout(hoverTimer.current);
-      hoverTimer.current = null;
-    }
-  }
-  /**
-   * 切换助手侧栏折叠状态并恢复移动端行程标签。
-   */
+  /** 切换助手侧栏，保留对话及输入状态。 */
   function toggleAssistant() {
-    cancelHover();
     setCollapsed((value) => !value);
     setMobileTab("trip");
+  }
+
+  /** 标出助手实际修改的活动，并让桌面行程滚动到变化位置。 */
+  function highlightChanges(targetDay: number, ids: string[]) {
+    if (changeTimer.current) clearTimeout(changeTimer.current);
+    setDayId(targetDay);
+    setChangedIds(ids);
+    setSelectedId(ids[0] ?? null);
+    setVisualView("map");
+    changeTimer.current = setTimeout(() => setChangedIds([]), 1800);
   }
   const day = trip.days.find((entry) => entry.id === dayId) ?? trip.days[0];
   const date = new Date(`${day.date}T12:00:00`);
@@ -162,10 +160,22 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
   useEffect(
     () => () => {
       if (noticeTimer.current) clearTimeout(noticeTimer.current);
-      if (hoverTimer.current) clearTimeout(hoverTimer.current);
+      if (changeTimer.current) clearTimeout(changeTimer.current);
     },
     [],
   );
+  useEffect(() => {
+    if (!changedIds.length || mobileTab !== "trip") return;
+    const frame = requestAnimationFrame(() => {
+      document.getElementById(changedIds[0])?.scrollIntoView({
+        block: "nearest",
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+          ? "instant"
+          : "smooth",
+      });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [changedIds, mobileTab]);
   useEffect(() => {
     if (!editing && !showInfo && !leaving) return;
     const previousFocus = document.activeElement as HTMLElement | null;
@@ -241,6 +251,7 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
       number = chosen.number;
       return { ...next, finalRevisionId: chosen.id };
     });
+    setConfirmed(success);
     inform(
       success
         ? `已选定第 ${number} 版为最终方案`
@@ -391,7 +402,6 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
                 <ArrowLeft size={18} />
                 返回全部计划
               </Link>
-              <span className="plan-kind">旅行计划</span>
             </nav>
             <div className="journal-heading">
               <h1>{project.name}</h1>
@@ -435,37 +445,34 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
             <div
               id="day-panel"
               className="day-panel"
+              key={day.id}
               role="tabpanel"
               aria-labelledby={`day-tab-${dayId}`}
             >
               <div className="day-intro">
                 <div>
-                  <p className="eyebrow">DAY {day.id}</p>
+                  <p className="day-meta">
+                    第 {day.id} 天<span aria-hidden="true">/</span>
+                    <CalendarDays size={14} />
+                    {dayDate} {weekday}
+                  </p>
                   <h2>{day.title}</h2>
                   <p className="day-description">{day.description}</p>
-                </div>
-                <div className="date-stamp">
-                  <span>
-                    {weekday} · 第 {day.id} 天
-                  </span>
-                  <span>
-                    <CalendarDays size={15} />
-                    {dayDate}
-                  </span>
                 </div>
               </div>
               <div className="day-content">
                 <ol className="timeline">
-                  {day.activities.map((activity) => {
+                  {day.activities.map((activity, index) => {
                     const Icon = icons[activity.kind] ?? MapPin;
                     return (
                       <li
                         id={activity.id}
                         key={activity.id}
-                        className={`timeline-item ${selectedId === activity.id ? "selected" : ""}`}
+                        className={`timeline-item ${selectedId === activity.id ? "selected" : ""} ${changedIds.includes(activity.id) ? "just-updated" : ""}`}
                       >
                         <span className="activity-icon">
-                          <Icon size={20} strokeWidth={1.4} />
+                          <Icon size={20} strokeWidth={1.5} />
+                          <span className="activity-number">{index + 1}</span>
                         </span>
                         <span className="activity-time">{activity.time}</span>
                         <div className="activity-content">
@@ -651,6 +658,7 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
             </div>
             <button
               className="choose-final-button"
+              data-confirmed={confirmed}
               onClick={chooseFinal}
               disabled={isFinal || busy}
             >
@@ -668,32 +676,12 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
 
         <div
           className={`assistant-slot ${mobileTab === "assistant" ? "mobile-visible" : ""}`}
-          onPointerEnter={(event) => {
-            if (event.pointerType === "mouse" && collapsed) {
-              cancelHover();
-              hoverTimer.current = setTimeout(() => {
-                setCollapsed(false);
-                hoverTimer.current = null;
-              }, 1000);
-            }
-          }}
-          onPointerLeave={cancelHover}
         >
-          <button
-            className="sidebar-toggle"
-            aria-label={collapsed ? "展开旅行助手" : "收起旅行助手"}
-            aria-expanded={!collapsed}
-            aria-controls="plan-assistant"
-            onClick={toggleAssistant}
-          >
-            {collapsed ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
-          </button>
           {collapsed && (
             <button
               className="assistant-rail"
               aria-label="展开旅行助手"
               onClick={() => {
-                cancelHover();
                 setCollapsed(false);
               }}
             >
@@ -715,6 +703,8 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
               readOnly={!!viewedRevision}
               onRevision={viewRevision}
               onBusy={setBusy}
+              onChanged={highlightChanges}
+              onCollapse={toggleAssistant}
             />
           </aside>
         </div>

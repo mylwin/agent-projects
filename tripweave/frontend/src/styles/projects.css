@@ -34,9 +34,10 @@
   margin-bottom: 38px;
 }
 .plans-intro h1 {
-  font-size: 36px;
-  font-weight: 500;
-  margin: 10px 0 13px;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.4;
+  margin: 0 0 12px;
   letter-spacing: 1px;
 }
 .plans-intro > div > p:last-child {
@@ -64,8 +65,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-block: 1px solid var(--line);
-  padding: 14px 0;
+  border-bottom: 1px solid var(--line);
+  padding: 0 0 16px;
   margin-bottom: 28px;
 }
 .plans-toolbar > span {
@@ -110,7 +111,7 @@
 }
 .project-card {
   border: 1px solid var(--line);
-  border-radius: 11px;
+  border-radius: 12px;
   overflow: hidden;
   background: #fdfbf8;
   box-shadow: 0 3px 15px #4e273503;
@@ -165,7 +166,7 @@
   display: flex;
 }
 .project-card-body {
-  padding: 18px 20px 14px;
+  padding: 20px;
 }
 .project-status {
   display: flex;
@@ -189,8 +190,9 @@
 .project-meta {
   display: flex;
   align-items: center;
-  gap: 17px;
-  font-size: 12px;
+  gap: 14px;
+  flex-wrap: wrap;
+  font-size: 13px;
   color: #857168;
 }
 .project-meta span {
@@ -199,7 +201,7 @@
   gap: 5px;
 }
 .project-results {
-  border-block: 1px solid var(--line);
+  border-top: 1px solid var(--line);
   margin: 20px 0 13px;
   padding: 12px 0;
 }
@@ -268,7 +270,7 @@
   justify-content: center;
   gap: 13px;
   border: 1px dashed #d8c6c9;
-  border-radius: 11px;
+  border-radius: 12px;
   background: #faf6f2;
   color: #92717e;
   transition:
@@ -290,11 +292,12 @@
 }
 .new-project-card strong {
   font-size: 18px;
-  font-weight: 400;
+  font-family: var(--font-display);
+  font-weight: 500;
 }
 .new-project-card small {
   font-size: 12px;
-  color: #a08b7e;
+  color: var(--wine);
 }
 .plans-tip {
   margin-top: 32px;
@@ -1014,11 +1017,10 @@
   min-height: 0;
 }
 .project-card h2 {
-  height: 35px;
+  height: auto;
   margin-block: 12px 10px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  line-height: 1.4;
 }
 .project-card h2 a {
   display: block;
@@ -1029,9 +1031,8 @@
   min-height: 18px;
 }
 .project-results {
-  height: 124px;
-  min-height: 124px;
-  max-height: 124px;
+  height: auto;
+  min-height: 80px;
   margin-top: 20px;
   margin-bottom: 13px;
   overflow: hidden;
@@ -1043,7 +1044,8 @@
 }
 .project-card-footer {
   margin-top: auto;
-  min-height: 22px;
+  min-height: 44px;
+  align-items: center;
 }
 .project-card-links {
   display: flex;
@@ -1368,4 +1370,101 @@
 .trip-info .modal-heading .icon-button:focus-visible {
   outline-width: 1px;
   outline-offset: 2px;
+}
+
+/* 首页保留卡片布局，与详情共用阅读层级及操作样式。 */
+.plans-shell .plans-main {
+  padding-top: 40px;
+}
+.plans-shell .plans-intro {
+  margin-bottom: 28px;
+}
+.plans-shell .plans-intro > div > p:last-child {
+  color: var(--text-secondary);
+}
+.plans-shell .plan-count small {
+  font-size: 12px;
+  letter-spacing: 0;
+  color: var(--text-secondary);
+}
+.plans-shell .project-card h2 {
+  font-size: 23px;
+  font-weight: 600;
+}
+.plans-shell .result-link {
+  min-height: 40px;
+  height: auto;
+  font-size: 13px;
+}
+.plans-shell .project-card-links a {
+  min-height: 40px;
+  padding: 8px 10px;
+  border-radius: var(--control-radius);
+  font-size: 13px;
+}
+.plans-shell .project-card-links a:last-child {
+  background: var(--rose);
+  color: var(--wine-dark);
+}
+.plans-shell .project-card-links a:last-child:hover {
+  background: #e8dce2;
+}
+.plans-shell .new-project-card {
+  min-height: 260px;
+  padding: 32px 24px;
+  gap: 16px;
+  color: var(--wine);
+  background: var(--assistant-paper);
+}
+.plans-shell .new-project-card > span {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+.plans-shell .new-project-card > span svg {
+  width: 30px;
+  height: 30px;
+}
+.plans-shell .new-project-card strong {
+  font-size: 22px;
+  line-height: 1.5;
+}
+.plans-shell .new-project-card small {
+  font-size: 14px;
+}
+.plans-shell .new-project-card:hover {
+  background: var(--rose);
+}
+@media (max-width: 600px) {
+  .plans-shell .plans-main {
+    padding-top: 28px;
+  }
+  .plans-shell .plans-intro h1 {
+    font-size: 28px;
+  }
+  .plans-shell .plans-intro > div > p:last-child {
+    font-size: 14px;
+  }
+  .plans-shell .project-card-body {
+    padding: 18px;
+  }
+  .plans-shell .project-card-footer {
+    font-size: 12px;
+  }
+  .plans-shell .new-project-card {
+    min-height: 240px;
+    padding: 28px 20px;
+  }
+}
+
+.plans-shell .project-results small,
+.plans-shell .version-mark {
+  font-size: 12px;
+}
+.plans-shell .plan-search input::placeholder {
+  color: var(--text-secondary);
+}
+.plans-shell .plan-search:focus-within {
+  outline-color: var(--wine);
 }

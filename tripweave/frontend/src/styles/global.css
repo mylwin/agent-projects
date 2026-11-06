@@ -1,9 +1,17 @@
 :root {
   font-family: "Noto Serif SC", "Songti SC", "STSong", serif;
   color: #312b2b;
-  background: #fcfaf7;
+  background: var(--canvas);
   font-synthesis: none;
   font-weight: 400;
+  --font-display: "Noto Serif SC", "Songti SC", "STSong", serif;
+  --font-ui:
+    -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei",
+    sans-serif;
+  --canvas: #f4f1ee;
+  --assistant-paper: #f7f1f3;
+  --text-secondary: #75645d;
+  --control-radius: 7px;
   --wine: #70405b;
   --wine-dark: #562e46;
   --muted: #8e807b;
@@ -1547,4 +1555,47 @@ button:active:not(:disabled) {
   .assistant-footer {
     margin-top: 7px;
   }
+}
+
+/* 首页与行程共享阅读角色：标题用宋体，控件和正文使用系统字体。 */
+.plans-shell,
+.planner-shell {
+  font-family: var(--font-ui);
+}
+.plans-shell h1,
+.plans-shell h2,
+.planner-shell h1,
+.planner-shell h2,
+.planner-shell .activity-title {
+  font-family: var(--font-display);
+}
+.plans-shell .plans-main {
+  background: var(--paper);
+}
+.plans-shell .project-meta,
+.plans-shell .project-status,
+.plans-shell .project-card-footer,
+.plans-shell .project-results > div,
+.plans-shell .plans-top-note,
+.plans-shell .plans-tip,
+.plans-shell .plans-footer {
+  color: var(--text-secondary);
+}
+.plans-shell .project-status,
+.plans-shell .project-card-footer,
+.plans-shell .project-results > div {
+  font-size: 12px;
+}
+.plans-shell .plan-search input {
+  font-size: 14px;
+}
+.plans-shell .button {
+  border-radius: var(--control-radius);
+}
+
+.plans-shell .button,
+.planner-shell .detail-info-button {
+  min-height: 44px;
+  border-radius: var(--control-radius);
+  font-size: 14px;
 }

@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { ArrowUpRight, Send, Sparkles, Square, UserRound } from "lucide-react";
+import {
+  ArrowUpRight,
+  PanelRightClose,
+  Send,
+  Sparkles,
+  Square,
+  UserRound,
+} from "lucide-react";
 import type { PlanProject } from "../types/trip";
 import { saveRevision, updateProject } from "../api/workspaceStore";
 import { examples, planLocally } from "../utils/localPlanner";
@@ -18,6 +25,10 @@ interface Props {
   onRevision: (id: string) => void;
   /** 本地演示开始和结束时通知父组件忙碌状态。 */
   onBusy: (busy: boolean) => void;
+  /** 收到实际活动变更时，同步行程高亮。 */
+  onChanged: (dayId: number, ids: string[]) => void;
+  /** 从标题栏收起桌面助手。 */
+  onCollapse: () => void;
 }
 /**
  * 为本地演示提供可取消的等待。
@@ -57,12 +68,11 @@ export default function AssistantPanel({
   readOnly,
   onRevision,
   onBusy,
+  onChanged,
+  onCollapse,
 }: Props) {
   const [input, setInput] = useState("");
-  const [phase, setPhase] = useState<
-    "idle" | "thinking" | "planning" | "typing"
-  >("idle");
-  const [stream, setStream] = useState("");
+  const [phase, setPhase] = useState<"idle" | "planning">("idle");
   const [error, setError] = useState("");
   const controller = useRef<AbortController | null>(null);
   const bottom = useRef<HTMLDivElement>(null);
@@ -71,10 +81,10 @@ export default function AssistantPanel({
   useEffect(() => () => controller.current?.abort(), []);
   useEffect(() => {
     bottom.current?.scrollIntoView({ block: "nearest", behavior: "instant" });
-  }, [project.messages.length, stream, phase, active]);
+  }, [project.messages.length, phase, active]);
 
   /**
-   * 执行或恢复一次本地调整，逐步显示回复并保存结果。
+   * 执行或恢复一次本地调整，保存结果并通知行程标记变化。
    *
    * @param text - 本次调整要求。
    * @param resume - 是否恢复项目中尚未完成的要求，默认 false。
@@ -113,21 +123,24 @@ export default function AssistantPanel({
       }));
     setInput("");
     setError("");
-    setPhase("thinking");
+    setPhase("planning");
     onBusy(true);
     try {
-      await delay(650, aborter.signal);
-      setPhase("planning");
-      await delay(700, aborter.signal);
+      // 给取消按钮留一个短暂的响应窗口，不模拟模型逐字生成。
+      await delay(120, aborter.signal);
       const result = planLocally(project.trip, targetDay, text);
-      setPhase("typing");
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches)
-        setStream(result.reply);
-      else
-        for (let count = 4; count < result.reply.length + 4; count += 4) {
-          setStream(result.reply.slice(0, count));
-          await delay(24, aborter.signal);
-        }
+      const before = project.trip.days.find((day) => day.id === targetDay);
+      const changedIds =
+        result.trip.days
+          .find((day) => day.id === targetDay)
+          ?.activities.filter(
+            (activity) =>
+              JSON.stringify(activity) !==
+              JSON.stringify(
+                before?.activities.find((item) => item.id === activity.id),
+              ),
+          )
+          .map((activity) => activity.id) ?? [];
       if (aborter.signal.aborted) return;
       updateProject(project.id, (p) => {
         const next = result.changed
@@ -156,6 +169,7 @@ export default function AssistantPanel({
           ],
         };
       });
+      if (result.changed) onChanged(targetDay, changedIds);
     } catch (caught) {
       if (!aborter.signal.aborted)
         setError(
@@ -167,7 +181,6 @@ export default function AssistantPanel({
       if (controller.current === aborter) {
         controller.current = null;
         setPhase("idle");
-        setStream("");
         onBusy(false);
       }
     }
@@ -189,10 +202,16 @@ export default function AssistantPanel({
           <Sparkles size={22} strokeWidth={1.5} />
           旅行助手
         </h2>
-        <span>
-          <i />
-          {busy ? "正在整理行程" : "这个计划的专属对话"}
-        </span>
+        <button
+          className="assistant-collapse-button icon-button"
+          aria-label="收起旅行助手"
+          aria-expanded="true"
+          aria-controls="plan-assistant"
+          onClick={onCollapse}
+          title="收起旅行助手"
+        >
+          <PanelRightClose size={19} strokeWidth={1.5} />
+        </button>
       </div>
       <div className="conversation-project">
         <span title={project.name}>当前计划：{project.name}</span>
@@ -212,7 +231,20 @@ export default function AssistantPanel({
             </span>
             <div className="message-body">
               <div className="message-bubble">
-                {message.content}
+                {message.role === "assistant" && message.revisionId ? (
+                  <>
+                    <strong className="message-summary">
+                      {message.content.split("\n\n")[0]}
+                    </strong>
+                    {message.content.includes("\n\n") && (
+                      <p className="message-detail">
+                        {message.content.split("\n\n").slice(1).join("\n\n")}
+                      </p>
+                    )}
+                  </>
+                ) : (
+                  message.content
+                )}
                 {message.revisionId && (
                   <button
                     className="message-result"
@@ -233,25 +265,9 @@ export default function AssistantPanel({
               <Sparkles size={17} />
             </span>
             <div className="message-body">
-              {phase === "typing" ? (
-                <div className="message-bubble streamed-text">
-                  {stream}
-                  <span className="typing-cursor" />
-                </div>
-              ) : (
-                <div className="thinking-state" role="status">
-                  <span className="thinking-dots">
-                    <i />
-                    <i />
-                    <i />
-                  </span>
-                  <span>
-                    {phase === "thinking"
-                      ? "正在整理你的想法"
-                      : "正在调整当天的安排"}
-                  </span>
-                </div>
-              )}
+              <div className="thinking-state" role="status">
+                <span>正在调整当天的安排</span>
+              </div>
             </div>
           </div>
         )}

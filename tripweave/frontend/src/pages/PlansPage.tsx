@@ -5,6 +5,7 @@ import {
   CalendarDays,
   FolderOpen,
   MessageCircle,
+  MapPin,
   Plus,
   Search,
   Sparkles,
@@ -101,7 +102,6 @@ export default function PlansPage() {
       <main className="plans-main">
         <div className="plans-intro">
           <div>
-            <p className="eyebrow">YOUR TRAVEL JOURNAL</p>
             <h1>我的旅行计划</h1>
             <p>每一趟旅程，一个专属文件夹。行程、调整结果和对话，都在这里。</p>
           </div>
@@ -140,13 +140,6 @@ export default function PlansPage() {
                   aria-label={`打开${project.name}`}
                 >
                   <img src="/images/suzhou-garden.png" alt="江南园林与月洞门" />
-                  <span className="folder-badge">
-                    <FolderOpen size={15} />
-                    {cardTrip.destination}
-                  </span>
-                  <span className="cover-arrow">
-                    <ArrowUpRight size={20} />
-                  </span>
                 </Link>
                 <div className="project-card-body">
                   <div className="project-status">
@@ -170,6 +163,10 @@ export default function PlansPage() {
                   </h2>
                   <div className="project-meta">
                     <span>
+                      <MapPin size={14} />
+                      {cardTrip.destination}
+                    </span>
+                    <span>
                       <CalendarDays size={14} />
                       {cardTrip.days.length} 天
                     </span>
@@ -181,7 +178,7 @@ export default function PlansPage() {
                   </div>
                   <div className="project-results">
                     <div>
-                      <span>已制定的结果</span>
+                      <span>行程版本</span>
                       <small>{project.revisions.length} 个版本</small>
                     </div>
                     {previews.map((revision) => (
@@ -200,9 +197,6 @@ export default function PlansPage() {
                         <ArrowUpRight size={14} />
                       </Link>
                     ))}
-                    {previews.length === 1 && (
-                      <div className="result-spacer" aria-hidden="true" />
-                    )}
                   </div>
                   <div className="project-card-footer">
                     <span>
@@ -210,14 +204,9 @@ export default function PlansPage() {
                       {project.messages.length} 条对话
                     </span>
                     <div className="project-card-links">
-                      {final && (
-                        <Link to={planUrl}>
-                          查看方案 <ArrowUpRight size={14} />
-                        </Link>
-                      )}
+                      {final && <Link to={planUrl}>查看方案</Link>}
                       <Link to={`/plans/${project.id}`}>
                         {final ? "继续规划" : "打开计划"}
-                        <ArrowUpRight size={14} />
                       </Link>
                     </div>
                   </div>
@@ -233,7 +222,7 @@ export default function PlansPage() {
               <Plus size={26} strokeWidth={1.2} />
             </span>
             <strong>下一程，想去哪里？</strong>
-            <small>新建一个旅行计划</small>
+            <small>新建计划</small>
           </button>
         </div>
         {!filtered.length && (
