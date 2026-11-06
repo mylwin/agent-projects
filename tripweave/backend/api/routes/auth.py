@@ -23,22 +23,6 @@ from backend.util.session import COOKIE, set_session, signing_key
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-def auth_error(status: int, code: str, message: str) -> ApiException:
-    """
-    构造不暴露内部细节的认证错误。
-
-    :param status: HTTP 状态码。
-    :param code: 错误码。
-    :param message: 错误信息。
-    :return: 认证错误。
-    """
-    return ApiException(status, ApiError(code=code, message=message))
-
-
-Session = Annotated[AsyncSession, Depends(get_db, scope="function")]
-Key = Annotated[bytes, Depends(signing_key)]
-
-
 @router.post(
     "/register",
     response_model=ApiSuccess[UserRegisterAndLoginData],
@@ -46,7 +30,10 @@ Key = Annotated[bytes, Depends(signing_key)]
     responses={409: {"model": ApiFailure}, 503: {"model": ApiFailure}},
 )
 async def register(
-    body: UserRegisterRequest, response: Response, session: Session, key: Key
+    body: UserRegisterRequest,
+    response: Response,
+    session: Annotated[AsyncSession, Depends(get_db, scope="function")],
+    key: Annotated[bytes, Depends(signing_key)],
 ) -> ApiSuccess[UserRegisterAndLoginData]:
     """创建用户并建立登录态，用户名重复时返回 409。"""
     password_hash = await run_in_threadpool(hash_password, body.password)
@@ -55,7 +42,9 @@ async def register(
         user = await create_user(session, body.username, password_hash)
     except IntegrityError as exc:
         if exc.orig is not None and exc.orig.args and exc.orig.args[0] == 1062:
-            raise auth_error(409, "username_taken", "用户名已存在") from None
+            raise ApiException(
+                409, ApiError(code="username_taken", message="用户名已存在")
+            ) from None
         raise
     # 设置登录 session
     set_session(response, user.id, key)
@@ -68,14 +57,19 @@ async def register(
     responses={401: {"model": ApiFailure}, 503: {"model": ApiFailure}},
 )
 async def login(
-    body: UserLoginRequest, response: Response, session: Session, key: Key
+    body: UserLoginRequest,
+    response: Response,
+    session: Annotated[AsyncSession, Depends(get_db, scope="function")],
+    key: Annotated[bytes, Depends(signing_key)],
 ) -> ApiSuccess[UserRegisterAndLoginData]:
     """验证用户名密码，成功后建立登录态。"""
     user = await find_user_by_username(session, body.username)
     if user is None or not await run_in_threadpool(
         verify_password, body.password, user.password_hash
     ):
-        raise auth_error(401, "invalid_credentials", "用户名或密码错误")
+        raise ApiException(
+            401, ApiError(code="invalid_credentials", message="用户名或密码错误")
+        )
     await record_login(session, user)
     set_session(response, user.id, key)
     return ApiSuccess(data=UserRegisterAndLoginData(id=user.id, username=user.username))
@@ -90,7 +84,7 @@ async def me(request: Request) -> ApiSuccess[UserRegisterAndLoginData]:
     """返回中间件验证过的当前用户。"""
     user: User | None = request.state.current_user
     if user is None:
-        raise auth_error(401, "unauthorized", "请先登录")
+        raise ApiException(401, ApiError(code="unauthorized", message="请先登录"))
     return ApiSuccess(data=UserRegisterAndLoginData(id=user.id, username=user.username))
 
 

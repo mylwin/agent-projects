@@ -14,6 +14,7 @@ import { AuthLoading, RequireAuth } from "../auth/RequireAuth";
 import { redirectTarget } from "../auth/redirectTarget";
 import PlannerPage from "../pages/PlannerPage";
 import PlansPage from "../pages/PlansPage";
+import SavedProjectPage from "../pages/SavedProjectPage";
 import LoginPage from "../pages/LoginPage";
 
 /**
@@ -36,6 +37,13 @@ function PlanRoute() {
       </main>
     );
   return <PlannerPage key={project.id} project={project} />;
+}
+
+/** 用户或项目切换时重建服务端详情页。 */
+function SavedProjectRoute() {
+  const { id } = useParams();
+  const { user } = useAuth();
+  return <SavedProjectPage key={`${user?.id}:${id}`} />;
 }
 
 /**
@@ -87,6 +95,7 @@ const router = createBrowserRouter([
         children: [
           { path: "/", element: <Navigate to="/plans" replace /> },
           { path: "/plans", element: <PlansPage /> },
+          { path: "/saved-projects/:id", element: <SavedProjectRoute /> },
           { path: "/plans/:id", element: <PlanRoute /> },
           { path: "*", element: <Navigate to="/plans" replace /> },
         ],

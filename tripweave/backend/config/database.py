@@ -2,6 +2,7 @@
 
 import os
 from collections.abc import AsyncGenerator
+from contextlib import asynccontextmanager
 
 from fastapi import Request
 from sqlalchemy import URL
@@ -60,6 +61,20 @@ def create_session_factory(engine: AsyncEngine) -> async_sessionmaker[AsyncSessi
     return async_sessionmaker(engine, expire_on_commit=False)
 
 
+@asynccontextmanager
+async def db_transaction(
+    factory: async_sessionmaker[AsyncSession],
+) -> AsyncGenerator[AsyncSession]:
+    """为模型调用前后的独立数据库操作提供短事务。"""
+    async with factory() as session:
+        try:
+            yield session
+            await session.commit()
+        except Exception:
+            await session.rollback()
+            raise
+
+
 async def get_db(request: Request) -> AsyncGenerator[AsyncSession]:
     """
     提供请求级会话，成功时提交，失败时回滚。
@@ -71,10 +86,5 @@ async def get_db(request: Request) -> AsyncGenerator[AsyncSession]:
     factory = getattr(request.app.state, "database_session_factory", None)
     if factory is None:
         raise ApiException.configuration("未配置数据库连接")
-    async with factory() as session:
-        try:
-            yield session
-            await session.commit()
-        except Exception:
-            await session.rollback()
-            raise
+    async with db_transaction(factory) as session:
+        yield session

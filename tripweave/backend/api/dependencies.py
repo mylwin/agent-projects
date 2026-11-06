@@ -6,6 +6,8 @@ from fastapi import Request
 
 from backend.config.planner import PlannerSettings
 from backend.errors.api import ApiException
+from backend.models.user import User
+from backend.schemas.api import ApiError
 
 
 def get_settings() -> PlannerSettings:
@@ -29,3 +31,17 @@ def get_generation_limit(request: Request) -> asyncio.Semaphore:
     :return: 应用级信号量。
     """
     return request.app.state.generation_limit
+
+
+def get_current_user(request: Request) -> User:
+    """
+    读取中间件验证的用户，供需登录接口复用。
+
+    :param request: 当前 HTTP 请求。
+    :return: 已验证的用户。
+    :raises ApiException: 未登录或登录态失效时抛出。
+    """
+    user: User | None = request.state.current_user
+    if user is None:
+        raise ApiException(401, ApiError(code="unauthorized", message="请先登录"))
+    return user

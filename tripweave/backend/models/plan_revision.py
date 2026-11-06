@@ -21,6 +21,8 @@ class Base(DeclarativeBase):
 
 
 class PlanRevision(Base):
+    """行程版本"""
+
     __tablename__ = "tb_plan_revision"
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)

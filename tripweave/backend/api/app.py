@@ -14,7 +14,7 @@ if __package__ in {None, ""}:
 
 from backend.api.exception_handlers import register_exception_handlers
 from backend.api.middleware import register_auth_middleware
-from backend.api.routes import auth, health, plans
+from backend.api.routes import auth, health, plans, projects
 from backend.config.database import (
     create_database_engine,
     create_session_factory,
@@ -49,6 +49,7 @@ app = FastAPI(title="TripWeave API", version="0.1.0", lifespan=lifespan)
 app.include_router(auth.router, prefix="/api")
 app.include_router(health.router, prefix="/api")
 app.include_router(plans.router, prefix="/api")
+app.include_router(projects.router, prefix="/api")
 register_exception_handlers(app)
 register_auth_middleware(app)
 

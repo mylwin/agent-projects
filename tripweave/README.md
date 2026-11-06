@@ -1,10 +1,10 @@
 # TripWeave
 
-旅行规划应用。当前多 Agent + 官方地图 MCP 已可通过薄 FastAPI 入口调用；真实服务联调与前端接入仍待完成。
+旅行规划应用。多 Agent + 官方地图 MCP 通过 FastAPI 入口调用；前端已接入认证、计划读取与生成保存。真实服务联调仍待完成。
 
 景点、美食、天气、住宿分别由研究 Agent 查询，Planner 汇总并返回行程草稿。
 高德和百度通过工厂切换官方 MCP 服务，不再维护手写地图 REST 客户端。
-前端仍为本地示例，尚未接入 HTTP 接口；后端已有薄 FastAPI 入口，真实服务联调未执行。
+原有本地草稿仍可使用；新计划通过后端生成并保存。真实模型、地图和数据库联调未执行。
 
 ## 运行
 
@@ -62,7 +62,7 @@ uv run uvicorn backend.api.app:app --host 127.0.0.1 --port 8000 --reload --reloa
 成功返回 `{success: true, data}`，失败返回 `{success: false, error}`。
 错误码包括 `invalid_request`、`planning_rejected`、`upstream_failed`、
 `planning_timeout`、`busy`、`configuration_error`、`internal_error`、`not_found` 和 `http_error`。
-认证接口使用 MySQL 和签名 Cookie；行程生成接口尚未加鉴权或异步任务，默认只绑定回环地址。
+认证接口使用 MySQL 和签名 Cookie；生成接口在传入 `name` 或 `project_id` 时要求登录并保存版本，默认只绑定回环地址。
 
 ## 离线检查
 
@@ -76,6 +76,6 @@ uv run pytest backend/tests -q
 测试使用内存 MCP、Streamable HTTP 的 ASGI 替身、模型 HTTP 替身及 FastAPI TestClient，不访问真实供应商。
 
 前端在 frontend/ 执行 `pnpm dev`，检查为 `pnpm typecheck`、`pnpm lint`、`pnpm build`。
-页面仍展示本地样例，不会自动读取 CLI 的生成结果。
+页面可读取服务端计划并创建新计划，原有本地草稿仍单独保存在浏览器。
 
 [文档入口](docs/README.md) · [Agent 使用说明](docs/02-agent.md) · [数据库设计](docs/05-database.md) · [接口 Schema](docs/06-api-schema.md) · [接口文档](docs/07-api-reference.md) · [开发约定](AGENTS.md)

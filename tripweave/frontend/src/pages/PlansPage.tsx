@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowUpRight,
@@ -12,76 +12,105 @@ import {
   UsersRound,
   X,
 } from "lucide-react";
-import fixture from "../data/trip.json";
-import { addProject, newProject } from "../api/workspaceStore";
+import {
+  ProjectsError,
+  generateSavedPlan,
+  listSavedProjects,
+  type ProjectSummary,
+} from "../api/projects";
+import { useAuth } from "../auth/AuthProvider";
 import { useWorkspace } from "../hooks/useWorkspace";
 import Brand from "../components/Brand";
 import AccountChip from "../components/AccountChip";
 
 /**
- * 展示、搜索和创建浏览器本地旅行项目。
+ * 展示服务端计划与本地草稿，并生成新的服务端计划。
  *
  * @returns 旅行计划列表及新建表单。
  */
 export default function PlansPage() {
   const { workspace } = useWorkspace();
+  const { user, refreshSession } = useAuth();
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [creating, setCreating] = useState(false);
+  const [createPending, setCreatePending] = useState(false);
+  const [createError, setCreateError] = useState("");
+  const [savedProjects, setSavedProjects] = useState<ProjectSummary[]>([]);
+  const [savedOwnerId, setSavedOwnerId] = useState<number | null>(null);
+  const [savedLoading, setSavedLoading] = useState(true);
+  const [savedError, setSavedError] = useState("");
+  const [reloadSaved, setReloadSaved] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    void listSavedProjects(controller.signal)
+      .then((projects) => {
+        setSavedProjects(projects);
+        setSavedOwnerId(user?.id ?? null);
+      })
+      .catch((cause: unknown) => {
+        if (!controller.signal.aborted) {
+          if (cause instanceof ProjectsError && cause.code === "unauthorized")
+            void refreshSession();
+          setSavedError(
+            cause instanceof Error ? cause.message : "无法读取已保存的计划。",
+          );
+        }
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setSavedLoading(false);
+      });
+    return () => controller.abort();
+  }, [user?.id, reloadSaved, refreshSession]);
+  const visibleSavedProjects = savedOwnerId === user?.id ? savedProjects : [];
+  const savedFiltered = visibleSavedProjects.filter((project) =>
+    `${project.name} ${project.destination}`.includes(query.trim()),
+  );
   const filtered = workspace.projects
     .filter((p) => `${p.name} ${p.trip.destination}`.includes(query.trim()))
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   /**
-   * 从表单读取需求，以样例行程创建项目并打开详情。
+   * 从表单读取需求，调用生成接口并打开保存后的版本。
    *
    * @param event - 新建计划表单的提交事件。
    */
-  function create(event: FormEvent<HTMLFormElement>) {
+  async function create(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (createPending) return;
     const form = new FormData(event.currentTarget);
     const name = String(form.get("name") ?? "").trim();
-    if (!name) return;
-    const start = String(form.get("date"));
+    const destination = String(form.get("destination") ?? "").trim();
+    const start = String(form.get("date") ?? "");
     const travelers = Number(form.get("travelers"));
-    const budget = Number(form.get("budget"));
+    const budget = String(form.get("budget") ?? "");
     const count = Number(form.get("days"));
-    if (
-      !Number.isFinite(Date.parse(start)) ||
-      !Number.isInteger(travelers) ||
-      travelers < 1 ||
-      travelers > 12 ||
-      !Number.isFinite(budget) ||
-      budget < 100 ||
-      count < 1 ||
-      count > 3
-    )
-      return;
-    const trip = structuredClone({
-      schemaVersion: fixture.schemaVersion,
-      id: fixture.id,
-      destination: fixture.destination,
-      travelers: fixture.travelers,
-      budget: fixture.budget,
-      currency: fixture.currency,
-      days: fixture.days,
-    });
-    trip.travelers = travelers;
-    trip.budget = budget;
-    trip.days = trip.days.slice(0, count).map((day, index) => {
-      const date = new Date(`${start}T12:00:00`);
-      date.setDate(date.getDate() + index);
-      return {
-        ...day,
-        date: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`,
-        activities: day.activities.map((activity) => ({
-          ...activity,
-          cost: Math.round((activity.cost / 2) * travelers),
-        })),
-      };
-    });
-    const project = newProject(name, trip);
-    addProject(project);
-    navigate(`/plans/${project.id}`);
+    if (!name || !destination) return;
+    setCreatePending(true);
+    setCreateError("");
+    try {
+      const result = await generateSavedPlan({
+        name,
+        destination,
+        start_date: start,
+        day_count: count,
+        travelers,
+        budget,
+        pace: "balanced",
+        interests: [],
+        instruction: String(form.get("instruction") ?? "").trim(),
+      });
+      navigate(
+        `/saved-projects/${result.project_id}?revision=${result.revision_id}`,
+      );
+    } catch (cause) {
+      if (cause instanceof ProjectsError && cause.code === "unauthorized")
+        void refreshSession();
+      setCreateError(
+        cause instanceof Error ? cause.message : "生成失败，请稍后重试。",
+      );
+    } finally {
+      setCreatePending(false);
+    }
   }
   return (
     <div className="app-shell plans-shell">
@@ -106,13 +135,14 @@ export default function PlansPage() {
             <p>每一趟旅程，一个专属文件夹。行程、调整结果和对话，都在这里。</p>
           </div>
           <span className="plan-count">
-            {workspace.projects.length} <small>个旅行计划</small>
+            {workspace.projects.length + visibleSavedProjects.length}{" "}
+            <small>个旅行计划</small>
           </span>
         </div>
         <div className="plans-toolbar">
           <span>
             <FolderOpen size={18} />
-            全部计划 <small>{filtered.length}</small>
+            全部计划 <small>{filtered.length + savedFiltered.length}</small>
           </span>
           <label className="plan-search">
             <Search size={16} />
@@ -123,6 +153,63 @@ export default function PlansPage() {
               placeholder="搜索计划或目的地"
             />
           </label>
+        </div>
+        <section
+          className="saved-projects-section"
+          aria-label="已保存到服务端的计划"
+        >
+          <div className="saved-section-heading">
+            <h2>已保存的计划</h2>
+            <span>{visibleSavedProjects.length} 个</span>
+          </div>
+          {savedLoading && <p role="status">正在读取已保存的计划…</p>}
+          {savedError && (
+            <p className="saved-error" role="alert">
+              {savedError}{" "}
+              <button
+                onClick={() => {
+                  setSavedLoading(true);
+                  setSavedError("");
+                  setReloadSaved((value) => value + 1);
+                }}
+              >
+                重试
+              </button>
+            </p>
+          )}
+          {!savedLoading && !savedError && savedFiltered.length === 0 && (
+            <p className="saved-empty">
+              {query ? "没有匹配的已保存计划。" : "还没有保存到服务端的计划。"}
+            </p>
+          )}
+          <div className="saved-card-grid">
+            {savedFiltered.map((project) => (
+              <Link
+                className="saved-project-card"
+                to={`/saved-projects/${project.id}`}
+                key={project.id}
+              >
+                <span>
+                  <FolderOpen size={19} /> 已保存 · {project.revision_count}{" "}
+                  个版本
+                </span>
+                <strong>{project.name}</strong>
+                <small>
+                  <MapPin size={14} /> {project.destination}
+                </small>
+                <small>
+                  {new Date(project.updated_at).toLocaleDateString("zh-CN")}{" "}
+                  更新
+                </small>
+                {project.final_revision_id && <em>已选最终方案</em>}
+                <ArrowUpRight className="saved-card-arrow" size={18} />
+              </Link>
+            ))}
+          </div>
+        </section>
+        <div className="saved-section-heading">
+          <h2>本地草稿</h2>
+          <span>{workspace.projects.length} 个</span>
         </div>
         <div className="project-grid">
           {filtered.map((project) => {
@@ -225,7 +312,7 @@ export default function PlansPage() {
             <small>新建计划</small>
           </button>
         </div>
-        {!filtered.length && (
+        {!filtered.length && !!query && (
           <p className="empty-search">
             没有找到这个计划。
             <button onClick={() => setQuery("")}>查看全部计划</button>
@@ -242,7 +329,10 @@ export default function PlansPage() {
         一份计划，收藏一路的期待。<span>TripWeave · 途织</span>
       </footer>
       {creating && (
-        <div className="modal-backdrop" onClick={() => setCreating(false)}>
+        <div
+          className="modal-backdrop"
+          onClick={() => !createPending && setCreating(false)}
+        >
           <section
             className="modal"
             role="dialog"
@@ -250,11 +340,11 @@ export default function PlansPage() {
             aria-labelledby="create-title"
             onClick={(e) => e.stopPropagation()}
             onKeyDown={(e) => {
-              if (e.key === "Escape") setCreating(false);
+              if (e.key === "Escape" && !createPending) setCreating(false);
               if (e.key === "Tab") {
                 const items = Array.from(
                   e.currentTarget.querySelectorAll<HTMLElement>(
-                    "button,input,select",
+                    "button,input,select,textarea",
                   ),
                 );
                 if (e.shiftKey && document.activeElement === items[0]) {
@@ -276,6 +366,7 @@ export default function PlansPage() {
                 className="icon-button"
                 aria-label="关闭新建计划"
                 onClick={() => setCreating(false)}
+                disabled={createPending}
               >
                 <X />
               </button>
@@ -291,14 +382,20 @@ export default function PlansPage() {
                   placeholder="例如：周末苏州慢游"
                 />
               </label>
-              <p className="new-plan-city">目的地：苏州 · 从园林与水巷开始</p>
+              <label>
+                目的地
+                <input
+                  name="destination"
+                  required
+                  maxLength={100}
+                  placeholder="例如：成都"
+                />
+              </label>
               <label>
                 出发日期
                 <input
                   name="date"
                   type="date"
-                  defaultValue="2027-03-12"
-                  min="2026-01-01"
                   max="2100-12-28"
                   required
                 />
@@ -310,6 +407,8 @@ export default function PlansPage() {
                     <option value="1">1 天</option>
                     <option value="2">2 天</option>
                     <option value="3">3 天</option>
+                    <option value="4">4 天</option>
+                    <option value="5">5 天</option>
                   </select>
                 </label>
                 <label>
@@ -329,18 +428,34 @@ export default function PlansPage() {
                 <input
                   name="budget"
                   type="number"
-                  min="100"
+                  min="0.01"
                   max="1000000"
+                  step="0.01"
                   defaultValue="3000"
                   required
                 />
               </label>
+              <label>
+                补充要求（选填）
+                <textarea
+                  name="instruction"
+                  maxLength={500}
+                  rows={3}
+                  placeholder="例如：节奏轻松，想尝尝当地小吃"
+                />
+              </label>
+              {createError && (
+                <p className="saved-error" role="alert">
+                  {createError}
+                </p>
+              )}
               <button
                 className="button primary create-plan-submit"
                 type="submit"
+                disabled={createPending}
               >
                 <FolderOpen size={16} />
-                创建旅行计划
+                {createPending ? "正在生成并保存行程…" : "生成并保存计划"}
               </button>
             </form>
           </section>

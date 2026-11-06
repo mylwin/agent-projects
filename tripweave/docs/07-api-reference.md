@@ -1,11 +1,10 @@
 # 接口文档
 
-本文档同时记录**已实现接口**和**计划中接口**。前端接入前，请先确认接口状态。
+本文档记录当前已实现接口与保存行为。
 
 - Base URL：`http://127.0.0.1:8000`
 - 请求类型：`application/json`
-- 已实现：健康检查、同步生成和用户认证；生成结果尚不写入数据库
-- 计划中：计划列表/详情、版本、最终方案、持久化生成、生成轨迹
+- 已实现：健康检查、用户认证、计划读写、同步生成及生成轨迹
 
 示例中的地点、日期、费用和模型输出仅用于说明结构，不代表真实查询结果。
 
@@ -42,17 +41,16 @@
 | 状态 | 方法 | 路径 | 用途 |
 | --- | --- | --- | --- |
 | 已实现 | GET | `/api/health` | 健康检查与公开配置 |
-| 已实现 | POST | `/api/plans/generate` | 生成行程，当前不保存到数据库 |
+| 已实现 | POST | `/api/plans/generate` | 生成行程；携带保存字段时写入计划和版本 |
 | 已实现 | POST | `/api/auth/register` | 用户注册 |
 | 已实现 | POST | `/api/auth/login` | 用户名/密码登录 |
 | 已实现 | POST | `/api/auth/logout` | 退出登录 |
 | 已实现 | GET | `/api/auth/me` | 当前登录用户 |
-| 计划中 | GET | `/api/projects` | 当前用户的计划列表 |
-| 计划中 | GET | `/api/projects/{project_id}` | 计划详情和版本列表 |
-| 计划中 | GET | `/api/projects/{project_id}/revisions/{revision_id}` | 单个版本完整结果 |
-| 计划中 | POST | `/api/projects/{project_id}/final` | 设置最终方案 |
-| 计划中 | POST | `/api/plans/generate` | 生成并保存计划，增加持久化字段 |
-| 计划中 | GET | `/api/projects/{project_id}/runs/{run_id}/trace` | 查看研究、工具证据和公开推理 |
+| 已实现 | GET | `/api/projects` | 当前用户的分页计划列表 |
+| 已实现 | GET | `/api/projects/{project_id}` | 计划详情和版本列表 |
+| 已实现 | GET | `/api/projects/{project_id}/revisions/{revision_id}` | 单个版本完整结果 |
+| 已实现 | POST | `/api/projects/{project_id}/final` | 设置最终方案 |
+| 已实现 | GET | `/api/projects/{project_id}/runs/{run_id}/trace` | 查看已保存的研究、工具证据和公开推理 |
 
 ---
 
@@ -97,11 +95,11 @@
 
 ---
 
-## 2. 生成行程（已实现，当前不持久化）
+## 2. 生成行程（已实现）
 
 ### POST `/api/plans/generate`
 
-同步生成一次完整行程。当前接口不要求登录，也不写入数据库；生成结果只存在于本次响应中。
+同步生成一次完整行程。不携带 `name` 或 `project_id` 时不要求登录，也不写入数据库；携带其中一个字段时按第 5 节保存。
 
 请求体：现有 `TripRequest` 扁平结构。
 
@@ -387,29 +385,34 @@ Set-Cookie: tripweave_session=<signed-value>; HttpOnly; SameSite=Lax; Path=/
 
 ---
 
-## 4. 计划与版本接口（计划中）
+## 4. 计划与版本接口
 
 以下接口都要求登录；只能访问当前用户自己的计划。
 
 ### GET `/api/projects`
 
-请求参数：无。当前不做分页。
+可选查询参数：`page`（页码，默认 1）和 `pageSize`（每页数量，默认 10，最大 100）。按更新时间和项目 ID 倒序排列。
 
 成功响应示例：
 
 ```json
 {
   "success": true,
-  "data": [
-    {
-      "id": 12,
-      "name": "成都三日",
-      "destination": "成都",
-      "updated_at": "2026-11-05T09:00:00+00:00",
-      "final_revision_id": 34,
-      "revision_count": 2
-    }
-  ]
+  "data": {
+    "items": [
+      {
+        "id": 12,
+        "name": "成都三日",
+        "destination": "成都",
+        "updated_at": "2026-11-05T09:00:00Z",
+        "final_revision_id": 34,
+        "revision_count": 2
+      }
+    ],
+    "total": 1,
+    "page": 1,
+    "page_size": 10
+  }
 }
 ```
 
@@ -495,17 +498,17 @@ Set-Cookie: tripweave_session=<signed-value>; HttpOnly; SameSite=Lax; Path=/
 
 ---
 
-## 5. 生成并保存（计划中）
+## 5. 生成并保存（已实现）
 
 ### POST `/api/plans/generate`
 
-持久化版本沿用当前路径，请求体在现有 `TripRequest` 上增加可选保存字段：
+持久化版本沿用当前路径，必须登录且配置数据库。请求体在现有 `TripRequest` 上增加一个保存字段：
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
 | 原有 `TripRequest` 字段 | - | 是 | 与第 2 节相同 |
-| `project_id` | integer/null | 否 | 已有计划 ID；为空时创建新计划 |
-| `name` | string/null | 否 | 新计划名称，1–40 字符；新建时必填 |
+| `project_id` | integer/null | 否 | 已有且属于当前用户的计划 ID；与 `name` 二选一 |
+| `name` | string/null | 否 | 新计划名称，1–40 字符；与 `project_id` 二选一 |
 
 请求示例（新建计划）：
 
@@ -538,11 +541,11 @@ Set-Cookie: tripweave_session=<signed-value>; HttpOnly; SameSite=Lax; Path=/
 }
 ```
 
-其中 `trip`、`places`、`warnings`、`reply`、`research` 与第 2 节完全相同。服务端会在生成后保存运行记录、研究证据、公开推理和版本快照。
+其中 `trip`、`places`、`warnings`、`reply`、`research` 与第 2 节完全相同。服务端在调用模型前创建运行记录，成功后原子保存计划、版本快照、研究证据和实际收到的公开模型内容；失败时记录运行错误。新计划的失败记录没有项目 ID，因此无法从项目轨迹接口读取。
 
 ---
 
-## 6. 生成轨迹（计划中）
+## 6. 生成轨迹
 
 ### GET `/api/projects/{project_id}/runs/{run_id}/trace`
 
@@ -593,6 +596,7 @@ Set-Cookie: tripweave_session=<signed-value>; HttpOnly; SameSite=Lax; Path=/
 
 - `reasoning` 为 `null` 表示供应商没有返回公开推理，不代表没有思考过程。
 - 原始工具原文在 `research[].evidence` 中；不展示隐藏 chain-of-thought。
+- 仅返回已存入数据库的内容；未保存的运行无法通过此接口查询。
 
 ---
 
@@ -619,6 +623,6 @@ Set-Cookie: tripweave_session=<signed-value>; HttpOnly; SameSite=Lax; Path=/
 ## 8. 当前边界
 
 - 用户认证使用 MySQL；同步生成接口不保存结果。
-- 计划、版本和轨迹接口仍处于设计阶段。
+- 计划和版本只读接口、最终方案接口及生成持久化已实现。
 - 生成接口是同步的，可能持续数十秒到数分钟；暂无 SSE、异步任务或取消接口。
 - 暂无局部修改、服务端对话、分享协作和 token 刷新/撤销接口。

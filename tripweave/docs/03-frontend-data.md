@@ -3,25 +3,25 @@
 ## 当前页面
 
 React + TypeScript + Vite，样式为现有暖白酒红旅行日笺，图标使用 lucide-react。
-/plans 展示计划列表；/plans/:id 展示每日行程、对话、版本和最终方案。
+/plans 展示服务端已保存计划与浏览器本地草稿；/saved-projects/:id 查看服务端版本和轨迹，
+/plans/:id 展示可编辑的本地行程、对话、版本和最终方案。
 支持手动编辑、日期切换、活动与 SVG 标记联动、侧栏展开和浏览器保存。
 样例在 frontend/src/data/trip.json 与 assistant-examples.json，不从 docs 导入。
 
-目前新建计划仍复制苏州样例，本地助手只处理轻松节奏、清淡午餐和餐费示例；
-未知要求进入待处理清单。页面没有向模型或后端发请求，SVG 也不提供真实导航。
-继续保留这些行为，直到独立 Agent 在线验证后再开展接入。
+新建计划提交真实目的地和行程需求到 `/api/plans/generate`，成功后打开服务端保存的版本。
+原有本地草稿及本地助手继续保存在浏览器；本地助手只处理轻松节奏、清淡午餐和餐费示例，
+未知要求进入待处理清单。已保存计划通过 `/api/projects` 系列接口读取；SVG 不提供真实导航。
 
 ## 独立 Agent 的输入
 
 TripRequest 保持扁平结构，字段 destination、start_date、day_count、travelers、budget
 可直接来自新建计划表单。pace、interests、instruction 可选。
-计划名称仅用于页面保存，不参与规划，不需要传给模型。
-未来接入时需要把现在写死的苏州改成目的地输入；薄后端接口已定义
-`POST /api/plans/generate`，前端尚未接入。
+计划名称用于服务端创建项目，不参与规划。当前新建表单已提供目的地输入，并调用
+`POST /api/plans/generate`；节奏固定为 `balanced`，兴趣暂为空数组，补充要求可输入。
 
 ## 独立 Agent 的输出
 
-PlanResult 包含 trip、places、reply、warnings，新增 research。它是函数/CLI 的结果，不是已上线接口。
+PlanResult 包含 trip、places、reply、warnings 和 research，也是已上线生成接口的结果。
 
 | 路径 | 含义与来源 |
 | --- | --- |
@@ -43,10 +43,10 @@ Trip 和 TripDay 的基础字段与现有前端相同，活动增加 placeId 便
 前端遇到任何未知活动费用时将合计显示为“待核实”，不能把 null 相加当零。
 原有已保存样例金额仍可读取。全部 point 为 null 时，当前 SVG 不显示地点标记。
 
-## 后续接入次序
+## 后续工作
 
-薄后端入口已增加，真实联调通过后前端再提交需求、显示等待和错误；
-成功后用 result.trip 建立计划，用 reply 和 warnings 展示来源边界，继续沿用现有浏览器保存与版本机制。
+已接入生成请求、等待和错误显示；生成成功后跳转至服务端版本详情。
+本地草稿与已保存计划目前是两个独立的数据来源，尚无草稿迁移功能。
 
 真实地图展示另行决定：根据 places 中经纬度进行 SVG 投影，或者接地图 SDK。
 高德默认 GCJ-02，百度默认 BD-09，必须按 coordinate_system 处理；当前未做坐标转换。

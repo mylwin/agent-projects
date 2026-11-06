@@ -35,7 +35,7 @@ class ModelCall(Base):
     provider: Mapped[str | None] = mapped_column(String(100), nullable=True)
     reasoning: Mapped[str | None] = mapped_column(Text, nullable=True)
     content: Mapped[str | None] = mapped_column(Text, nullable=True)
-    tool_calls: Mapped[dict | None] = mapped_column(JSON, nullable=True)
+    tool_calls: Mapped[list[dict] | None] = mapped_column(JSON, nullable=True)
     started_at: Mapped[datetime] = mapped_column(
         DATETIME(fsp=6), server_default=text("CURRENT_TIMESTAMP(6)")
     )

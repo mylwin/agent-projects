@@ -1,6 +1,6 @@
 # 接口请求与响应 Schema 设计
 
-状态：设计稿，尚未实现。数据库设计见 [05-database.md](05-database.md)，初始化 SQL 见 [resource/schema.sql](../resource/schema.sql)，具体请求/响应示例见 [07-api-reference.md](07-api-reference.md)。
+状态：认证、计划读写、生成保存和轨迹读取已实现；后续扩展仍按本设计讨论。数据库设计见 [05-database.md](05-database.md)，初始化 SQL 见 [resource/schema.sql](../resource/schema.sql)，具体请求/响应示例见 [07-api-reference.md](07-api-reference.md)。
 
 ## 范围
 
@@ -251,7 +251,7 @@ backend/
 - 路由只做参数、调用服务、异常转换，不直接拼 SQL。
 - 生成开始时先写 `tb_generation_run(status='running')`；模型调用期间不要持有长数据库事务；结束后再提交版本和研究轨迹。
 - 生成失败时更新运行状态为 `failed`，保留脱敏错误信息；已经成功的版本不受影响。
-- 当前 `ConsoleCallback` 只写终端，不保存轨迹；实现 `tb_model_call` 前需要增加一个轨迹记录回调。
+- 服务端生成通过 `ModelTrace` 回调保存供应商公开返回的正文、推理和工具名称；终端仍使用 `ConsoleCallback`。
 - 登录 Cookie 使用环境变量中的签名密钥，设置 `HttpOnly` 和 `SameSite=Lax`；生产环境再加 `Secure`。
 - `resource/schema.sql` 只用于初始化；正式开发使用迁移工具管理后续变更。
 

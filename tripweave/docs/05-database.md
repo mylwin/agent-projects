@@ -1,6 +1,6 @@
 # 数据库设计
 
-状态：已提供可选的 MySQL 连接配置，用户注册和登录已接入，计划业务读写尚未实现；前端计划仍保存在 localStorage。
+状态：已提供可选的 MySQL 连接配置，用户认证、计划读写和生成保存已接入；旧版前端草稿仍保存在 localStorage。
 
 在项目根目录 `.env` 中设置 `DB_NAME`、`DB_USER`、`DB_PASSWORD`，并按需设置 `DB_HOST` 和 `DB_PORT`（默认分别为 `127.0.0.1` 和 `3306`）。先创建 MySQL 8.0.16+ 数据库并执行初始化脚本。引擎在首次使用时才连接，应用关闭时释放连接池；认证接口使用数据库；启动成功不代表连接验证成功。未设置 `DB_NAME` 时不启用连接。
 
@@ -158,9 +158,9 @@ unique(run_id, agent, call_index)
 ```
 
 - `agent` 取 `attractions`、`weather`、`hotels` 或 `planner`。
-- `content` 保存该轮模型正文，`tool_calls` 保存工具名、参数和调用 ID。
+- `content` 保存该轮模型正文，`tool_calls` 只保存工具名和调用 ID，不保存可能含密钥的参数。
 - `reasoning` 只保存供应商公开返回的推理；没有返回就存 `null`，不伪造、不补写隐藏推理。
-- 当前 `PlanResult` 不包含推理内容，后续需要增加一个轨迹记录回调，把公开推理和模型调用写入这张表。
+- `PlanResult` 不包含推理内容；保存生成时由回调采集供应商实际返回的公开推理和正文。
 
 ## 索引
 
@@ -197,8 +197,8 @@ create index tb_model_call_run_idx
 | `PlanResult.reply` | `tb_plan_revision.reply` |
 | `PlanResult.research[].summary` | `tb_research_report.summary` |
 | `PlanResult.research[].evidence` | `tb_tool_evidence` |
-| 模型公开推理 | `tb_model_call.reasoning`，当前尚未采集 |
-| 模型正文与工具调用 | `tb_model_call.content` / `tool_calls`，当前尚未写入数据库 |
+| 模型公开推理 | `tb_model_call.reasoning`；供应商未返回时为 `null` |
+| 模型正文与工具调用 | `tb_model_call.content` / `tool_calls`；工具参数不保存 |
 
 ## 当前不建的表
 
