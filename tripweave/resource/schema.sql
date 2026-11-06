@@ -1,118 +1,139 @@
--- TripWeave 初始数据库结构（PostgreSQL）
--- 状态：设计稿，尚未接入应用；脚本可重复执行，不包含删除语句。
+-- TripWeave 初始数据库结构（MySQL 8.0.16+）
+-- 说明：
+--   1. 字符串列按用途改为 VARCHAR，便于索引；长文本用 TEXT。
+--   2. jsonb -> JSON；timestamptz -> DATETIME(6)（存 UTC）。
+--   3. 索引、外键、CHECK 全部内联在 CREATE TABLE 中，保证脚本可重复执行。
+--   4. MySQL DDL 隐式提交，事务无法回滚建表，因此不写 START TRANSACTION。
+--   5. 用户名唯一性依赖 utf8mb4_0900_ai_ci（大小写不敏感），已显式指定排序规则。
 
-begin;
+SET NAMES utf8mb4;
 
--- 用户只保留用户名和密码登录，不建 token/session 表。
-create table if not exists tb_user (
-    id            bigserial primary key,
-    username      text not null,
-    password_hash text not null,
-    created_at    timestamptz not null default now(),
-    last_login_at timestamptz
-);
+-- 用户表
+CREATE TABLE IF NOT EXISTS tb_user (
+    id            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    username      VARCHAR(255) NOT NULL                COMMENT '用户名，默认排序规则下大小写不敏感唯一',
+    password_hash VARCHAR(255) NOT NULL                COMMENT '密码哈希，不存明文',
+    created_at    DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '创建时间',
+    last_login_at DATETIME(6)  NULL                    COMMENT '最近登录时间，可为空',
+    PRIMARY KEY (id),
+    UNIQUE KEY tb_user_username_idx (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+  COMMENT='用户表，仅保存用户名和密码哈希，登录态不落库';
 
--- 旅行计划文件夹。
-create table if not exists tb_project (
-    id                bigserial primary key,
-    user_id           bigint not null references tb_user(id) on delete cascade,
-    name              text not null,
-    destination       text not null,
-    -- 业务层校验最终版本；不建循环外键。
-    final_revision_id bigint,
-    created_at        timestamptz not null default now(),
-    updated_at        timestamptz not null default now()
-);
+-- 旅行计划文件夹
+CREATE TABLE IF NOT EXISTS tb_project (
+    id                BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    user_id           BIGINT       NOT NULL                COMMENT '所属用户，用户删除时级联删除',
+    name              VARCHAR(255) NOT NULL                COMMENT '项目名称',
+    destination       VARCHAR(255) NOT NULL                COMMENT '目的地',
+    final_revision_id BIGINT       NULL                    COMMENT '最终版本修订 ID，逻辑关联 tb_plan_revision.id，由业务层校验；不建外键以避免循环引用',
+    created_at        DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '创建时间',
+    updated_at        DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '更新时间',
+    PRIMARY KEY (id),
+    KEY tb_project_user_updated_idx (user_id, updated_at DESC),
+    CONSTRAINT fk_project_user FOREIGN KEY (user_id)
+        REFERENCES tb_user (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+  COMMENT='旅行计划文件夹/项目表';
 
--- 每次生成尝试；失败记录也保留。
-create table if not exists tb_generation_run (
-    id            bigserial primary key,
-    project_id    bigint references tb_project(id) on delete set null,
-    user_id       bigint not null references tb_user(id) on delete cascade,
-    request       jsonb not null,
-    status        text not null check (status in ('running', 'succeeded', 'failed')),
-    error_stage   text,
-    error_code    text,
-    error_message text,
-    model_name    text not null,
-    map_provider  text not null,
-    started_at    timestamptz not null default now(),
-    finished_at   timestamptz,
-    duration_ms   int
-);
+-- 每次生成尝试（成功与失败均保留）
+CREATE TABLE IF NOT EXISTS tb_generation_run (
+    id            BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    project_id    BIGINT       NULL                    COMMENT '关联项目；项目删除时置空，以保留历史运行记录',
+    user_id       BIGINT       NOT NULL                COMMENT '所属用户，用户删除时级联删除',
+    request       JSON         NOT NULL                COMMENT '本次生成请求 JSON',
+    status        VARCHAR(20)  NOT NULL                COMMENT '运行状态：running / succeeded / failed',
+    error_stage   VARCHAR(100) NULL                    COMMENT '失败阶段，可为空',
+    error_code    VARCHAR(100) NULL                    COMMENT '失败错误码，可为空',
+    error_message TEXT         NULL                    COMMENT '失败错误信息，可为空',
+    model_name    VARCHAR(255) NOT NULL                COMMENT '使用的模型名称',
+    map_provider  VARCHAR(100) NOT NULL                COMMENT '地图服务提供方',
+    started_at    DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '开始时间',
+    finished_at   DATETIME(6)  NULL                    COMMENT '结束时间，可为空',
+    duration_ms   INT          NULL                    COMMENT '耗时（毫秒），可为空',
+    PRIMARY KEY (id),
+    KEY tb_generation_run_project_idx (project_id, started_at DESC),
+    CONSTRAINT fk_run_project FOREIGN KEY (project_id)
+        REFERENCES tb_project (id) ON DELETE SET NULL,
+    CONSTRAINT fk_run_user FOREIGN KEY (user_id)
+        REFERENCES tb_user (id) ON DELETE CASCADE,
+    CONSTRAINT chk_run_status CHECK (status IN ('running', 'succeeded', 'failed'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+  COMMENT='每次行程生成尝试记录，成功与失败均保留';
 
--- 行程版本快照；不拆每日活动和地点表。
-create table if not exists tb_plan_revision (
-    id                bigserial primary key,
-    project_id        bigint not null references tb_project(id) on delete cascade,
-    number            int not null,
-    title             text not null,
-    schema_version    int not null default 1,
-    trip              jsonb not null,
-    places            jsonb not null default '[]'::jsonb,
-    warnings          jsonb not null default '[]'::jsonb,
-    reply             text,
-    generation_run_id bigint references tb_generation_run(id) on delete set null,
-    created_at        timestamptz not null default now()
-);
+-- 行程版本快照
+CREATE TABLE IF NOT EXISTS tb_plan_revision (
+    id                BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    project_id        BIGINT       NOT NULL                COMMENT '所属项目，项目删除时级联删除',
+    number            INT          NOT NULL                COMMENT '项目内版本号，与 project_id 组合唯一',
+    title             VARCHAR(255) NOT NULL                COMMENT '版本标题',
+    schema_version    INT          NOT NULL DEFAULT 1      COMMENT '行程 JSON 结构版本，默认 1',
+    trip              JSON         NOT NULL                COMMENT '完整行程数据 JSON',
+    places            JSON         NOT NULL DEFAULT (JSON_ARRAY()) COMMENT '地点数据 JSON 数组，默认空数组',
+    warnings          JSON         NOT NULL DEFAULT (JSON_ARRAY()) COMMENT '警告信息 JSON 数组，默认空数组',
+    reply             TEXT         NULL                    COMMENT '回复文本，可为空',
+    generation_run_id BIGINT       NULL                    COMMENT '关联生成运行；运行记录删除时置空',
+    created_at        DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '创建时间',
+    PRIMARY KEY (id),
+    UNIQUE KEY tb_plan_revision_project_number_idx (project_id, number),
+    CONSTRAINT fk_revision_project FOREIGN KEY (project_id)
+        REFERENCES tb_project (id) ON DELETE CASCADE,
+    CONSTRAINT fk_revision_run FOREIGN KEY (generation_run_id)
+        REFERENCES tb_generation_run (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+  COMMENT='行程版本快照，行程主体以 JSON 保存，不拆每日活动和地点表';
 
--- 每个研究主题的摘要与警告。
-create table if not exists tb_research_report (
-    id         bigserial primary key,
-    run_id     bigint not null references tb_generation_run(id) on delete cascade,
-    topic      text not null check (topic in ('attractions', 'weather', 'hotels')),
-    summary    text not null,
-    warnings   jsonb not null default '[]'::jsonb,
-    created_at timestamptz not null default now()
-);
+-- 每个研究主题的摘要与警告
+CREATE TABLE IF NOT EXISTS tb_research_report (
+    id         BIGINT      NOT NULL AUTO_INCREMENT COMMENT '主键',
+    run_id     BIGINT      NOT NULL                COMMENT '关联生成运行，运行删除时级联删除',
+    topic      VARCHAR(50) NOT NULL                COMMENT '研究主题：attractions / weather / hotels',
+    summary    TEXT        NOT NULL                COMMENT '该主题摘要',
+    warnings   JSON        NOT NULL DEFAULT (JSON_ARRAY()) COMMENT '警告信息 JSON 数组，默认空数组',
+    created_at DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '创建时间',
+    PRIMARY KEY (id),
+    UNIQUE KEY tb_research_report_run_topic_idx (run_id, topic),
+    CONSTRAINT fk_report_run FOREIGN KEY (run_id)
+        REFERENCES tb_generation_run (id) ON DELETE CASCADE,
+    CONSTRAINT chk_report_topic CHECK (topic IN ('attractions', 'weather', 'hotels'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+  COMMENT='每次生成运行中每个研究主题的摘要与警告';
 
--- 地图工具原文；保留来源与接收时间。
-create table if not exists tb_tool_evidence (
-    id                 bigserial primary key,
-    report_id          bigint not null references tb_research_report(id) on delete cascade,
-    sequence           int not null,
-    tool               text not null,
-    tool_call_id       text,
-    content            text not null,
-    structured_content jsonb,
-    fetched_at         timestamptz not null
-);
+-- 地图工具原文证据
+CREATE TABLE IF NOT EXISTS tb_tool_evidence (
+    id                 BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    report_id          BIGINT       NOT NULL                COMMENT '关联研究报告，报告删除时级联删除',
+    sequence           INT          NOT NULL                COMMENT '同一报告内的证据顺序',
+    tool               VARCHAR(100) NOT NULL                COMMENT '工具名称',
+    tool_call_id       VARCHAR(255) NULL                    COMMENT '工具调用 ID，可为空',
+    content            TEXT         NOT NULL                COMMENT '工具返回原文',
+    structured_content JSON         NULL                    COMMENT '结构化内容 JSON，可为空',
+    fetched_at         DATETIME(6)  NOT NULL                COMMENT '接收/抓取时间',
+    PRIMARY KEY (id),
+    KEY tb_tool_evidence_report_idx (report_id, sequence),
+    CONSTRAINT fk_evidence_report FOREIGN KEY (report_id)
+        REFERENCES tb_research_report (id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+  COMMENT='地图工具返回原文及结构化内容，作为研究证据';
 
--- 每轮模型调用；reasoning 只存供应商公开返回的内容。
-create table if not exists tb_model_call (
-    id          bigserial primary key,
-    run_id      bigint not null references tb_generation_run(id) on delete cascade,
-    agent       text not null check (agent in ('attractions', 'weather', 'hotels', 'planner')),
-    call_index  int not null,
-    model_name  text not null,
-    provider    text,
-    reasoning   text,
-    content     text,
-    tool_calls  jsonb,
-    started_at  timestamptz not null default now(),
-    finished_at timestamptz,
-    duration_ms int
-);
-
-create unique index if not exists tb_user_username_idx
-    on tb_user (lower(username));
-
-create index if not exists tb_project_user_updated_idx
-    on tb_project (user_id, updated_at desc);
-
-create unique index if not exists tb_plan_revision_project_number_idx
-    on tb_plan_revision (project_id, number);
-
-create index if not exists tb_generation_run_project_idx
-    on tb_generation_run (project_id, started_at desc);
-
-create unique index if not exists tb_research_report_run_topic_idx
-    on tb_research_report (run_id, topic);
-
-create index if not exists tb_tool_evidence_report_idx
-    on tb_tool_evidence (report_id, sequence);
-
-create unique index if not exists tb_model_call_run_agent_call_idx
-    on tb_model_call (run_id, agent, call_index);
-
-commit;
+-- 每轮模型调用记录
+CREATE TABLE IF NOT EXISTS tb_model_call (
+    id          BIGINT       NOT NULL AUTO_INCREMENT COMMENT '主键',
+    run_id      BIGINT       NOT NULL                COMMENT '关联生成运行，运行删除时级联删除',
+    agent       VARCHAR(50)  NOT NULL                COMMENT '调用代理：attractions / weather / hotels / planner',
+    call_index  INT          NOT NULL                COMMENT '同一代理下的调用序号',
+    model_name  VARCHAR(255) NOT NULL                COMMENT '模型名称',
+    provider    VARCHAR(100) NULL                    COMMENT '模型供应商，可为空',
+    reasoning   TEXT         NULL                    COMMENT '推理内容，仅存供应商公开返回的部分',
+    content     TEXT         NULL                    COMMENT '模型输出内容',
+    tool_calls  JSON         NULL                    COMMENT '工具调用信息 JSON',
+    started_at  DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '开始时间',
+    finished_at DATETIME(6)  NULL                    COMMENT '结束时间，可为空',
+    duration_ms INT          NULL                    COMMENT '耗时（毫秒），可为空',
+    PRIMARY KEY (id),
+    UNIQUE KEY tb_model_call_run_agent_call_idx (run_id, agent, call_index),
+    CONSTRAINT fk_model_call_run FOREIGN KEY (run_id)
+        REFERENCES tb_generation_run (id) ON DELETE CASCADE,
+    CONSTRAINT chk_model_call_agent CHECK (agent IN ('attractions', 'weather', 'hotels', 'planner'))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
+  COMMENT='每轮模型调用记录';

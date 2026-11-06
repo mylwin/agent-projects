@@ -23,7 +23,11 @@ type AuthContextValue = {
   status: AuthStatus;
   serviceIssue: string | null;
   login: (username: string, password: string) => Promise<void>;
-  register: (username: string, password: string) => Promise<void>;
+  register: (
+    username: string,
+    password: string,
+    confirmPassword: string,
+  ) => Promise<void>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<void>;
 };
@@ -82,11 +86,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setServiceIssue(null);
   }, []);
 
-  const register = useCallback(async (username: string, password: string) => {
-    const session = await registerRequest(username, password);
-    setUser(session);
-    setServiceIssue(null);
-  }, []);
+  const register = useCallback(
+    async (username: string, password: string, confirmPassword: string) => {
+      const session = await registerRequest(
+        username,
+        password,
+        confirmPassword,
+      );
+      setUser(session);
+      setServiceIssue(null);
+    },
+    [],
+  );
 
   const logout = useCallback(async () => {
     try {

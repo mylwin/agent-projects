@@ -12,9 +12,14 @@ if __package__ in {None, ""}:
     # 直接执行本文件时补充项目根目录，保证 backend 包可导入。
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from backend.api.exception_handlers import register_exception_handlers  # noqa: E402
-from backend.api.routes import health, plans  # noqa: E402
-from backend.config.env import load_env  # noqa: E402
+from backend.api.exception_handlers import register_exception_handlers
+from backend.api.middleware import register_auth_middleware
+from backend.api.routes import auth, health, plans
+from backend.config.database import (
+    create_database_engine,
+    create_session_factory,
+)
+from backend.config.env import load_env
 
 
 @asynccontextmanager
@@ -27,13 +32,25 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     """
     load_env()
     app.state.generation_limit = asyncio.Semaphore(2)
-    yield
+    app.state.database_engine = create_database_engine()
+    app.state.database_session_factory = (
+        create_session_factory(app.state.database_engine)
+        if app.state.database_engine is not None
+        else None
+    )
+    try:
+        yield
+    finally:
+        if app.state.database_engine is not None:
+            await app.state.database_engine.dispose()
 
 
 app = FastAPI(title="TripWeave API", version="0.1.0", lifespan=lifespan)
+app.include_router(auth.router, prefix="/api")
 app.include_router(health.router, prefix="/api")
 app.include_router(plans.router, prefix="/api")
 register_exception_handlers(app)
+register_auth_middleware(app)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,8 @@
 # 数据库设计
 
-状态：设计稿，尚未实现。当前后端没有数据库，前端计划仍保存在 localStorage。
+状态：已提供可选的 MySQL 连接配置，用户注册和登录已接入，计划业务读写尚未实现；前端计划仍保存在 localStorage。
+
+在项目根目录 `.env` 中设置 `DB_NAME`、`DB_USER`、`DB_PASSWORD`，并按需设置 `DB_HOST` 和 `DB_PORT`（默认分别为 `127.0.0.1` 和 `3306`）。先创建 MySQL 8.0.16+ 数据库并执行初始化脚本。引擎在首次使用时才连接，应用关闭时释放连接池；认证接口使用数据库；启动成功不代表连接验证成功。未设置 `DB_NAME` 时不启用连接。
 
 初始化脚本见 [resource/schema.sql](../resource/schema.sql)。接口请求/响应契约见 [06-api-schema.md](06-api-schema.md)。
 
@@ -29,7 +31,7 @@ tb_research_report 1 ── n tb_tool_evidence
 tb_generation_run 1 ── n tb_model_call
 ```
 
-建议使用 PostgreSQL；JSONB、UUID/时间类型和约束更直接。单机原型也可以用 SQLite，但 JSON 字段会退化为 TEXT，复杂查询能力较弱。
+初始化脚本和当前模型使用 MySQL；下列字段描述保留了早期设计的 PostgreSQL 类型，具体以初始化脚本为准。
 
 ## 1. tb_user
 
@@ -41,7 +43,7 @@ created_at     timestamptz not null default now()
 last_login_at  timestamptz
 ```
 
-- 只做用户名和密码登录；密码使用 Argon2id 或 bcrypt 哈希，禁止明文。
+- 只做用户名和密码登录；密码使用带随机盐的 scrypt 哈希，禁止明文。
 - 不建 `tb_auth_session`、refresh token、JWT 黑名单等表。
 - 登录态由接口层处理，可以使用签名 Cookie 或 HTTP Basic；数据库只负责用户身份。
 - `username` 建议加 `lower(username)` 唯一索引，避免大小写重复。
@@ -209,8 +211,8 @@ create index tb_model_call_run_idx
 
 ## 后续实现顺序
 
-1. 选择数据库和迁移工具（PostgreSQL + Alembic 优先）。
-2. 增加用户注册/登录，密码哈希与简单登录态。
+1. 确定数据库迁移工具并接入版本管理。
+2. 用户注册/登录已实现，后续可根据需求增加登录态撤销。
 3. 增加项目、版本和生成结果的保存接口。
 4. 增加生成轨迹记录：研究摘要、工具证据、公开推理。
 5. 前端从 localStorage 迁移到服务端前，先确定多端同步和冲突策略。

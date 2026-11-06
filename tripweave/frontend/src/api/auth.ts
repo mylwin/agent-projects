@@ -4,7 +4,7 @@
  * 接口约定见 docs/07-api-reference.md：
  * - GET  /api/auth/me       已登录返回 {success:true,data:{id,username}}，未登录返回 401。
  * - POST /api/auth/login    提交 {username,password}，成功后建立登录态。
- * - POST /api/auth/register 提交 {username,password}，成功即建立登录态。
+ * - POST /api/auth/register 提交 {username,password,confirm_password}，成功即建立登录态。
  * - POST /api/auth/logout   清除登录态，返回 {success:true,data:null}。
  */
 
@@ -82,9 +82,7 @@ async function read<T>(response: Response): Promise<T> {
   if (!response.ok || !isRecord(body) || body.success !== true) {
     const error = isRecord(body) && isRecord(body.error) ? body.error : null;
     const code =
-      typeof error?.code === "string"
-        ? error.code
-        : `http_${response.status}`;
+      typeof error?.code === "string" ? error.code : `http_${response.status}`;
     const message =
       typeof error?.message === "string" ? error.message : serviceMessage;
     throw new AuthError(code, message);
@@ -128,16 +126,22 @@ export async function login(
  *
  * @param username - 已去除首尾空白的用户名。
  * @param password - 原始密码，不做裁剪。
+ * @param confirmPassword - 再次输入的密码，不做裁剪。
  * @returns 注册后登录的用户。
  * @throws AuthError 用户名已被占用或服务不可用时抛出。
  */
 export async function register(
   username: string,
   password: string,
+  confirmPassword: string,
 ): Promise<AuthUser> {
   const response = await send("/api/auth/register", {
     method: "POST",
-    body: JSON.stringify({ username, password }),
+    body: JSON.stringify({
+      username,
+      password,
+      confirm_password: confirmPassword,
+    }),
   });
   return read<AuthUser>(response);
 }

@@ -6,7 +6,7 @@
 2. [Agent 与 MCP 运行](02-agent.md)：配置、调用上限、结果和验证边界。
 3. [前端数据](03-frontend-data.md)：行程、研究证据、坐标和接入差异。
 4. [Agent 执行函数流程图](04-flowcharts/01-agent-execution.html)：从 CLI、MCP 连接、三个研究 Agent 到 Planner 校验与结果输出，附研究内部步骤、回调与异常说明。
-5. [数据库设计](05-database.md)：用户登录、计划版本、生成轨迹和模型推理的存储设计（尚未实现）。
+5. [数据库设计](05-database.md)：用户登录、计划版本、生成轨迹和模型推理的存储设计。
 6. [接口请求与响应 Schema](06-api-schema.md)：登录、计划、生成结果和轨迹的 Pydantic 契约与代码落点（尚未实现）。
 7. [接口文档](07-api-reference.md)：已实现与计划中的 HTTP 接口、参数、请求示例和响应示例。
 
@@ -22,7 +22,7 @@
 - 自动验证：真实 MCP 初始化、工具发现/调用、多 Agent 工具循环与模型 SDK 均由离线替身覆盖。
 - 真实联调：沿用用户暂不调用真实服务的选择，尚未验证在线服务权限与响应差异。
 - 后端接口：薄 FastAPI 入口与统一成功/失败响应已实现，真实服务联调未执行。
-- 数据库：设计见 [05-database.md](05-database.md)，尚未实现；当前前端继续使用 localStorage，服务端保存和前端接入未开始。
-- 接口 Schema：设计见 [06-api-schema.md](06-api-schema.md)，尚未实现；当前只有 health 和同步生成接口。
+- 数据库：用户认证已接入 MySQL；计划仍保存在前端 localStorage。
+- 接口 Schema：设计见 [06-api-schema.md](06-api-schema.md)，尚未实现；当前已有 health、同步生成和认证接口。
 
 旧单 Agent 版本已作为 Git 基线提交；更早的资料备份仍在忽略的 tmp/refactor/2026-11-05/。

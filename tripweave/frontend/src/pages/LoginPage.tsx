@@ -101,18 +101,19 @@ export default function LoginPage() {
     if (submitting) return;
     const name = username.trim();
     let problem: { message: string; field: Field } | null = null;
-    if (!name) problem = { message: "请填写用户名。", field: "username" };
-    else if (registerMode) {
-      if (name.length > 50)
-        problem = { message: "用户名不能超过 50 个字符。", field: "username" };
-      else if (password.length < 8)
-        problem = { message: "密码至少需要 8 个字符。", field: "password" };
-      else if (password.length > 128)
-        problem = { message: "密码不能超过 128 个字符。", field: "password" };
-      else if (password !== confirm)
-        problem = { message: "两次输入的密码不一致。", field: "confirm" };
-    } else if (!password)
-      problem = { message: "请填写密码。", field: "password" };
+    const nameLength = Array.from(name).length;
+    const passwordLength = Array.from(password).length;
+    if (nameLength < 2 || nameLength > 50)
+      problem = { message: "用户名需要 2 至 50 个字符。", field: "username" };
+    else if (passwordLength < 6 || passwordLength > 72)
+      problem = { message: "密码需要 6 至 72 个字符。", field: "password" };
+    else if (new TextEncoder().encode(password).length > 72)
+      problem = {
+        message: "密码的 UTF-8 编码不能超过 72 字节。",
+        field: "password",
+      };
+    else if (registerMode && password !== confirm)
+      problem = { message: "两次输入的密码不一致。", field: "confirm" };
 
     if (problem) {
       setError(problem.message);
@@ -125,7 +126,7 @@ export default function LoginPage() {
     setErrorField(null);
     setSubmitting(true);
     try {
-      if (registerMode) await register(name, password);
+      if (registerMode) await register(name, password, confirm);
       else await login(name, password);
       navigate(target, { replace: true });
     } catch (error) {
@@ -213,7 +214,6 @@ export default function LoginPage() {
                   name="username"
                   autoComplete="username"
                   autoFocus
-                  maxLength={50}
                   value={username}
                   onChange={(event) => {
                     setUsername(event.target.value);
@@ -237,14 +237,19 @@ export default function LoginPage() {
                   id="login-password"
                   name="password"
                   type={visible ? "text" : "password"}
-                  autoComplete={registerMode ? "new-password" : "current-password"}
-                  maxLength={128}
+                  autoComplete={
+                    registerMode ? "new-password" : "current-password"
+                  }
                   value={password}
                   onChange={(event) => {
                     setPassword(event.target.value);
                     clearError();
                   }}
-                  placeholder={registerMode ? "至少 8 个字符" : "输入你的密码"}
+                  placeholder={
+                    registerMode
+                      ? "至少 6 个字符，最多 72 字节"
+                      : "输入你的密码"
+                  }
                   aria-invalid={errorField === "password"}
                   aria-describedby={error ? "auth-error" : undefined}
                 />
@@ -276,7 +281,6 @@ export default function LoginPage() {
                     name="confirm"
                     type={visible ? "text" : "password"}
                     autoComplete="new-password"
-                    maxLength={128}
                     value={confirm}
                     onChange={(event) => {
                       setConfirm(event.target.value);

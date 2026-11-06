@@ -4,8 +4,8 @@
 
 - Base URL：`http://127.0.0.1:8000`
 - 请求类型：`application/json`
-- 已实现：`GET /api/health`、`POST /api/plans/generate`（当前无数据库、无登录）
-- 计划中：登录、计划列表/详情、版本、最终方案、持久化生成、生成轨迹
+- 已实现：健康检查、同步生成和用户认证；生成结果尚不写入数据库
+- 计划中：计划列表/详情、版本、最终方案、持久化生成、生成轨迹
 
 示例中的地点、日期、费用和模型输出仅用于说明结构，不代表真实查询结果。
 
@@ -43,10 +43,10 @@
 | --- | --- | --- | --- |
 | 已实现 | GET | `/api/health` | 健康检查与公开配置 |
 | 已实现 | POST | `/api/plans/generate` | 生成行程，当前不保存到数据库 |
-| 计划中 | POST | `/api/auth/register` | 用户注册 |
-| 计划中 | POST | `/api/auth/login` | 用户名/密码登录 |
-| 计划中 | POST | `/api/auth/logout` | 退出登录 |
-| 计划中 | GET | `/api/auth/me` | 当前登录用户 |
+| 已实现 | POST | `/api/auth/register` | 用户注册 |
+| 已实现 | POST | `/api/auth/login` | 用户名/密码登录 |
+| 已实现 | POST | `/api/auth/logout` | 退出登录 |
+| 已实现 | GET | `/api/auth/me` | 当前登录用户 |
 | 计划中 | GET | `/api/projects` | 当前用户的计划列表 |
 | 计划中 | GET | `/api/projects/{project_id}` | 计划详情和版本列表 |
 | 计划中 | GET | `/api/projects/{project_id}/revisions/{revision_id}` | 单个版本完整结果 |
@@ -306,27 +306,35 @@
 
 ---
 
-## 3. 登录接口（计划中）
+## 3. 登录接口
 
-登录只校验用户名和密码，不返回 token；服务端登录成功后写入签名 Cookie。以下接口尚未实现。
+注册和登录成功后写入有效期为 7 天的签名 Cookie。配置数据库及至少 32 字节的 `AUTH_SECRET_KEY`；生产环境使用随机密钥、HTTPS 并设置 `AUTH_COOKIE_SECURE=true`。Cookie 不包含密码，退出只清除浏览器 Cookie，无法撤销已复制的 Cookie。
 
 ### POST `/api/auth/register`
 
-请求：
+成功返回 HTTP 201。密码使用随机盐和 scrypt 哈希后保存。
+
+创建用户并建立登录态。无需已有登录态；请求使用 `Content-Type: application/json`，前端携带 Cookie（`credentials: include`）。
+
+请求体：
 
 ```json
 {
   "username": "mylwin",
-  "password": "example-pass-123"
+  "password": "example-pass-123",
+  "confirm_password": "example-pass-123"
 }
 ```
 
 | 参数 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
-| `username` | string | 是 | 1–50 字符，唯一 |
-| `password` | string | 是 | 8–128 字符，仅用于哈希，不返回 |
+| `username` | string | 是 | 前端去除首尾空白后要求 2–50 个字符；用户名需唯一 |
+| `password` | string | 是 | 6–72 个字符，UTF-8 编码最多 72 字节，不去除空白；不在响应中返回 |
+| `confirm_password` | string | 是 | 与密码一致，不去除空白 |
 
-成功响应：
+注册表单在前端检查两次密码是否一致，后端请求模型也会校验；字符长度按 Unicode 码点计算。
+
+成功响应示例（前端期望 `success: true`，并读取 `data.id` 和 `data.username`）：
 
 ```json
 {
@@ -338,11 +346,11 @@
 }
 ```
 
-错误：409 `username_taken`。
+成功后设置签名登录 Cookie，供后续请求使用，格式见下方登录接口。用户名已存在时返回 409 `username_taken`，请求校验失败按通用格式返回 422 `invalid_request`。前端从失败响应读取 `error.code` 和 `error.message`。
 
 ### POST `/api/auth/login`
 
-请求体同注册。成功后响应：
+请求体包含 `username` 和 `password`。成功后响应：
 
 ```json
 {
@@ -610,7 +618,7 @@ Set-Cookie: tripweave_session=<signed-value>; HttpOnly; SameSite=Lax; Path=/
 
 ## 8. 当前边界
 
-- 当前只有健康检查和同步生成接口，无登录、无数据库。
-- 计划、版本、登录和轨迹接口均处于设计阶段，尚未实现。
+- 用户认证使用 MySQL；同步生成接口不保存结果。
+- 计划、版本和轨迹接口仍处于设计阶段。
 - 生成接口是同步的，可能持续数十秒到数分钟；暂无 SSE、异步任务或取消接口。
 - 暂无局部修改、服务端对话、分享协作和 token 刷新/撤销接口。

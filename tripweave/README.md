@@ -62,7 +62,7 @@ uv run uvicorn backend.api.app:app --host 127.0.0.1 --port 8000 --reload --reloa
 成功返回 `{success: true, data}`，失败返回 `{success: false, error}`。
 错误码包括 `invalid_request`、`planning_rejected`、`upstream_failed`、
 `planning_timeout`、`busy`、`configuration_error`、`internal_error`、`not_found` 和 `http_error`。
-接口尚未加鉴权、数据库或异步任务，默认只绑定回环地址。
+认证接口使用 MySQL 和签名 Cookie；行程生成接口尚未加鉴权或异步任务，默认只绑定回环地址。
 
 ## 离线检查
 
