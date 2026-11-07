@@ -121,6 +121,7 @@ async def generate(
                         request,
                         settings.model_name,
                         settings.map_provider,
+                        settings.planner_timeout_seconds,
                     )
                 trace = stream or (
                     ModelTrace(settings.model_name, secrets) if save else None
@@ -138,7 +139,7 @@ async def generate(
                 stage = "持久化"
                 if stream:
                     stream.progress("正在保存行程和研究资料")
-                saved = await saved_generation.save_result(
+                saved, _ = await saved_generation.save_result(
                     factory,
                     user.id,
                     request.project_id,
@@ -157,12 +158,12 @@ async def generate(
                         )
                 raise
             except Exception as exc:
-                if stage == "持久化":
-                    error = ApiException.internal()
-                    code = "save_failed"
-                elif isinstance(exc, ApiException):
+                if isinstance(exc, ApiException):
                     error = exc
                     code = error.error.code
+                elif stage == "持久化":
+                    error = ApiException.internal()
+                    code = "save_failed"
                 elif isinstance(exc, TimeoutError):
                     error = ApiException.timeout()
                     code = error.error.code

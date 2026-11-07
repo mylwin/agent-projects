@@ -2,9 +2,10 @@
 
 from datetime import UTC, datetime
 
-from sqlalchemy import delete, func, select
+from sqlalchemy import delete, func, or_, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.crud.conversation import expire_running_turns
 from backend.models.conversation_turn import ConversationTurn
 from backend.models.generation_run import GenerationRun
 from backend.models.model_call import ModelCall
@@ -178,8 +179,40 @@ async def lock_project(
     )
 
 
-async def has_active_request(db: AsyncSession, project_id: int) -> bool:
-    """检查项目是否仍有生成或对话请求，避免并发编辑、删除。"""
+async def recover_project_requests(
+    db: AsyncSession, project_id: int, now: datetime
+) -> None:
+    """持有项目锁时回收超时请求；无截止时间的旧运行视为已中断。"""
+    await db.execute(
+        update(GenerationRun)
+        .where(
+            GenerationRun.project_id == project_id,
+            GenerationRun.status == "running",
+            or_(GenerationRun.deadline_at <= now, GenerationRun.deadline_at.is_(None)),
+        )
+        .values(
+            status="failed",
+            error_code="generation_interrupted",
+            error_stage="任务恢复",
+            error_message="生成已中断，请重新发起",
+            finished_at=now,
+        )
+    )
+    await expire_running_turns(db, project_id, now)
+
+
+async def has_active_request(
+    db: AsyncSession, project_id: int, *, exclude_turn_id: int | None = None
+) -> bool:
+    """持有项目锁时先回收失效请求，再检查生成与非自身对话是否占用项目。"""
+    now = datetime.now(UTC).replace(tzinfo=None)
+    await recover_project_requests(db, project_id, now)
+    turns = select(ConversationTurn.id).where(
+        ConversationTurn.project_id == project_id,
+        ConversationTurn.status == "running",
+    )
+    if exclude_turn_id is not None:
+        turns = turns.where(ConversationTurn.id != exclude_turn_id)
     return (
         await db.scalar(
             select(GenerationRun.id)
@@ -187,14 +220,7 @@ async def has_active_request(db: AsyncSession, project_id: int) -> bool:
                 GenerationRun.project_id == project_id,
                 GenerationRun.status == "running",
             )
-            .union_all(
-                select(ConversationTurn.id).where(
-                    ConversationTurn.project_id == project_id,
-                    ConversationTurn.status == "running",
-                    ConversationTurn.deadline_at
-                    > datetime.now(UTC).replace(tzinfo=None),
-                )
-            )
+            .union_all(turns)
             .limit(1)
         )
         is not None

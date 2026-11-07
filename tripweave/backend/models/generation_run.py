@@ -42,6 +42,7 @@ class GenerationRun(Base):
     started_at: Mapped[datetime] = mapped_column(
         DATETIME(fsp=6), server_default=text("CURRENT_TIMESTAMP(6)")
     )
+    deadline_at: Mapped[datetime | None] = mapped_column(DATETIME(fsp=6), nullable=True)
     finished_at: Mapped[datetime | None] = mapped_column(DATETIME(fsp=6), nullable=True)
     duration_ms: Mapped[int | None] = mapped_column(Integer, nullable=True)
 

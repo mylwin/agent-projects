@@ -60,13 +60,12 @@ async def list_turns(
     db: AsyncSession, user_id: int, project_id: int, *, recover: bool = True
 ) -> list[ConversationTurnData]:
     """返回当前用户项目最近 50 轮对话；读取时顺带回收超时的运行中轮次。"""
-    if await project_crud.get_project(db, user_id, project_id) is None:
+    if await project_crud.lock_project(db, user_id, project_id) is None:
         raise ApiException(
             404, ApiError(code="project_not_found", message="计划不存在")
         )
     if recover:
-        # 进程异常退出后没有代码写终态，刷新页面时应看到失败而不是一直“处理中”。
-        await conversation_crud.expire_running_turns(
+        await project_crud.recover_project_requests(
             db, project_id, saved_generation.utc_now()
         )
     rows = await conversation_crud.list_turns(db, user_id, project_id, HISTORY_LIMIT)
@@ -88,9 +87,6 @@ async def prepare_turn(
                 404, ApiError(code="project_not_found", message="计划不存在")
             )
         now = saved_generation.utc_now()
-        # 删除超时未完成对话
-        await conversation_crud.expire_running_turns(db, project_id, now)
-        # 如果正在处理请求，则返回错误
         if await project_crud.has_active_request(db, project_id):
             raise ApiException(
                 409,
@@ -155,6 +151,8 @@ async def finish_turn(
             )
         if turn.status != "running":
             return ConversationTurnData.model_validate(turn)
+        if status == "succeeded" and turn.deadline_at <= saved_generation.utc_now():
+            status, error_code = "failed", "conversation_interrupted"
         await conversation_crud.save_turn_result(
             db,
             turn,
@@ -242,7 +240,6 @@ async def reply(
     """一轮真实流式交流；按授权绑定局部调整或完整规划工具。"""
     text = ""
     run_id: int | None = None
-    revision_id: int | None = None
     secrets = (settings.model_api_key, settings.amap_api_key, settings.baidu_api_key)
     try:
         if limit.locked():
@@ -294,6 +291,8 @@ async def reply(
                             trip_request,
                             settings.model_name,
                             settings.map_provider,
+                            settings.planner_timeout_seconds,
+                            turn_id=context.turn_id,
                         )
                         result = await generate_trip(
                             trip_request,
@@ -302,7 +301,7 @@ async def reply(
                             callback=stream,
                         )
                         stream.progress("正在保存完整新版本")
-                        saved = await saved_generation.save_result(
+                        _, turn = await saved_generation.save_result(
                             factory,
                             user_id,
                             project_id,
@@ -311,9 +310,10 @@ async def reply(
                             run_id,
                             result,
                             stream.calls,
+                            turn_id=context.turn_id,
                         )
-                        revision_id = saved.revision_id
-                        text = result.reply
+                        assert turn is not None
+                        return ApiSuccess(data=turn)
                     elif call["name"] == "AdjustTrip" and not request.generate:
                         try:
                             adjustment = AdjustTrip.model_validate(call["args"])
@@ -327,40 +327,27 @@ async def reply(
                             ) from None
                         stream.progress(f"正在校验第 {adjustment.day_id} 天的调整")
                         try:
-                            adjusted = await projects.save_assistant_adjustment(
+                            turn = await projects.save_assistant_adjustment(
                                 factory,
                                 user_id,
                                 project_id,
-                                request.base_revision_id,
+                                context.turn_id,
                                 adjustment,
+                                text,
                             )
                         except ValueError as exc:
                             raise ApiException(
                                 422,
                                 ApiError(code="invalid_adjustment", message=str(exc)),
                             ) from None
-                        if adjusted is None:
-                            confirmation = "当前行程已经是这个安排，没有创建新版本。"
-                        else:
-                            revision_id = adjusted.revision_id
-                            confirmation = (
-                                f"已调整第 {adjustment.day_id} 天，"
-                                f"并保存为第 {adjusted.revision_number} 版。"
-                            )
-                        text = (
-                            f"{text.strip()}\n\n{confirmation}"
-                            if text.strip()
-                            else confirmation
-                        )
+                        return ApiSuccess(data=turn)
                     else:
                         raise PlanningError(
                             "对话", ValueError("模型返回了未授权的工具调用")
                         )
                 if not text:
                     raise PlanningError("对话", ValueError("模型没有返回正文"))
-                turn = await finish_turn(
-                    factory, context.turn_id, text, "succeeded", revision_id
-                )
+                turn = await finish_turn(factory, context.turn_id, text, "succeeded")
                 return ApiSuccess(data=turn)
     except asyncio.CancelledError:
         with CancelScope(shield=True):
@@ -373,8 +360,7 @@ async def reply(
                 context.turn_id,
                 text,
                 "cancelled",
-                revision_id,
-                "conversation_cancelled",
+                error_code="conversation_cancelled",
             )
         raise
     except Exception as exc:
@@ -392,7 +378,7 @@ async def reply(
                 factory, run_id, error.error.code, "对话规划"
             )
         await finish_turn(
-            factory, context.turn_id, text, "failed", revision_id, error.error.code
+            factory, context.turn_id, text, "failed", error_code=error.error.code
         )
         logger.error("对话失败 [%s]：%s", type(exc).__name__, redact(str(exc), secrets))
         raise error from None
