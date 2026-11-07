@@ -199,19 +199,20 @@ def model_messages(context: ChatContext, request: ChatRequest) -> list[BaseMessa
             for report in context.result.research
         ],
     }
-    messages: list[BaseMessage] = [
-        SystemMessage(content=SYSTEM_PROMPT),
-        SystemMessage(
-            content="当前只读依据资料：\n" + json.dumps(evidence, ensure_ascii=False)
-        ),
-        SystemMessage(
-            content=(
+    # 部分 OpenAI 兼容供应商（如 DashScope）只接受首条 system 消息，
+    # 因此把系统规则、只读依据和版本状态合并成一条，历史消息保持 human/assistant 交替。
+    system_content = "\n\n".join(
+        (
+            SYSTEM_PROMPT,
+            "当前只读依据资料：\n" + json.dumps(evidence, ensure_ascii=False),
+            (
                 "当前依据版本是最新版本，可以按用户要求做局部调整。"
                 if context.is_latest
                 else "当前查看历史版本，只能解释和讨论，不能调整或生成新版本。"
-            )
-        ),
-    ]
+            ),
+        )
+    )
+    messages: list[BaseMessage] = [SystemMessage(content=system_content)]
     for turn in context.history[-20:]:
         if turn.status == "succeeded":
             messages.extend(
