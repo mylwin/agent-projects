@@ -25,7 +25,13 @@ from backend.models.plan_revision import PlanRevision
 from backend.models.project import Project
 from backend.models.research_report import ResearchReport
 from backend.models.tool_evidence import ToolEvidence
-from backend.schemas.conversation import ChatRequest
+from backend.schemas.conversation import (
+    ActivityAdjustment,
+    AdjustTrip,
+    ChatRequest,
+    GenerateFullPlan,
+)
+from backend.schemas.trip import Trip
 from backend.services import conversation, projects
 from backend.services.generation_stream import GenerationStream
 from backend.tests.test_api import REQUEST, make_result
@@ -186,8 +192,10 @@ def test_conversation_owner_is_checked(factory, user_id, project_id):
     asyncio.run(scenario())
 
 
-def test_real_sdk_chat_has_no_tools_and_keeps_public_context(factory, monkeypatch):
-    """真实 ChatOpenAI SDK 流式读取正文，普通问候不携带工具、不调用规划。"""
+def test_real_sdk_chat_keeps_public_context_and_binds_only_adjustment(
+    factory, monkeypatch
+):
+    """真实 ChatOpenAI SDK 流式读取正文；普通聊天只开放局部调整工具。"""
     calls = []
 
     def respond(http_request):
@@ -195,7 +203,9 @@ def test_real_sdk_chat_has_no_tools_and_keeps_public_context(factory, monkeypatc
         body = json.loads(http_request.content)
         calls.append(body)
         assert body["stream"] is True
-        assert "tools" not in body
+        tools = json.dumps(body.get("tools", []), ensure_ascii=False)
+        assert "GenerateFullPlan" not in tools
+        assert "AdjustTrip" in tools
         assert "城市慢游" in json.dumps(body, ensure_ascii=False)
         chunks = []
         for content in ("你好，", "可以聊聊当前安排。"):
@@ -277,6 +287,11 @@ def test_stream_is_live_and_stop_is_persisted(factory, monkeypatch):
     class Model:
         """用门闩保证模型不会提前完成。"""
 
+        def bind_tools(self, tools, **kwargs):
+            """普通聊天只绑定局部调整工具。"""
+            assert tools == [AdjustTrip]
+            return self
+
         async def astream(self, _messages):
             """先发正文，再等待取消。"""
             yield AIMessageChunk(content="先聊聊你的安排。")
@@ -323,7 +338,7 @@ def test_authorized_full_generation_uses_existing_planner(factory, monkeypatch):
 
         def bind_tools(self, tools, **kwargs):
             """确认只绑定完整规划工具。"""
-            assert tools == [conversation.GenerateFullPlan]
+            assert tools == [GenerateFullPlan]
             return self
 
         async def astream(self, _messages):
@@ -444,6 +459,11 @@ def test_unexpected_tool_call_cannot_generate(factory, monkeypatch):
     class Model:
         """模拟未遵循协议的模型回复。"""
 
+        def bind_tools(self, tools, **kwargs):
+            """普通聊天只绑定局部调整工具。"""
+            assert tools == [AdjustTrip]
+            return self
+
         async def astream(self, _messages):
             """返回未授权工具，业务层必须拒绝。"""
             yield AIMessageChunk(
@@ -472,6 +492,330 @@ def test_unexpected_tool_call_cannot_generate(factory, monkeypatch):
         async with db_transaction(factory) as db:
             assert len(await projects.projects_crud.list_revisions(db, 12)) == 1
             assert (await conversation.list_turns(db, 1, 12))[0].status == "failed"
+
+    asyncio.run(scenario())
+
+
+def test_adjustment_saves_new_revision_and_keeps_facts(factory, monkeypatch):
+    """局部调整写新版本，未提供字段保留当前事实。"""
+
+    class Model:
+        """返回一次合法的单日调整。"""
+
+        def bind_tools(self, tools, **kwargs):
+            """普通聊天只绑定局部调整工具。"""
+            assert tools == [AdjustTrip]
+            return self
+
+        async def astream(self, _messages):
+            """只改时间和标题，省略说明以验证保留原值。"""
+            yield AIMessageChunk(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "AdjustTrip",
+                        "args": {
+                            "day_id": 1,
+                            "activities": [
+                                {
+                                    "id": "day-1-activity-1",
+                                    "time": "10:30",
+                                    "title": "晚点出发",
+                                }
+                            ],
+                        },
+                        "id": "adjust-1",
+                    }
+                ],
+            )
+
+    monkeypatch.setattr(conversation, "create_chat_model", lambda *_args: Model())
+
+    async def scenario():
+        """通过正式回复服务完成调整，并核对新版本与事实字段。"""
+        body = request("第一天下午轻松一点")
+        context = await conversation.prepare_turn(factory, 1, 12, body)
+        result = await conversation.reply(
+            factory,
+            1,
+            12,
+            body,
+            context,
+            PlannerSettings("key", ""),
+            asyncio.Semaphore(1),
+            GenerationStream("test", ()),
+        )
+        assert result.data.status == "succeeded"
+        assert result.data.result_revision_id is not None
+        assert "已调整第 1 天" in result.data.assistant_text
+        async with db_transaction(factory) as db:
+            revisions = await projects.projects_crud.list_revisions(db, 12)
+            assert len(revisions) == 2
+            revision = revisions[0]
+            assert revision.id == result.data.result_revision_id
+            assert revision.number == 2
+            assert revision.title == "助手调整第 1 天"
+            assert revision.generation_run_id == 56
+            assert revision.places == []
+            assert revision.warnings == ["费用待核实"]
+            trip = Trip.model_validate(revision.trip)
+            activity = trip.days[0].activities[0]
+            assert activity.time == "10:30"
+            assert activity.title == "晚点出发"
+            assert activity.description == "测试活动"
+            assert activity.placeId == "place-test"
+            assert activity.cost is None
+            turns = await conversation.list_turns(db, 1, 12)
+            assert turns[-1].result_revision_id == revision.id
+
+    asyncio.run(scenario())
+
+
+def test_adjustment_without_changes_does_not_create_revision(factory, monkeypatch):
+    """模型给出与当前行程相同的内容时不写新版本。"""
+
+    class Model:
+        """只回传已有活动 ID，不修改任何字段。"""
+
+        def bind_tools(self, tools, **kwargs):
+            """普通聊天只绑定局部调整工具。"""
+            assert tools == [AdjustTrip]
+            return self
+
+        async def astream(self, _messages):
+            """活动顺序和字段都保持原样。"""
+            yield AIMessageChunk(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "AdjustTrip",
+                        "args": {
+                            "day_id": 1,
+                            "activities": [{"id": "day-1-activity-1"}],
+                        },
+                        "id": "adjust-noop",
+                    }
+                ],
+            )
+
+    monkeypatch.setattr(conversation, "create_chat_model", lambda *_args: Model())
+
+    async def scenario():
+        """成功结束但不产生版本，并说明无需调整。"""
+        body = request("这样安排就好")
+        context = await conversation.prepare_turn(factory, 1, 12, body)
+        result = await conversation.reply(
+            factory,
+            1,
+            12,
+            body,
+            context,
+            PlannerSettings("key", ""),
+            asyncio.Semaphore(1),
+            GenerationStream("test", ()),
+        )
+        assert result.data.result_revision_id is None
+        assert "没有创建新版本" in result.data.assistant_text
+        async with db_transaction(factory) as db:
+            assert len(await projects.projects_crud.list_revisions(db, 12)) == 1
+
+    asyncio.run(scenario())
+
+
+def test_adjustment_rejects_unknown_activity_without_version(factory, monkeypatch):
+    """引用不存在活动时校验失败，保留原版本并记录失败轮次。"""
+
+    class Model:
+        """返回当前版本不存在的活动 ID。"""
+
+        def bind_tools(self, tools, **kwargs):
+            """普通聊天只绑定局部调整工具。"""
+            assert tools == [AdjustTrip]
+            return self
+
+        async def astream(self, _messages):
+            """非法引用必须由业务层拒绝。"""
+            yield AIMessageChunk(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "AdjustTrip",
+                        "args": {
+                            "day_id": 1,
+                            "activities": [{"id": "day-1-activity-9"}],
+                        },
+                        "id": "adjust-invalid",
+                    }
+                ],
+            )
+
+    monkeypatch.setattr(conversation, "create_chat_model", lambda *_args: Model())
+
+    async def scenario():
+        """调整失败不覆盖已有版本。"""
+        body = request("换个活动")
+        context = await conversation.prepare_turn(factory, 1, 12, body)
+        with pytest.raises(ApiException) as caught:
+            await conversation.reply(
+                factory,
+                1,
+                12,
+                body,
+                context,
+                PlannerSettings("key", ""),
+                asyncio.Semaphore(1),
+                GenerationStream("test", ()),
+            )
+        assert caught.value.status_code == 422
+        assert caught.value.error.code == "invalid_adjustment"
+        async with db_transaction(factory) as db:
+            assert len(await projects.projects_crud.list_revisions(db, 12)) == 1
+            turns = await conversation.list_turns(db, 1, 12)
+            assert turns[-1].status == "failed"
+            assert turns[-1].error_code == "invalid_adjustment"
+
+    asyncio.run(scenario())
+
+
+def test_adjustment_requires_latest_revision(factory, monkeypatch):
+    """历史版本只能聊天；模型尝试调整时返回版本冲突。"""
+
+    class Model:
+        """返回一个格式合法的调整。"""
+
+        def bind_tools(self, tools, **kwargs):
+            """普通聊天只绑定局部调整工具。"""
+            assert tools == [AdjustTrip]
+            return self
+
+        async def astream(self, _messages):
+            """调整意图在历史版本上必须被拒绝。"""
+            yield AIMessageChunk(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "AdjustTrip",
+                        "args": {
+                            "day_id": 1,
+                            "activities": [{"id": "day-1-activity-1"}],
+                        },
+                        "id": "adjust-history",
+                    }
+                ],
+            )
+
+    monkeypatch.setattr(conversation, "create_chat_model", lambda *_args: Model())
+
+    async def scenario():
+        """先插入第二版，再用旧版本发起对话。"""
+        async with db_transaction(factory) as db:
+            db.add(
+                PlanRevision(
+                    id=35,
+                    project_id=12,
+                    number=2,
+                    title="第二版",
+                    schema_version=1,
+                    trip=make_result().trip.model_dump(mode="json"),
+                    places=[],
+                    warnings=[],
+                    reply="",
+                    generation_run_id=None,
+                )
+            )
+        body = request("再调整一下")
+        context = await conversation.prepare_turn(factory, 1, 12, body)
+        with pytest.raises(ApiException) as caught:
+            await conversation.reply(
+                factory,
+                1,
+                12,
+                body,
+                context,
+                PlannerSettings("key", ""),
+                asyncio.Semaphore(1),
+                GenerationStream("test", ()),
+            )
+        assert caught.value.status_code == 409
+        assert caught.value.error.code == "revision_conflict"
+        async with db_transaction(factory) as db:
+            assert len(await projects.projects_crud.list_revisions(db, 12)) == 2
+            turns = await conversation.list_turns(db, 1, 12)
+            assert turns[-1].status == "failed"
+            assert turns[-1].error_code == "revision_conflict"
+
+    asyncio.run(scenario())
+
+
+def test_adjusted_trip_removes_omitted_activity_without_mutating_source():
+    """未列出的活动被移除，原行程对象保持不变。"""
+
+    trip = make_result().trip.model_copy(deep=True)
+    first = trip.days[0].activities[0]
+    trip.days[0].activities.append(
+        first.model_copy(
+            update={"id": "day-1-activity-2", "time": "14:00", "title": "下午散步"}
+        )
+    )
+    adjustment = AdjustTrip(
+        day_id=1, activities=[ActivityAdjustment(id=first.id, time="09:30")]
+    )
+    updated = projects.adjusted_trip(trip, adjustment)
+    assert [activity.id for activity in updated.days[0].activities] == [first.id]
+    activity = updated.days[0].activities[0]
+    assert activity.time == "09:30"
+    assert activity.title == first.title
+    assert activity.placeId == "place-test"
+    assert len(trip.days[0].activities) == 2
+
+
+def test_adjusted_trip_requires_ordered_unique_times():
+    """调整后的时间必须按顺序排列且不能重复。"""
+
+    trip = make_result().trip.model_copy(deep=True)
+    first = trip.days[0].activities[0]
+    trip.days[0].activities.append(
+        first.model_copy(
+            update={"id": "day-1-activity-2", "time": "14:00", "title": "下午散步"}
+        )
+    )
+    reversed_times = AdjustTrip(
+        day_id=1,
+        activities=[
+            ActivityAdjustment(id="day-1-activity-2", time="10:00"),
+            ActivityAdjustment(id=first.id, time="09:00"),
+        ],
+    )
+    with pytest.raises(ValueError, match="按顺序"):
+        projects.adjusted_trip(trip, reversed_times)
+    duplicate_times = AdjustTrip(
+        day_id=1,
+        activities=[
+            ActivityAdjustment(id=first.id, time="09:00"),
+            ActivityAdjustment(id="day-1-activity-2", time="09:00"),
+        ],
+    )
+    with pytest.raises(ValueError, match="按顺序"):
+        projects.adjusted_trip(trip, duplicate_times)
+
+
+def test_reading_turns_recovers_expired_running_turn(factory):
+    """刷新页面读取对话时，超时运行中轮次应显示为失败而不是一直处理中。"""
+    from datetime import timedelta
+
+    async def scenario():
+        """把运行中轮次改为过期后直接读取。"""
+        context = await conversation.prepare_turn(factory, 1, 12, request())
+        async with db_transaction(factory) as db:
+            turn = await db.get(ConversationTurn, context.turn_id)
+            assert turn is not None
+            turn.deadline_at = datetime.now(UTC).replace(tzinfo=None) - timedelta(
+                seconds=1
+            )
+        async with db_transaction(factory) as db:
+            turns = await conversation.list_turns(db, 1, 12)
+        assert turns[-1].status == "failed"
+        assert turns[-1].error_code == "conversation_interrupted"
 
     asyncio.run(scenario())
 

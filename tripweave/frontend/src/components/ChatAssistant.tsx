@@ -172,7 +172,8 @@ export default function ChatAssistant({
         {loading && <p role="status">正在读取对话…</p>}
         {!loading && !turns.length && (
           <p className="chat-welcome">
-            可以聊聊旅行想法，或问我为什么这样安排。当前选中第 {dayId} 天。
+            可以聊聊旅行想法、问我为什么这样安排，或让我调整某一天已有活动的安排。当前选中第{" "}
+            {dayId} 天。
           </p>
         )}
         {turns.map((turn) => (
@@ -212,7 +213,7 @@ export default function ChatAssistant({
                         onRevision(String(turn.result_revision_id))
                       }
                     >
-                      查看此版行程
+                      {turn.generate ? "查看此版行程" : "查看调整后的行程"}
                       <ArrowUpRight size={15} />
                     </button>
                   )}
@@ -283,7 +284,7 @@ export default function ChatAssistant({
           onChange={(event) => setInput(event.target.value)}
           maxLength={2000}
           disabled={busy || loading || loadFailed}
-          placeholder="问问安排，或聊聊旅行想法"
+          placeholder="问问安排，或说“第 2 天下午轻松一点”"
           autoComplete="off"
         />
         {busy ? (
@@ -314,7 +315,9 @@ export default function ChatAssistant({
         重新规划整趟
       </button>
       <p className="assistant-footer">
-        对话自动保存；重新规划整趟会创建新版本。
+        {historical
+          ? "正在查看历史版本，只能讨论；返回当前计划后才能调整。"
+          : "对话自动保存；可以说“第 2 天下午轻松一点”做局部调整，重新规划整趟会创建新版本。"}
       </p>
     </>
   );
