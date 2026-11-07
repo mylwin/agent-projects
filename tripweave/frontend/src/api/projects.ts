@@ -296,3 +296,8 @@ export async function generateSavedPlan(
     reader.releaseLock();
   }
 }
+
+/** 删除整个服务端计划，后端同时删除其全部版本及关联记录。 */
+export function deleteSavedProject(projectId: number) {
+  return request<null>(`/api/projects/${projectId}`, { method: "DELETE" });
+}

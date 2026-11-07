@@ -10,6 +10,7 @@ import {
   Search,
   Sparkles,
   UsersRound,
+  Trash2,
   X,
 } from "lucide-react";
 import {
@@ -23,6 +24,9 @@ import { useAuth } from "../auth/AuthProvider";
 import { useWorkspace } from "../hooks/useWorkspace";
 import Brand from "../components/Brand";
 import AccountChip from "../components/AccountChip";
+import DeletePlanDialog, {
+  type DeletePlanTarget,
+} from "../components/DeletePlanDialog";
 
 /**
  * 展示服务端计划与本地草稿，并生成新的服务端计划。
@@ -35,6 +39,9 @@ export default function PlansPage() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [creating, setCreating] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<DeletePlanTarget | null>(
+    null,
+  );
   const [createPending, setCreatePending] = useState(false);
   const [createError, setCreateError] = useState("");
   const [progress, setProgress] = useState<GenerationProgress[]>([]);
@@ -207,26 +214,41 @@ export default function PlansPage() {
           )}
           <div className="saved-card-grid">
             {savedFiltered.map((project) => (
-              <Link
-                className="saved-project-card"
-                to={`/saved-projects/${project.id}`}
-                key={project.id}
-              >
-                <span>
-                  <FolderOpen size={19} /> 已保存 · {project.revision_count}{" "}
-                  个版本
-                </span>
-                <strong>{project.name}</strong>
-                <small>
-                  <MapPin size={14} /> {project.destination}
-                </small>
-                <small>
-                  {new Date(project.updated_at).toLocaleDateString("zh-CN")}{" "}
-                  更新
-                </small>
-                {project.final_revision_id && <em>已选最终方案</em>}
-                <ArrowUpRight className="saved-card-arrow" size={18} />
-              </Link>
+              <article className="saved-project-card" key={project.id}>
+                <Link
+                  className="saved-project-card-link"
+                  to={`/saved-projects/${project.id}`}
+                >
+                  <span>
+                    <FolderOpen size={19} /> 已保存 · {project.revision_count}{" "}
+                    个版本
+                  </span>
+                  <strong>{project.name}</strong>
+                  <small>
+                    <MapPin size={14} /> {project.destination}
+                  </small>
+                  <small>
+                    {new Date(project.updated_at).toLocaleDateString("zh-CN")}{" "}
+                    更新
+                  </small>
+                  {project.final_revision_id && <em>已选最终方案</em>}
+                  <ArrowUpRight className="saved-card-arrow" size={18} />
+                </Link>
+                <button
+                  className="delete-plan-button"
+                  aria-label={`删除计划：${project.name}`}
+                  onClick={() =>
+                    setDeleteTarget({
+                      source: "saved",
+                      id: project.id,
+                      name: project.name,
+                      revisionCount: project.revision_count,
+                    })
+                  }
+                >
+                  <Trash2 size={14} /> 删除计划
+                </button>
+              </article>
             ))}
           </div>
         </section>
@@ -314,6 +336,20 @@ export default function PlansPage() {
                       {project.messages.length} 条对话
                     </span>
                     <div className="project-card-links">
+                      <button
+                        className="delete-plan-button"
+                        aria-label={`删除计划：${project.name}`}
+                        onClick={() =>
+                          setDeleteTarget({
+                            source: "local",
+                            id: project.id,
+                            name: project.name,
+                            revisionCount: project.revisions.length,
+                          })
+                        }
+                      >
+                        <Trash2 size={14} /> 删除
+                      </button>
                       {final && <Link to={planUrl}>查看方案</Link>}
                       <Link to={`/plans/${project.id}`}>
                         {final ? "继续规划" : "打开计划"}
@@ -348,6 +384,19 @@ export default function PlansPage() {
       <footer className="plans-footer">
         一份计划，收藏一路的期待。<span>TripWeave · 途织</span>
       </footer>
+      {deleteTarget && (
+        <DeletePlanDialog
+          target={deleteTarget}
+          onClose={() => setDeleteTarget(null)}
+          onDeleted={() => {
+            if (deleteTarget.source === "saved")
+              setSavedProjects((current) =>
+                current.filter((project) => project.id !== deleteTarget.id),
+              );
+            setDeleteTarget(null);
+          }}
+        />
+      )}
       {creating && (
         <div
           className="modal-backdrop"

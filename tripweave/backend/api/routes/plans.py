@@ -160,6 +160,9 @@ async def generate(
                 if stage == "持久化":
                     error = ApiException.internal()
                     code = "save_failed"
+                elif isinstance(exc, ApiException):
+                    error = exc
+                    code = error.error.code
                 elif isinstance(exc, TimeoutError):
                     error = ApiException.timeout()
                     code = error.error.code

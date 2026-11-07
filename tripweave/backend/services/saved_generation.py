@@ -6,13 +6,15 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from backend.config.database import db_transaction
-from backend.crud.projects import get_project
+from backend.crud.projects import get_project, lock_project
+from backend.errors.api import ApiException
 from backend.models.generation_run import GenerationRun
 from backend.models.model_call import ModelCall
 from backend.models.plan_revision import PlanRevision
 from backend.models.project import Project
 from backend.models.research_report import ResearchReport as StoredReport
 from backend.models.tool_evidence import ToolEvidence as StoredEvidence
+from backend.schemas.api import ApiError
 from backend.schemas.projects import GeneratePlanData
 from backend.schemas.trip import PlanResult, TripRequest
 
@@ -32,6 +34,13 @@ async def start_run(
 ) -> int:
     """单独提交运行记录，模型调用期间不持有事务。"""
     async with db_transaction(factory) as db:
+        if (
+            project_id is not None
+            and await lock_project(db, user_id, project_id) is None
+        ):
+            raise ApiException(
+                404, ApiError(code="project_not_found", message="计划不存在")
+            )
         run = GenerationRun(
             project_id=project_id,
             user_id=user_id,

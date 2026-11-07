@@ -5,9 +5,11 @@ from datetime import UTC
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.crud import projects as projects_crud
+from backend.errors.api import ApiException
 from backend.models.generation_run import GenerationRun
 from backend.models.plan_revision import PlanRevision
 from backend.models.project import Project
+from backend.schemas.api import ApiError
 from backend.schemas.projects import (
     ModelCallTrace,
     ProjectDetail,
@@ -161,3 +163,21 @@ async def run_trace(db: AsyncSession, project: Project, run: GenerationRun) -> R
             for call in calls
         ],
     )
+
+
+async def delete_project(db: AsyncSession, user_id: int, project_id: int) -> None:
+    """校验归属并整项删除计划；不提供单独删除版本的操作。"""
+    project = await projects_crud.lock_project(db, user_id, project_id)
+    if project is None:
+        raise ApiException(
+            404, ApiError(code="project_not_found", message="计划不存在")
+        )
+    if await projects_crud.has_running_generation(db, project.id):
+        raise ApiException(
+            409,
+            ApiError(
+                code="project_generating",
+                message="计划正在生成，请等待生成结束后再删除",
+            ),
+        )
+    await projects_crud.delete_project(db, project.id)

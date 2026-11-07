@@ -345,3 +345,19 @@ export function saveRevision(
     ],
   };
 }
+
+/** 删除整个本地草稿；存储失败时保持原项目，允许用户重试。 */
+export function deleteLocalProject(id: string): boolean {
+  const previous = snapshot;
+  const saved = commit({
+    version: 2,
+    projects: snapshot.workspace.projects.filter(
+      (project) => project.id !== id,
+    ),
+  });
+  if (!saved) {
+    snapshot = { ...previous, error: snapshot.error };
+    listeners.forEach((listener) => listener());
+  }
+  return saved;
+}
