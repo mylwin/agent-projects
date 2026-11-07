@@ -1,18 +1,18 @@
-/** 渲染助手回复中的轻量 Markdown；全部通过 React 节点输出，不注入 HTML。 */
-
+/** 流式与已保存回复共用安全节点渲染，不注入 HTML。 */
 import type { ReactNode } from "react";
 import {
   parseChatMarkdown,
   parseInline,
+  type ChatBlock,
   type InlineToken,
 } from "../utils/chatMarkdown";
 
-/** 把行内片段渲染成 React 节点，链接只保留 http(s)。 */
+/** 将闭合的行内语法输出为 React 节点。 */
 function InlineText({ text }: { text: string }) {
   return <>{parseInline(text).map(renderToken)}</>;
 }
 
-/** 按片段类型输出文本、加粗、代码或外链。 */
+/** 链接仅来自解析器允许的 http(s) 协议。 */
 function renderToken(token: InlineToken, index: number): ReactNode {
   switch (token.kind) {
     case "bold":
@@ -21,7 +21,12 @@ function renderToken(token: InlineToken, index: number): ReactNode {
       return <code key={index}>{token.text}</code>;
     case "link":
       return (
-        <a key={index} href={token.href} target="_blank" rel="noreferrer">
+        <a
+          key={index}
+          href={token.href}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
           {token.text}
         </a>
       );
@@ -30,52 +35,88 @@ function renderToken(token: InlineToken, index: number): ReactNode {
   }
 }
 
-/**
- * 把助手正文渲染为段落、标题和列表。
- *
- * @param props.text 服务端保存的公开回复。
- * @returns 带结构的消息内容；空文本不渲染任何节点。
- */
+/** 递归渲染列表与表格，保留显式序号、对齐方式及未闭合代码围栏。 */
+function renderBlock(block: ChatBlock, index: number): ReactNode {
+  if (block.kind === "ordered-list" || block.kind === "unordered-list") {
+    const items = block.items.map((item, itemIndex) => (
+      <li key={itemIndex} value={item.number}>
+        {item.blocks.map(renderBlock)}
+      </li>
+    ));
+    return block.kind === "ordered-list" ? (
+      <ol key={index} start={block.items[0]?.number}>
+        {items}
+      </ol>
+    ) : (
+      <ul key={index}>{items}</ul>
+    );
+  }
+  if (block.kind === "table")
+    return (
+      <div className="chat-table" key={index}>
+        <table
+          style={{ minWidth: `${Math.min(block.header.length, 6) * 8.5}em` }}
+        >
+          <thead>
+            <tr>
+              {block.header.map((cell, column) => (
+                <th
+                  key={column}
+                  scope="col"
+                  style={{ textAlign: block.align[column] ?? "left" }}
+                >
+                  <InlineText text={cell} />
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {block.rows.map((row, rowIndex) => (
+              <tr key={rowIndex}>
+                {row.map((cell, column) => (
+                  <td
+                    key={column}
+                    style={{ textAlign: block.align[column] ?? "left" }}
+                  >
+                    <InlineText text={cell} />
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    );
+  if (block.kind === "code")
+    return (
+      <pre key={index}>
+        <code>{block.text}</code>
+      </pre>
+    );
+  if (block.kind === "literal")
+    return (
+      <p className="chat-literal" key={index}>
+        {block.text}
+      </p>
+    );
+  if (block.kind === "heading")
+    return (
+      <h3 className="chat-markdown-heading" key={index}>
+        <InlineText text={block.text} />
+      </h3>
+    );
+  return (
+    <p key={index}>
+      <InlineText text={block.text} />
+    </p>
+  );
+}
+
+/** 渲染公开正文；增量快照和最终回复采用完全相同的规则。 */
 export default function ChatMarkdown({ text }: { text: string }) {
-  const blocks = parseChatMarkdown(text);
   return (
     <div className="chat-markdown">
-      {blocks.map((block, index) => {
-        if (block.kind === "heading") {
-          return (
-            <h3 className="chat-markdown-heading" key={index}>
-              <InlineText text={block.text} />
-            </h3>
-          );
-        }
-        if (block.kind === "ordered-list") {
-          return (
-            <ol key={index}>
-              {block.items.map((item, itemIndex) => (
-                <li key={itemIndex}>
-                  <InlineText text={item} />
-                </li>
-              ))}
-            </ol>
-          );
-        }
-        if (block.kind === "unordered-list") {
-          return (
-            <ul key={index}>
-              {block.items.map((item, itemIndex) => (
-                <li key={itemIndex}>
-                  <InlineText text={item} />
-                </li>
-              ))}
-            </ul>
-          );
-        }
-        return (
-          <p key={index}>
-            <InlineText text={block.text} />
-          </p>
-        );
-      })}
+      {parseChatMarkdown(text).map(renderBlock)}
     </div>
   );
 }
