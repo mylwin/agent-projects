@@ -15,6 +15,7 @@ import {
   type ConversationTurn,
 } from "../api/projects";
 import { useAuth } from "../auth/AuthProvider";
+import ChatMarkdown from "./ChatMarkdown";
 
 /** 同一工作区内的真实聊天；当前日期和依据版本随每轮明确发送。 */
 export default function ChatAssistant({
@@ -202,10 +203,13 @@ export default function ChatAssistant({
               </span>
               <div className="message-body">
                 <div className="message-bubble">
-                  {turn.assistant_text ||
-                    (turn.status === "running"
-                      ? "本轮请求仍在处理。"
-                      : "本轮没有生成完整回复。")}
+                  {turn.assistant_text ? (
+                    <ChatMarkdown text={turn.assistant_text} />
+                  ) : turn.status === "running" ? (
+                    "本轮请求仍在处理。"
+                  ) : (
+                    "本轮没有生成完整回复。"
+                  )}
                   {turn.result_revision_id && (
                     <button
                       className="message-result"
