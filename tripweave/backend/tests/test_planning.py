@@ -9,11 +9,15 @@ from unittest.mock import patch
 import httpx
 import pytest
 from langchain_core.callbacks import AsyncCallbackHandler
+from langchain_core.language_models.fake_chat_models import FakeMessagesListChatModel
+from langchain_core.messages import AIMessage
+from langchain_core.tools import tool
 from langchain_mcp_adapters.tools import load_mcp_tools
 from mcp.server.fastmcp import FastMCP
 from mcp.shared.memory import create_connected_server_and_client_session
 from pydantic import ValidationError
 
+from backend.agents.research import research_topic
 from backend.config.planner import PlannerSettings
 from backend.integrations.chat_model import create_chat_model
 from backend.integrations.map_mcp import MapTools
@@ -54,10 +58,16 @@ def make_draft(days: int = 1) -> dict:
 class ModelStub:
     """模拟 OpenAI 兼容流式响应，三个研究 Agent 各调用一次 MCP 后总结。"""
 
-    def __init__(self, provider: str = "amap", draft: dict | None = None):
+    def __init__(
+        self,
+        provider: str = "amap",
+        draft: dict | None = None,
+        weather_summary: str = "已查询工具，未覆盖的日期和价格保持未知。",
+    ):
         """记录实际模型请求以验证角色隔离和调用数量。"""
         self.provider = provider
         self.draft = draft or make_draft()
+        self.weather_summary = weather_summary
         self.calls: list[dict] = []
 
     def respond(self, request: httpx.Request) -> httpx.Response:
@@ -66,6 +76,7 @@ class ModelStub:
         self.calls.append(body)
         assert body["stream"] is True
         available = {tool["function"]["name"] for tool in body["tools"]}
+        weather = "查询目的地天气" in body["messages"][0]["content"]
         assert "share_map" not in available
         if "TravelDraft" in available:
             function, arguments = "TravelDraft", self.draft
@@ -74,7 +85,6 @@ class ModelStub:
         elif any(message["role"] == "tool" for message in body["messages"]):
             function, arguments = None, {}
         else:
-            weather = "查询目的地天气" in body["messages"][0]["content"]
             if weather:
                 function = "maps_weather" if self.provider == "amap" else "map_weather"
                 assert available == {function}
@@ -101,7 +111,11 @@ class ModelStub:
                 }
             ]
         else:
-            delta["content"] = "已查询工具，未覆盖的日期和价格保持未知。"
+            delta["content"] = (
+                self.weather_summary
+                if weather
+                else "已查询工具，未覆盖的日期和价格保持未知。"
+            )
         chunk = {
             "id": "test",
             "object": "chat.completion.chunk",
@@ -123,7 +137,11 @@ class ModelStub:
 
 
 def make_server(
-    provider: str = "amap", empty: bool = False, fail_weather: bool = False
+    provider: str = "amap",
+    empty: bool = False,
+    fail_weather: bool = False,
+    *,
+    weather_payload: dict | None = None,
 ) -> FastMCP:
     """建立内存 MCP 服务，经过 SDK 的初始化、工具发现和调用协议。"""
     server = FastMCP("合成测试地图")
@@ -155,11 +173,22 @@ def make_server(
             ]
         }
 
-    async def weather(city: str) -> dict:
-        """查询合成天气；可以模拟供应商失败。"""
+    async def weather(city: str) -> dict[str, object]:
+        """查询合成天气，显式返回结构化内容；可以模拟供应商失败。"""
         if fail_weather:
             raise ValueError("合成天气服务不可用")
-        return {"city": city, "forecast": [{"date": "2026-11-05", "weather": "晴"}]}
+        if weather_payload is not None:
+            return weather_payload
+        if provider == "amap":
+            return {
+                "forecasts": [
+                    {
+                        "city": city,
+                        "casts": [{"date": "2026-11-05", "dayweather": "晴"}],
+                    }
+                ]
+            }
+        return {"result": {"forecasts": [{"date": "2026-11-05", "text_day": "晴"}]}}
 
     async def share_map() -> str:
         """不应暴露给研究 Agent 的分享工具。"""
@@ -176,10 +205,17 @@ def make_server(
 
 
 async def execute(
-    stub: ModelStub, days: int = 1, *, empty: bool = False, fail_weather: bool = False
+    stub: ModelStub,
+    days: int = 1,
+    *,
+    empty: bool = False,
+    fail_weather: bool = False,
+    weather_payload: dict | None = None,
 ) -> PlanResult:
     """通过完整 MCP 协议及模型 SDK 调用全部 Agent。"""
-    server = make_server(stub.provider, empty, fail_weather)
+    server = make_server(
+        stub.provider, empty, fail_weather, weather_payload=weather_payload
+    )
     async with create_connected_server_and_client_session(server) as session:
         tools = await load_mcp_tools(session)
         async with httpx.AsyncClient(
@@ -209,6 +245,12 @@ def test_complete_flow(provider: str, days: int) -> None:
         "hotels",
     ]
     assert all(len(report.evidence) == 1 for report in result.research)
+    weather = result.research[1]
+    assert weather.summary.count("天气未知") == days
+    assert "晴" not in weather.summary and "25" not in weather.summary
+    assert "2026-11-05" in weather.evidence[0].content
+    assert weather.evidence[0].fetched_at.tzinfo is not None
+    assert weather.warnings
     assert result.places[0].source == provider
     assert result.places[0].coordinate_system == (
         "GCJ-02" if provider == "amap" else "BD-09"
@@ -250,13 +292,106 @@ def test_empty_pool_skips_planner() -> None:
     assert len(stub.calls) == 6
 
 
-def test_weather_error_keeps_unknown() -> None:
+@pytest.mark.parametrize("provider", ["amap", "baidu"])
+def test_weather_error_keeps_unknown(provider: str) -> None:
     """天气工具错误不会作为成功查询，仍可生成有缺失说明的行程。"""
-    result = asyncio.run(execute(ModelStub(), fail_weather=True))
+    result = asyncio.run(execute(ModelStub(provider), fail_weather=True))
     report = result.research[1]
     assert not report.evidence
-    assert "未知" in report.summary
+    assert "2027-03-12：天气未知" in report.summary
+    assert "晴" not in report.summary
     assert any("查询失败" in warning for warning in result.warnings)
+
+
+@pytest.mark.parametrize("provider", ["amap", "baidu"])
+@pytest.mark.parametrize("covered", [0, 1, 3])
+def test_weather_summary_uses_daily_evidence(provider: str, covered: int) -> None:
+    """真实 MCP 协议替身覆盖全量、部分和空预报，模型错误天气不能进入摘要。"""
+    rows = [
+        {
+            "date": f"2027-03-{12 + offset:02d}",
+            "dayweather" if provider == "amap" else "text_day": "小雨",
+        }
+        for offset in range(covered)
+    ]
+    payload = (
+        {"forecasts": [{"casts": rows}]}
+        if provider == "amap"
+        else {"result": {"forecasts": rows}}
+    )
+    stub = ModelStub(
+        provider, make_draft(3), weather_summary="出行期间每天都是晴天，气温25°C。"
+    )
+    result = asyncio.run(execute(stub, 3, weather_payload=payload))
+    report = result.research[1]
+    assert len(stub.calls) == 7
+    assert report.summary.count("小雨") == covered
+    assert report.summary.count("天气未知") == 3 - covered
+    assert "晴" not in report.summary and "25" not in report.summary
+    assert bool(report.warnings) == (covered < 3)
+    assert report.evidence[0].structured_content == payload
+    assert "text" in report.evidence[0].content
+    planner_input = next(
+        call["messages"][1]["content"]
+        for call in stub.calls
+        if any(tool["function"]["name"] == "TravelDraft" for tool in call["tools"])
+    )
+    assert "出行期间每天都是晴天" not in planner_input
+    for offset in range(covered, 3):
+        day = f"2027-03-{12 + offset:02d}"
+        assert f"{day}：天气未知" in report.summary
+        assert any(day in warning for warning in result.warnings)
+
+
+@pytest.mark.parametrize("parallel_calls,expected_calls", [(1, 6), (2, 8)])
+def test_weather_limits_preserve_evidence_and_warnings(
+    parallel_calls: int, expected_calls: int
+) -> None:
+    """天气研究达到模型或工具调用上限后保留证据、警告和程序天气摘要。"""
+
+    class WeatherLoopModel(FakeMessagesListChatModel):
+        """循环请求天气，让真实 Agent 中间件终止调用。"""
+
+        def bind_tools(self, *args: object, **kwargs: object):
+            """绑定合成天气工具，不连接外部模型。"""
+            return self
+
+    calls = []
+
+    @tool
+    async def maps_weather(city: str) -> str:
+        """返回只覆盖旅行首日的合成天气。"""
+        calls.append(city)
+        return json.dumps(
+            {"forecasts": [{"casts": [{"date": "2027-03-12", "dayweather": "小雨"}]}]}
+        )
+
+    model = WeatherLoopModel(
+        responses=[
+            AIMessage(
+                content="",
+                tool_calls=[
+                    {
+                        "name": "maps_weather",
+                        "id": f"weather-{iteration}-{index}",
+                        "args": {"city": "成都"},
+                    }
+                    for index in range(parallel_calls)
+                ],
+            )
+            for iteration in range(7)
+        ]
+    )
+    report = asyncio.run(
+        research_topic(
+            "weather", make_request(3), model, MapTools("amap", [maps_weather])
+        )
+    )
+    assert len(calls) == expected_calls
+    assert len(report.evidence) == expected_calls
+    assert any("调用上限" in warning for warning in report.warnings)
+    assert report.summary.count("小雨") == 1
+    assert report.summary.count("天气未知") == 2
 
 
 @pytest.mark.parametrize(

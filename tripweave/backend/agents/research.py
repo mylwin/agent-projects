@@ -17,6 +17,7 @@ from langgraph.prebuilt.tool_node import ToolCallRequest
 from langgraph.types import Command
 
 from backend.agents.prompts import ResearchTopic, get_research_prompt
+from backend.agents.weather import WEATHER_TOOLS, summarize_weather
 from backend.errors import PlanningError
 from backend.integrations.map_mcp import MapTools
 from backend.schemas.trip import ResearchReport, ToolEvidence, TripRequest
@@ -30,7 +31,6 @@ SEARCH_TOOLS = {
     "map_place_details",
     "map_geocode",
 }
-WEATHER_TOOLS = {"maps_weather", "map_weather"}
 GEOCODE_TOOLS = {"maps_geo", "map_geocode"}
 LIMIT_MESSAGE_MARKERS = ("Model call limit", "Tool call limit")
 
@@ -118,10 +118,15 @@ async def research_topic(
     if not tools or (
         topic == "weather" and not any(tool.name in WEATHER_TOOLS for tool in tools)
     ):
+        summary, warnings = (
+            summarize_weather(request, [])
+            if topic == "weather"
+            else ("未提供该主题的查询工具。", [])
+        )
         return ResearchReport(
             topic=topic,
-            summary="未提供该主题的查询工具。",
-            warnings=[f"{topic}：地图 MCP 没有提供所需的只读工具。"],
+            summary=summary,
+            warnings=[f"{topic}：地图 MCP 没有提供所需的只读工具。", *warnings],
         )
     # 两种中间件各自扩展框架状态，按公共接口声明，避免被推断为第一种状态。
     # 达到上限时结束当前研究，保留已有工具证据，不让单个主题拖垮整轮规划。
@@ -187,6 +192,9 @@ async def research_topic(
     elif not summary.strip():
         summary = "已取得工具结果，但模型未给出研究摘要。"
         warnings.append(f"{topic}：模型未输出最终摘要，已保留工具结果。")
+    if topic == "weather":
+        summary, weather_warnings = summarize_weather(request, evidence)
+        warnings.extend(weather_warnings)
     return ResearchReport(
         topic=topic, summary=summary, evidence=evidence, warnings=warnings
     )
