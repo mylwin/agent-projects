@@ -3,6 +3,7 @@ import type {
   ResearchReport,
   SavedPlanResult as PlanResult,
 } from "../api/projects";
+import ChatMarkdown from "./ChatMarkdown";
 
 const topicNames: Record<ResearchReport["topic"], string> = {
   attractions: "景点与活动",
@@ -18,6 +19,14 @@ const activityKinds: Record<string, string> = {
   free: "自由活动",
 };
 
+/** 后端警告以主题键开头，展示时换成读者熟悉的主题名。 */
+function readableNotice(text: string): string {
+  const [topic, ...rest] = text.split("：");
+  return topic in topicNames && rest.length > 0
+    ? `${topicNames[topic as ResearchReport["topic"]]}：${rest.join("：")}`
+    : text;
+}
+
 /** 展示已保存版本的行程、地点事实、研究证据和提示。 */
 export default function SavedPlanResult({
   result,
@@ -28,12 +37,23 @@ export default function SavedPlanResult({
 }) {
   const { trip, places, research, warnings, reply } = result;
   const placesById = new Map(places.map((place) => [place.id, place]));
+  const notices = [
+    ...new Set(
+      [...warnings, ...research.flatMap((report) => report.warnings)].map(
+        readableNotice,
+      ),
+    ),
+  ];
 
   return (
     <div className="saved-result">
       {!evidenceOnly && (
         <>
-          {reply && <p className="saved-reply">{reply}</p>}
+          {reply.trim() && (
+            <div className="saved-reply">
+              <ChatMarkdown text={reply} />
+            </div>
+          )}
           <div className="saved-trip-meta" aria-label="行程概况">
             <span>
               <MapPin size={15} /> {trip.destination}
@@ -114,29 +134,14 @@ export default function SavedPlanResult({
               <article className="saved-fact" key={place.id}>
                 <h4>{place.name}</h4>
                 <p>{place.address || "地址未提供"}</p>
-                <dl>
-                  <div>
-                    <dt>来源</dt>
-                    <dd>{place.source === "amap" ? "高德地图" : "百度地图"}</dd>
-                  </div>
-                  <div>
-                    <dt>坐标</dt>
-                    <dd>
-                      {place.longitude}, {place.latitude}（
-                      {place.coordinate_system}）
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>采集时间</dt>
-                    <dd>
-                      {new Date(place.fetched_at).toLocaleString("zh-CN")}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>地点 ID</dt>
-                    <dd>{place.id}</dd>
-                  </div>
-                </dl>
+                <div className="saved-source-meta">
+                  <span>
+                    {place.source === "amap" ? "高德地图" : "百度地图"}
+                  </span>
+                  <time dateTime={place.fetched_at}>
+                    查询于 {new Date(place.fetched_at).toLocaleString("zh-CN")}
+                  </time>
+                </div>
               </article>
             ))}
           </div>
@@ -153,48 +158,39 @@ export default function SavedPlanResult({
         {research.length === 0 ? (
           <p className="saved-empty">本次结果没有保存调研资料。</p>
         ) : (
-          research.map((report) => (
-            <article className="saved-report" key={report.topic}>
-              <h4>{topicNames[report.topic]}</h4>
-              <p>{report.summary}</p>
-              {report.warnings.length > 0 && (
-                <ul>
-                  {report.warnings.map((warning, index) => (
-                    <li key={index}>{warning}</li>
-                  ))}
-                </ul>
-              )}
-              {report.evidence.length > 0 && (
-                <div className="saved-evidence-list">
-                  {report.evidence.map((evidence, index) => (
-                    <details key={`${evidence.tool}-${index}`}>
-                      <summary>
-                        {evidence.tool} ·{" "}
-                        {new Date(evidence.fetched_at).toLocaleString("zh-CN")}
-                      </summary>
-                      <pre>{evidence.content}</pre>
-                      {evidence.structured_content !== null && (
-                        <>
-                          <strong>结构化内容</strong>
-                          <pre>
-                            {JSON.stringify(
-                              evidence.structured_content,
-                              null,
-                              2,
-                            )}
-                          </pre>
-                        </>
-                      )}
-                    </details>
-                  ))}
-                </div>
-              )}
-            </article>
-          ))
+          research.map((report) => {
+            const latestQuery = report.evidence.length
+              ? new Date(
+                  Math.max(
+                    ...report.evidence.map((item) =>
+                      new Date(item.fetched_at).getTime(),
+                    ),
+                  ),
+                )
+              : null;
+            return (
+              <article className="saved-report" key={report.topic}>
+                <h4>{topicNames[report.topic]}</h4>
+                {report.summary.trim() ? (
+                  <ChatMarkdown text={report.summary} />
+                ) : (
+                  <p className="saved-empty">本次没有保存调研摘要。</p>
+                )}
+                {latestQuery && (
+                  <div className="saved-source-meta">
+                    <span>参考 {report.evidence.length} 条查询资料</span>
+                    <time dateTime={latestQuery.toISOString()}>
+                      最近查询于 {latestQuery.toLocaleString("zh-CN")}
+                    </time>
+                  </div>
+                )}
+              </article>
+            );
+          })
         )}
       </section>
 
-      {warnings.length > 0 && (
+      {notices.length > 0 && (
         <section
           className="saved-warnings"
           aria-labelledby="saved-warnings-title"
@@ -203,18 +199,12 @@ export default function SavedPlanResult({
             待核实事项
           </h3>
           <ul>
-            {warnings.map((warning, index) => (
+            {notices.map((warning, index) => (
               <li key={index}>{warning}</li>
             ))}
           </ul>
         </section>
       )}
-
-      <details className="saved-result-meta">
-        <summary>行程数据标识</summary>
-        <p>行程 ID：{trip.id}</p>
-        <p>结构版本：{trip.schemaVersion}</p>
-      </details>
     </div>
   );
 }
