@@ -8,7 +8,7 @@ from typing import cast
 
 import httpx
 import pytest
-from langchain_core.messages import AIMessageChunk
+from langchain_core.messages import AIMessageChunk, HumanMessage, SystemMessage
 from sqlalchemy import Integer, MetaData, Table, create_engine, func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 from sqlalchemy.orm import Session
@@ -29,6 +29,7 @@ from backend.schemas.conversation import (
     ActivityAdjustment,
     AdjustTrip,
     ChatRequest,
+    ConversationTurnData,
     GenerateFullPlan,
 )
 from backend.schemas.trip import Trip
@@ -279,6 +280,34 @@ def test_real_sdk_chat_keeps_public_context_and_binds_only_adjustment(
 
     asyncio.run(scenario())
     assert len(calls) == 1
+
+
+def test_model_messages_use_single_leading_system_message():
+    """DashScope 等 OpenAI 兼容接口只允许首条 system 消息。"""
+    history = [
+        ConversationTurnData(
+            id=1,
+            base_revision_id=34,
+            result_revision_id=None,
+            day_id=1,
+            generate=False,
+            user_text="你好",
+            assistant_text="你好，需要我做什么？",
+            status="succeeded",
+            error_code=None,
+            created_at=datetime.now(UTC),
+        )
+    ]
+    context = conversation.ChatContext(1, make_result(), history, True)
+    messages = conversation.model_messages(context, request())
+    assert isinstance(messages[0], SystemMessage)
+    assert not any(isinstance(message, SystemMessage) for message in messages[1:])
+    assert isinstance(messages[-1], HumanMessage)
+    assert [type(message).__name__ for message in messages[1:]] == [
+        "HumanMessage",
+        "AIMessage",
+        "HumanMessage",
+    ]
 
 
 def test_stream_is_live_and_stop_is_persisted(factory, monkeypatch):
