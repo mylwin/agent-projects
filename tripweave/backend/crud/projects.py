@@ -78,8 +78,44 @@ async def set_final_revision(
 ) -> None:
     """更新项目的最终版本，事务由 get_db 提交。"""
     project.final_revision_id = revision_id
+    await touch_project(db, project)
+
+
+async def touch_project(db: AsyncSession, project: Project) -> None:
+    """更新项目最后修改时间，事务由调用方提交。"""
     project.updated_at = datetime.now(UTC).replace(tzinfo=None)
     await db.flush()
+
+
+async def create_revision(
+    db: AsyncSession,
+    *,
+    project_id: int,
+    number: int,
+    title: str,
+    schema_version: int,
+    trip: dict,
+    places: list,
+    warnings: list,
+    reply: str | None,
+    generation_run_id: int | None,
+) -> PlanRevision:
+    """插入新版本并回填主键与数据库默认创建时间。"""
+    revision = PlanRevision(
+        project_id=project_id,
+        number=number,
+        title=title,
+        schema_version=schema_version,
+        trip=trip,
+        places=places,
+        warnings=warnings,
+        reply=reply,
+        generation_run_id=generation_run_id,
+    )
+    db.add(revision)
+    await db.flush()
+    await db.refresh(revision)
+    return revision
 
 
 async def list_research(
