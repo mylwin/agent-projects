@@ -83,3 +83,19 @@ uv run pytest backend/tests -q
 需确认后执行。正在生成的计划会提示稍后重试，不提供单独删除版本。
 
 [文档入口](docs/README.md) · [Agent 使用说明](docs/02-agent.md) · [数据库设计](docs/05-database.md) · [接口 Schema](docs/06-api-schema.md) · [接口文档](docs/07-api-reference.md) · [开发约定](AGENTS.md)
+
+
+## 统一工作区与对话
+
+服务端计划现在复用行程工作区，支持日期切换、手动编辑保存版本、历史查看、最终方案、
+真实流式聊天和来源/轨迹面板。普通聊天不生成版本；“重新规划整趟”才授权完整规划。
+自动局部修改仍留待后续实现。本地草稿继续使用独立的演示助手，不会复制服务端对话。
+
+已有数据库先执行 `resource/migrations/20261107_conversation.sql`；新数据库使用包含该表的
+`resource/schema.sql`。迁移只新增对话表，可重复执行；应用不会自动变更数据库结构。
+
+```bash
+mysql -h <数据库地址> -u <数据库用户> -p <数据库名称> < resource/migrations/20261107_conversation.sql
+```
+
+测试使用内存数据库、真实 SDK 的 HTTP 替身和模型/地图替身，不操作线上计划。

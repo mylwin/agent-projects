@@ -11,7 +11,8 @@
 - 生成计划并保存结果。
 - 查看研究摘要、工具证据和供应商公开返回的推理。
 
-不包含：token 刷新与撤销、服务端对话、局部修改、分享协作和异步任务。生成接口已支持请求 `Accept: text/event-stream` 获取 SSE 进度。
+不包含：token 刷新与撤销、自动局部修改、分享协作和持久化异步任务。
+服务端对话、手动编辑快照与显式完整重新规划已实现。生成接口已支持请求 `Accept: text/event-stream` 获取 SSE 进度。
 
 ## 复用现有模型
 
@@ -258,8 +259,8 @@ backend/
 ## 7. 暂不实现
 
 - token 刷新、撤销和会话表。
-- 服务端对话消息和待处理调整清单。
-- 局部修改接口（现有 Agent 只支持整趟生成）。
+- 自动局部调整的待处理清单；服务端对话使用 `tb_conversation_turn` 保存。
+- 自动局部修改接口（已有手动编辑快照接口，Agent 仍只支持完整生成）。
 - 分享协作、多用户权限。
 - 持久化异步任务、断线续传和独立取消接口。SSE 进度已实现，连接断开时取消本轮执行。
 
@@ -270,3 +271,19 @@ backend/
 应用层按关联顺序在同一事务中显式删除全部版本、运行、研究摘要、工具证据和模型轨迹，
 不依赖数据库安装级联外键，无需修改表结构。生成运行创建与删除共用项目行锁；
 生成中返回 `409 project_generating`。不提供单独删除版本。
+
+
+## 对话与手动编辑
+
+- `GET /api/projects/{id}/messages`：`ApiSuccess[list[ConversationTurnData]]`，最近 50 轮，正序。
+- `POST /api/projects/{id}/messages`：`ChatRequest`，返回 SSE；普通聊天与重新生成统一入口。
+- `POST /api/projects/{id}/revisions`：`SaveRevisionRequest`，返回 `ApiSuccess[RevisionDetail]`。
+- `RevisionDetail` 补充 `generation_run_id`，手动版本沿用原证据和生成轨迹关联。
+
+`ChatRequest` 含 `text`（1–2000 字符）、`base_revision_id`、`day_id` 和默认 false 的 `generate`。
+只有 `generate=true` 才绑定完整规划工具；普通输入从程序层面无法创建新版本。
+`ConversationTurnData` 包含公开用户输入、回复、依据/结果版本、日期与运行状态；不保存隐藏推理。
+创建轮次先锁定本人项目；运行期间不占用数据库事务；完成提交后才发送成功终态。
+同项目正在处理对话或生成时返回 409，避免并发编辑或删除。对话截止时间过后，可恢复后续请求。
+手动编辑携带最新版本 ID，只允许更改原活动的标题、说明和 HH:MM 时间，且保持时间有序、不重复。
+地点、费用、日期和事实来源不由编辑接口改写；版本过期返回 `409 revision_conflict`。

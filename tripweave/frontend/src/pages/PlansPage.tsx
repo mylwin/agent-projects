@@ -130,9 +130,7 @@ export default function PlansPage() {
         (event) => setProgress((current) => [...current, event]),
         controller.signal,
       );
-      navigate(
-        `/saved-projects/${result.project_id}?revision=${result.revision_id}`,
-      );
+      navigate(`/saved-projects/${result.project_id}`);
     } catch (cause) {
       if (controller.signal.aborted) return;
       if (cause instanceof ProjectsError && cause.code === "unauthorized")

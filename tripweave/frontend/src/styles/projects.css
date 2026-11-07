@@ -1952,3 +1952,67 @@
   justify-content: center;
   gap: 6px;
 }
+
+.workspace-places,
+.workspace-evidence {
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+}
+.workspace-places h3 {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 12px;
+  font-size: 16px;
+}
+.workspace-places ol {
+  padding-left: 20px;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.workspace-places li {
+  padding: 7px 0;
+}
+.workspace-places button {
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+.workspace-places p,
+.chat-welcome {
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--text-secondary);
+}
+.workspace-evidence {
+  margin-top: 20px;
+}
+.workspace-evidence > summary {
+  cursor: pointer;
+  color: var(--wine);
+  font-size: 13px;
+}
+.chat-turn small,
+.message-body > small {
+  display: block;
+  margin-top: 7px;
+  color: var(--text-secondary);
+  font-size: 11px;
+}
+.chat-live {
+  white-space: pre-wrap;
+}
+.chat-generate,
+.chat-retry {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  color: var(--wine);
+  font-size: 12px;
+}
+.chat-generate:disabled {
+  opacity: 0.5;
+}

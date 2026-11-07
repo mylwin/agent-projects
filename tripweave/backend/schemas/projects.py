@@ -4,7 +4,7 @@ from datetime import UTC, datetime
 
 from pydantic import AwareDatetime, BaseModel, Field, field_validator
 
-from backend.schemas.trip import PlanResult, ResearchReport, TripRequest
+from backend.schemas.trip import PlanResult, ResearchReport, Trip, TripRequest
 
 
 class GeneratePlanRequest(TripRequest):
@@ -107,6 +107,7 @@ class RevisionDetail(BaseModel):
     title: str
     created_at: AwareDatetime
     result: PlanResult
+    generation_run_id: int | None = None
 
     @field_validator("created_at", mode="before")
     @classmethod
@@ -170,3 +171,10 @@ class RunTrace(BaseModel):
     error_message: str | None = None
     research: list[ResearchReport]
     model_calls: list[ModelCallTrace]
+
+
+class SaveRevisionRequest(BaseModel):
+    """手动编辑仅允许修改原活动的标题、说明和时间。"""
+
+    base_revision_id: int = Field(ge=1)
+    trip: Trip

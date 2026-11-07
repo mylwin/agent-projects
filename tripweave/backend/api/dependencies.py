@@ -45,3 +45,11 @@ def get_current_user(request: Request) -> User:
     if user is None:
         raise ApiException(401, ApiError(code="unauthorized", message="请先登录"))
     return user
+
+
+def get_chat_settings() -> PlannerSettings:
+    """普通聊天仅要求模型配置，不因缺少地图凭据而不可用。"""
+    try:
+        return PlannerSettings.from_env(require_maps=False)
+    except ValueError as exc:
+        raise ApiException.configuration(str(exc)) from exc

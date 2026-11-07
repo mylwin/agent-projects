@@ -30,6 +30,7 @@ def database() -> Generator[tuple[AsyncSession, Session]]:
         "CREATE TABLE tb_plan_revision (id INTEGER PRIMARY KEY, project_id INTEGER REFERENCES tb_project(id), generation_run_id INTEGER REFERENCES tb_generation_run(id))",
         "CREATE TABLE tb_research_report (id INTEGER PRIMARY KEY, run_id INTEGER REFERENCES tb_generation_run(id))",
         "CREATE TABLE tb_tool_evidence (id INTEGER PRIMARY KEY, report_id INTEGER REFERENCES tb_research_report(id))",
+        "CREATE TABLE tb_conversation_turn (id INTEGER PRIMARY KEY, project_id INTEGER REFERENCES tb_project(id), status TEXT, deadline_at DATETIME)",
         "CREATE TABLE tb_model_call (id INTEGER PRIMARY KEY, run_id INTEGER REFERENCES tb_generation_run(id))",
     )
     with engine.begin() as connection:
@@ -150,14 +151,14 @@ def test_partial_delete_failure_rolls_back_everything(
         """第三条删除语句失败，确保不是只测试删除之前的错误。"""
         nonlocal executed
         executed += 1
-        if executed == 3:
+        if executed == 4:
             raise RuntimeError("模拟删除失败")
         return await execute(statement)
 
     monkeypatch.setattr(db, "execute", fail_midway)
     with pytest.raises(RuntimeError), session.begin():
         asyncio.run(projects.delete_project(db, 1, 1))
-    assert executed == 3
+    assert executed == 4
     assert counts(session) == [2, 4, 4, 4, 4, 4]
 
 
@@ -181,7 +182,7 @@ def test_delete_endpoint_success(
         deleted.append(project_id)
 
     monkeypatch.setattr(crud, "lock_project", lock)
-    monkeypatch.setattr(crud, "has_running_generation", idle)
+    monkeypatch.setattr(crud, "has_active_request", idle)
     monkeypatch.setattr(crud, "delete_project", remove)
     response = client.delete("/api/projects/12")
     assert response.status_code == 200
@@ -217,7 +218,7 @@ def test_delete_endpoint_conflict_and_missing(
         return True
 
     monkeypatch.setattr(crud, "lock_project", lock)
-    monkeypatch.setattr(crud, "has_running_generation", running)
+    monkeypatch.setattr(crud, "has_active_request", running)
     response = client.delete(f"/api/projects/{project_id}")
     assert response.status_code == expected
 

@@ -11,11 +11,10 @@ from uuid import UUID
 from anyio import CancelScope
 from langchain_core.messages import ToolMessage
 from langchain_core.outputs import LLMResult
+from pydantic import BaseModel
 
 from backend.errors import ApiException, redact
 from backend.schemas.api import ApiSuccess
-from backend.schemas.projects import GeneratePlanData
-from backend.schemas.trip import PlanResult
 from backend.services.model_trace import ModelTrace
 
 logger = logging.getLogger("tripweave.api.stream")
@@ -36,6 +35,7 @@ class GenerationStream(ModelTrace):
         super().__init__(model_name, secrets)
         self.events: asyncio.Queue[dict[str, Any]] = asyncio.Queue()
         self.tools: dict[UUID, tuple[str, str]] = {}
+        self.pending_reply: dict[str, Any] | None = None
 
     def progress(self, message: str) -> None:
         """把真实阶段说明放入本轮事件队列。"""
@@ -43,9 +43,14 @@ class GenerationStream(ModelTrace):
 
     def emit(self, event: str, message: str, **data: Any) -> None:
         """发送脱敏后的有限元数据，不发送模型输入和工具原文。"""
-        self.events.put_nowait(
-            {"event": event, "message": redact(message, self.secrets), **data}
-        )
+        payload = {"event": event, "message": redact(message, self.secrets), **data}
+        # 慢连接只需要最新正文快照，避免逐 token 累积大量重复全文。
+        if event == "reply":
+            if self.pending_reply is not None:
+                self.pending_reply.update(payload)
+                return
+            self.pending_reply = payload
+        self.events.put_nowait(payload)
 
     @staticmethod
     def agent_label(tags: list[str] | None) -> str:
@@ -116,9 +121,10 @@ class GenerationStream(ModelTrace):
         role, name = self.tools.pop(run_id, ("模型", "未知工具"))
         self.emit("tool_error", f"{role}：{name} 调用失败", call_id=str(run_id))
 
-    async def iterate(
+    async def iterate[T: BaseModel](
         self,
-        generate: Callable[[], Awaitable[ApiSuccess[PlanResult | GeneratePlanData]]],
+        generate: Callable[[], Awaitable[ApiSuccess[T]]],
+        started_message: str = "已开始生成行程",
     ) -> AsyncGenerator[str]:
         """并发执行规划和事件发送；断开连接时取消规划并等待清理。"""
 
@@ -148,13 +154,15 @@ class GenerationStream(ModelTrace):
 
         task = asyncio.create_task(produce())
         try:
-            yield self.encode({"event": "started", "message": "已开始生成行程"})
+            yield self.encode({"event": "started", "message": started_message})
             while True:
                 try:
                     event = await asyncio.wait_for(self.events.get(), timeout=15)
                 except TimeoutError:
                     yield ": heartbeat\n\n"
                     continue
+                if event is self.pending_reply:
+                    self.pending_reply = None
                 yield self.encode(event)
                 if event["event"] in {"complete", "error"}:
                     break

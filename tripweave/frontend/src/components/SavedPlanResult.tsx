@@ -19,78 +19,89 @@ const activityKinds: Record<string, string> = {
 };
 
 /** 展示已保存版本的行程、地点事实、研究证据和提示。 */
-export default function SavedPlanResult({ result }: { result: PlanResult }) {
+export default function SavedPlanResult({
+  result,
+  evidenceOnly = false,
+}: {
+  result: PlanResult;
+  evidenceOnly?: boolean;
+}) {
   const { trip, places, research, warnings, reply } = result;
   const placesById = new Map(places.map((place) => [place.id, place]));
 
   return (
     <div className="saved-result">
-      {reply && <p className="saved-reply">{reply}</p>}
-      <div className="saved-trip-meta" aria-label="行程概况">
-        <span>
-          <MapPin size={15} /> {trip.destination}
-        </span>
-        <span>
-          <CalendarDays size={15} /> {trip.days.length} 天行程
-        </span>
-        <span>
-          <UsersRound size={15} /> {trip.travelers} 人同行
-        </span>
-        <span>
-          全团预算 {trip.currency === "CNY" ? "¥" : trip.currency}
-          {trip.budget.toLocaleString()}（不含往返大交通）
-        </span>
-      </div>
+      {!evidenceOnly && (
+        <>
+          {reply && <p className="saved-reply">{reply}</p>}
+          <div className="saved-trip-meta" aria-label="行程概况">
+            <span>
+              <MapPin size={15} /> {trip.destination}
+            </span>
+            <span>
+              <CalendarDays size={15} /> {trip.days.length} 天行程
+            </span>
+            <span>
+              <UsersRound size={15} /> {trip.travelers} 人同行
+            </span>
+            <span>
+              全团预算 {trip.currency === "CNY" ? "¥" : trip.currency}
+              {trip.budget.toLocaleString()}（不含往返大交通）
+            </span>
+          </div>
 
-      <section aria-labelledby="saved-itinerary-title">
-        <h3 className="saved-section-title" id="saved-itinerary-title">
-          每日行程
-        </h3>
-        {trip.days.map((day) => (
-          <article className="saved-day" key={day.id}>
-            <div className="saved-day-heading">
-              <span>
-                {day.label} · {day.date}
-              </span>
-              <h4>{day.title}</h4>
-              {day.description && <p>{day.description}</p>}
-              <small>路程：{day.distance}</small>
-            </div>
-            <ol>
-              {day.activities.map((activity) => {
-                const place = activity.placeId
-                  ? placesById.get(activity.placeId)
-                  : undefined;
-                return (
-                  <li key={activity.id}>
-                    <time>{activity.time}</time>
-                    <div>
-                      <strong>{activity.title}</strong>
-                      <span className="saved-activity-kind">
-                        {activityKinds[activity.kind] ?? activity.kind}
-                      </span>
-                      {activity.description && <p>{activity.description}</p>}
-                      <small>{activity.location}</small>
-                      {place && (
-                        <small className="saved-activity-source">
-                          地图地点：{place.name} ·{" "}
-                          {place.source === "amap" ? "高德" : "百度"}
-                        </small>
-                      )}
-                    </div>
-                    <span className="saved-activity-cost">
-                      {activity.cost === null
-                        ? "费用待核实"
-                        : `¥${activity.cost.toLocaleString()}`}
-                    </span>
-                  </li>
-                );
-              })}
-            </ol>
-          </article>
-        ))}
-      </section>
-
+          <section aria-labelledby="saved-itinerary-title">
+            <h3 className="saved-section-title" id="saved-itinerary-title">
+              每日行程
+            </h3>
+            {trip.days.map((day) => (
+              <article className="saved-day" key={day.id}>
+                <div className="saved-day-heading">
+                  <span>
+                    {day.label} · {day.date}
+                  </span>
+                  <h4>{day.title}</h4>
+                  {day.description && <p>{day.description}</p>}
+                  <small>路程：{day.distance}</small>
+                </div>
+                <ol>
+                  {day.activities.map((activity) => {
+                    const place = activity.placeId
+                      ? placesById.get(activity.placeId)
+                      : undefined;
+                    return (
+                      <li key={activity.id}>
+                        <time>{activity.time}</time>
+                        <div>
+                          <strong>{activity.title}</strong>
+                          <span className="saved-activity-kind">
+                            {activityKinds[activity.kind] ?? activity.kind}
+                          </span>
+                          {activity.description && (
+                            <p>{activity.description}</p>
+                          )}
+                          <small>{activity.location}</small>
+                          {place && (
+                            <small className="saved-activity-source">
+                              地图地点：{place.name} ·{" "}
+                              {place.source === "amap" ? "高德" : "百度"}
+                            </small>
+                          )}
+                        </div>
+                        <span className="saved-activity-cost">
+                          {activity.cost === null
+                            ? "费用待核实"
+                            : `¥${activity.cost.toLocaleString()}`}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ol>
+              </article>
+            ))}
+          </section>
+        </>
+      )}
       <section className="saved-facts" aria-labelledby="saved-places-title">
         <h3 className="saved-section-title" id="saved-places-title">
           地点来源 <small>{places.length} 处</small>
