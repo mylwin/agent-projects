@@ -106,4 +106,4 @@ PlanResult 包含 trip、places、reply、warnings，新增 research 保存每�
 
 新增 few-shot 参数通过合成 MCP 的 schema 校验，Planner 示例通过真实草稿模型和业务校验。
 它们不证明真实供应商的权限、在线工具名、回包形状或模型遵循提示词的效果已验证。
-按用户选择尚未进行真实服务联调；已实现薄 HTTP 入口，前端尚未接入。
+真实服务联调仍需单独验证；HTTP 入口已接入前端，生成期间通过 SSE 显示阶段、模型调用与工具状态。

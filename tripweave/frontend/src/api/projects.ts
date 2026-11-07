@@ -202,10 +202,97 @@ export function getSavedTrace(
   });
 }
 
-/** 生成行程并保存为用户的新项目。 */
-export function generateSavedPlan(input: GeneratePlanInput) {
-  return request<GeneratedPlan>("/api/plans/generate", {
-    method: "POST",
-    body: JSON.stringify(input),
-  });
+/** 规划期间由服务端真实回调产生的进度，不包含工具原始参数。 */
+export interface GenerationProgress {
+  event:
+    | "started"
+    | "progress"
+    | "model_start"
+    | "model_end"
+    | "tool_start"
+    | "tool_end"
+    | "tool_error";
+  message: string;
+  call_id?: string;
+}
+
+/** 生成并保存行程；逐帧处理 SSE，只有持久化成功才兑现最终结果。 */
+export async function generateSavedPlan(
+  input: GeneratePlanInput,
+  onProgress: (event: GenerationProgress) => void,
+  signal: AbortSignal,
+): Promise<GeneratedPlan> {
+  let response: Response;
+  try {
+    response = await fetch("/api/plans/generate", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "text/event-stream",
+      },
+      body: JSON.stringify(input),
+      signal,
+    });
+  } catch (cause) {
+    if (signal.aborted) throw cause;
+    throw new ProjectsError("network_error", "无法连接计划服务，请稍后重试。");
+  }
+  if (!response.ok) {
+    const body = (await response.json().catch(() => null)) as ApiFailure | null;
+    throw new ProjectsError(
+      body?.error?.code ?? `http_${response.status}`,
+      body?.error?.message ?? "无法开始生成，请稍后重试。",
+    );
+  }
+  if (
+    !response.headers.get("content-type")?.includes("text/event-stream") ||
+    !response.body
+  ) {
+    throw new ProjectsError("invalid_stream", "计划服务未返回有效的进度流。");
+  }
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  try {
+    while (true) {
+      const { value, done } = await reader.read();
+      buffer += decoder.decode(value, { stream: !done });
+      // 服务端使用 LF；同时接受 CRLF，兼容代理和测试中的分帧。
+      buffer = buffer.replace(/\r\n/g, "\n");
+      let boundary: number;
+      while ((boundary = buffer.indexOf("\n\n")) >= 0) {
+        const frame = buffer.slice(0, boundary);
+        buffer = buffer.slice(boundary + 2);
+        const data = frame
+          .split("\n")
+          .filter((line) => line.startsWith("data:"))
+          .map((line) => line.slice(5).trimStart())
+          .join("\n");
+        if (!data) continue; // 心跳注释不表示进度。
+        const event = JSON.parse(data) as
+          | GenerationProgress
+          | { event: "complete"; data: GeneratedPlan }
+          | { event: "error"; error: { code: string; message: string } };
+        if (event.event === "error")
+          throw new ProjectsError(event.error.code, event.error.message);
+        if (event.event === "complete") return event.data;
+        onProgress(event);
+      }
+      if (done)
+        throw new ProjectsError(
+          "stream_interrupted",
+          "生成连接已中断，尚未收到保存成功的确认。请检查计划列表后再重试。",
+        );
+    }
+  } catch (cause) {
+    if (signal.aborted || cause instanceof ProjectsError) throw cause;
+    throw new ProjectsError(
+      "stream_interrupted",
+      "生成连接异常，尚未收到保存成功的确认。请检查计划列表后再重试。",
+    );
+  } finally {
+    await reader.cancel().catch(() => undefined);
+    reader.releaseLock();
+  }
 }

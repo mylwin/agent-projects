@@ -1870,3 +1870,41 @@
     margin-left: 63px;
   }
 }
+
+/* 生成期间只展示服务端真实事件，不使用模拟百分比。 */
+.generation-fields {
+  display: contents;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+.generation-fields[hidden] {
+  display: none;
+}
+.generation-progress {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--paper);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.generation-progress > p {
+  margin: 0 0 8px;
+  color: var(--wine);
+}
+.generation-progress ol {
+  max-height: 160px;
+  overflow: auto;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-secondary);
+  overflow-wrap: anywhere;
+}
+.generation-progress .generation-tool-error {
+  color: #a03d4a;
+}
+.plans-shell .modal {
+  width: min(450px, calc(100vw - 40px));
+}

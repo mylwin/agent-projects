@@ -48,10 +48,10 @@ async def start_run(
 async def mark_failed(
     factory: async_sessionmaker[AsyncSession], run_id: int, code: str, stage: str | None
 ) -> None:
-    """另开事务记录已脱敏的生成失败。"""
+    """另开事务记录失败；断流清理不得覆盖已经成功提交的运行。"""
     async with db_transaction(factory) as db:
         run = await db.get(GenerationRun, run_id)
-        if run is None:
+        if run is None or run.status != "running":
             return
         run.status = "failed"
         run.error_code = code
