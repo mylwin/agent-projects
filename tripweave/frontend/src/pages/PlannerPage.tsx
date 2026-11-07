@@ -3,6 +3,8 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type Dispatch,
+  type SetStateAction,
   type FormEvent,
   type ReactNode,
 } from "react";
@@ -52,10 +54,15 @@ const icons: Record<string, LucideIcon> = {
 export interface ServerWorkspace {
   projectId: number;
   revisionId: number;
+  revisionNumber: number;
   revisions: RevisionSummary[];
+  draft: string;
+  setDraft: Dispatch<SetStateAction<string>>;
+  loading: boolean;
+  status: ReactNode;
   saveTrip: (trip: Trip) => Promise<void>;
   chooseFinal: (revisionId: number) => Promise<void>;
-  onGenerated: (revisionId: number) => Promise<void>;
+  onGenerated: (revisionId: number, signal?: AbortSignal) => Promise<void>;
   evidence: ReactNode;
 }
 /**
@@ -89,7 +96,10 @@ export default function PlannerPage({
   const [mobileTab, setMobileTab] = useState<"trip" | "assistant">("trip");
   const [collapsed, setCollapsed] = useState(false);
   const [visualView, setVisualView] = useState<"map" | "photo">("map");
-  const [busy, setBusy] = useState(false);
+  const [saving, setBusy] = useState(false);
+  const [assistantBusy, setAssistantBusy] = useState(false);
+  const [assistantStatus, setAssistantStatus] = useState("");
+  const busy = saving || assistantBusy || !!server?.loading;
   const [confirmed, setConfirmed] = useState(false);
   const [changedIds, setChangedIds] = useState<string[]>([]);
   const changeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -433,7 +443,12 @@ export default function PlannerPage({
             setCollapsed(false);
           }}
         >
-          旅行助手{requests.length > 0 && <span>{requests.length}</span>}
+          旅行助手
+          {server && assistantStatus ? (
+            <span>{assistantStatus}</span>
+          ) : (
+            requests.length > 0 && <span>{requests.length}</span>
+          )}
         </button>
       </nav>
 
@@ -445,6 +460,7 @@ export default function PlannerPage({
           aria-label="旅行行程"
         >
           <div className="journal-scroll">
+            {server?.status}
             {viewedRevision && (
               <div className="revision-notice">
                 <History size={15} />
@@ -762,19 +778,22 @@ export default function PlannerPage({
           {collapsed && (
             <button
               className="assistant-rail"
-              aria-label="展开旅行助手"
+              aria-label={`展开旅行助手${assistantStatus ? `：${assistantStatus}` : ""}`}
               onClick={() => {
                 setCollapsed(false);
               }}
             >
               <PanelRightOpen size={21} />
               <span>旅行助手</span>
+              {server && assistantStatus && (
+                <small className="rail-status">{assistantStatus}</small>
+              )}
               {busy && <i className="rail-working" />}
             </button>
           )}
           <aside
             id="plan-assistant"
-            className="assistant mobile-visible"
+            className={`assistant mobile-visible ${server ? "server-chat" : ""}`}
             aria-label="当前计划的旅行助手"
             inert={collapsed}
           >
@@ -783,10 +802,16 @@ export default function PlannerPage({
                 projectId={server.projectId}
                 name={project.name}
                 revisionId={server.revisionId}
+                revisionNumber={server.revisionNumber}
+                revisions={server.revisions}
+                draft={server.draft}
+                setDraft={server.setDraft}
+                workspaceLoading={server.loading || saving}
                 dayId={dayId}
-                active={mobileTab === "assistant"}
+                active={mobileTab === "assistant" && !collapsed}
                 historical={!!viewedRevision}
-                onBusy={setBusy}
+                onBusy={setAssistantBusy}
+                onStatus={setAssistantStatus}
                 onRevision={viewRevision}
                 onSaved={server.onGenerated}
                 onCollapse={toggleAssistant}
