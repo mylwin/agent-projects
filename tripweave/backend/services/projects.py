@@ -19,7 +19,7 @@ from backend.schemas.projects import (
     RevisionSummary,
     RunTrace,
 )
-from backend.schemas.trip import PlanResult, ResearchReport, ToolEvidence
+from backend.schemas.trip import PlanResult, ResearchReport, ToolEvidence, Trip
 
 
 def project_summary(project: Project, revision_count: int) -> ProjectSummary:
@@ -115,6 +115,7 @@ async def revision_detail(
         number=revision.number,
         title=revision.title,
         created_at=revision.created_at,
+        generation_run_id=revision.generation_run_id,
         result=PlanResult.model_validate(
             {
                 "trip": revision.trip,
@@ -172,7 +173,7 @@ async def delete_project(db: AsyncSession, user_id: int, project_id: int) -> Non
         raise ApiException(
             404, ApiError(code="project_not_found", message="计划不存在")
         )
-    if await projects_crud.has_running_generation(db, project.id):
+    if await projects_crud.has_active_request(db, project.id):
         raise ApiException(
             409,
             ApiError(
@@ -181,3 +182,76 @@ async def delete_project(db: AsyncSession, user_id: int, project_id: int) -> Non
             ),
         )
     await projects_crud.delete_project(db, project.id)
+
+
+async def save_manual_revision(
+    db: AsyncSession, user_id: int, project_id: int, base_revision_id: int, trip: Trip
+) -> RevisionDetail:
+    """在最新版本上保存活动文字和时间，拒绝覆盖其他标签页的新版本及事实字段。"""
+    import re
+
+    from backend.services.saved_generation import utc_now
+
+    project = await projects_crud.lock_project(db, user_id, project_id)
+    if project is None:
+        raise ApiException(
+            404, ApiError(code="project_not_found", message="计划不存在")
+        )
+    if await projects_crud.has_active_request(db, project_id):
+        raise ApiException(
+            409, ApiError(code="project_busy", message="请等待当前请求完成后再编辑")
+        )
+    revisions = await projects_crud.list_revisions(db, project_id)
+    if not revisions or revisions[0].id != base_revision_id:
+        raise ApiException(
+            409,
+            ApiError(
+                code="revision_conflict", message="当前计划已有新版本，请刷新后再编辑"
+            ),
+        )
+    base = revisions[0]
+    original = Trip.model_validate(base.trip)
+    invalid = trip.model_dump(exclude={"days"}) != original.model_dump(
+        exclude={"days"}
+    ) or len(trip.days) != len(original.days)
+    for day, before in zip(trip.days, original.days, strict=False):
+        invalid |= day.model_dump(exclude={"activities"}) != before.model_dump(
+            exclude={"activities"}
+        ) or len(day.activities) != len(before.activities)
+        times = [activity.time for activity in day.activities]
+        invalid |= times != sorted(set(times))
+        for activity, previous in zip(day.activities, before.activities, strict=False):
+            invalid |= activity.model_dump(
+                exclude={"title", "description", "time"}
+            ) != previous.model_dump(exclude={"title", "description", "time"})
+            invalid |= not (
+                0 < len(activity.title.strip()) <= 200
+                and len(activity.description) <= 500
+                and re.fullmatch(r"(?:[01]\d|2[0-3]):[0-5]\d", activity.time)
+            )
+    if invalid:
+        raise ApiException(
+            422,
+            ApiError(
+                code="invalid_revision",
+                message="仅可修改原活动的标题、说明和 HH:MM 时间；时间须按顺序排列且不能重复",
+            ),
+        )
+    if trip == original:
+        return await revision_detail(db, base, user_id)
+    revision = PlanRevision(
+        project_id=project_id,
+        number=base.number + 1,
+        title="手动调整行程",
+        schema_version=trip.schemaVersion,
+        trip=trip.model_dump(mode="json"),
+        places=base.places,
+        warnings=base.warnings,
+        reply=base.reply,
+        generation_run_id=base.generation_run_id,
+    )
+    db.add(revision)
+    project.updated_at = utc_now()
+    await db.flush()
+    await db.refresh(revision)
+    return await revision_detail(db, revision, user_id)

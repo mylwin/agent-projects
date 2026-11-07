@@ -111,6 +111,7 @@ async def save_result(
                 or 0
             ) + 1
             project.updated_at = utc_now()
+            project.destination = request.destination
         run = await db.get(GenerationRun, run_id)
         if run is None:
             raise ValueError("生成记录不存在")

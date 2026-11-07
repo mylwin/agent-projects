@@ -37,7 +37,7 @@ class PlannerSettings:
     model_thinking_budget: int | None = None
 
     @classmethod
-    def from_env(cls) -> "PlannerSettings":
+    def from_env(cls, *, require_maps: bool = True) -> "PlannerSettings":
         """
         读取并检查运行所需的环境变量。
 
@@ -53,7 +53,11 @@ class PlannerSettings:
             "MODEL_API_KEY": os.getenv("MODEL_API_KEY", "").strip(),
             map_key_name: os.getenv(map_key_name, "").strip(),
         }
-        missing = [name for name, value in values.items() if not value]
+        missing = [
+            name
+            for name, value in values.items()
+            if not value and (name == "MODEL_API_KEY" or require_maps)
+        ]
         if missing:
             raise ValueError("缺少环境变量：" + "、".join(missing))
         return cls(

@@ -1,8 +1,11 @@
 """旅行项目与版本的数据库读写。"""
 
+from datetime import UTC, datetime
+
 from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.models.conversation_turn import ConversationTurn
 from backend.models.generation_run import GenerationRun
 from backend.models.model_call import ModelCall
 from backend.models.plan_revision import PlanRevision
@@ -75,6 +78,7 @@ async def set_final_revision(
 ) -> None:
     """更新项目的最终版本，事务由 get_db 提交。"""
     project.final_revision_id = revision_id
+    project.updated_at = datetime.now(UTC).replace(tzinfo=None)
     await db.flush()
 
 
@@ -138,14 +142,22 @@ async def lock_project(
     )
 
 
-async def has_running_generation(db: AsyncSession, project_id: int) -> bool:
-    """检查项目是否仍有生成任务，避免删除后再写回结果。"""
+async def has_active_request(db: AsyncSession, project_id: int) -> bool:
+    """检查项目是否仍有生成或对话请求，避免并发编辑、删除。"""
     return (
         await db.scalar(
             select(GenerationRun.id)
             .where(
                 GenerationRun.project_id == project_id,
                 GenerationRun.status == "running",
+            )
+            .union_all(
+                select(ConversationTurn.id).where(
+                    ConversationTurn.project_id == project_id,
+                    ConversationTurn.status == "running",
+                    ConversationTurn.deadline_at
+                    > datetime.now(UTC).replace(tzinfo=None),
+                )
             )
             .limit(1)
         )
@@ -159,6 +171,7 @@ async def delete_project(db: AsyncSession, project_id: int) -> None:
     reports = select(ResearchReport.id).where(ResearchReport.run_id.in_(runs))
     # ORM 只有逻辑关联，显式删除也适用于未安装外键的数据库。
     statements = (
+        delete(ConversationTurn).where(ConversationTurn.project_id == project_id),
         delete(ToolEvidence).where(ToolEvidence.report_id.in_(reports)),
         delete(ModelCall).where(ModelCall.run_id.in_(runs)),
         delete(ResearchReport).where(ResearchReport.run_id.in_(runs)),

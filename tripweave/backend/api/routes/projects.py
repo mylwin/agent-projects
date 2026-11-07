@@ -17,6 +17,7 @@ from backend.schemas.projects import (
     ProjectSummary,
     RevisionDetail,
     RunTrace,
+    SaveRevisionRequest,
     SetFinalRevisionRequest,
 )
 from backend.services import projects as projects_service
@@ -150,3 +151,18 @@ async def delete_project(
     """删除当前用户计划及其全部版本、运行、研究资料和模型轨迹。"""
     await projects_service.delete_project(db, user.id, project_id)
     return ApiSuccess(data=None)
+
+
+@router.post("/{project_id}/revisions", response_model=ApiSuccess[RevisionDetail])
+async def save_revision(
+    body: SaveRevisionRequest,
+    db: Annotated[AsyncSession, Depends(get_db, scope="function")],
+    user: Annotated[User, Depends(get_current_user)],
+    project_id: Annotated[int, Path(ge=1)],
+) -> ApiSuccess[RevisionDetail]:
+    """保存当前计划的手动编辑快照，历史版本只读。"""
+    return ApiSuccess(
+        data=await projects_service.save_manual_revision(
+            db, user.id, project_id, body.base_revision_id, body.trip
+        )
+    )

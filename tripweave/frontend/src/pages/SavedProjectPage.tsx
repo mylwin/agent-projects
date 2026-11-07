@@ -1,290 +1,218 @@
 import { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { ArrowLeft, Check, History, MapPin } from "lucide-react";
-import AccountChip from "../components/AccountChip";
-import Brand from "../components/Brand";
+import PlannerPage from "./PlannerPage";
 import SavedPlanResult from "../components/SavedPlanResult";
 import { useAuth } from "../auth/AuthProvider";
 import {
   getSavedProject,
   getSavedRevision,
   getSavedTrace,
-  ProjectsError,
+  saveProjectRevision,
   setSavedFinal,
+  ProjectsError,
   type ProjectDetail,
   type RevisionDetail,
   type RunTrace,
 } from "../api/projects";
+import type { PlanProject, Trip } from "../types/trip";
 
-/** 展示服务端保存的计划版本和公开生成轨迹。 */
+/** 服务端数据容器：行程、编辑、版本、对话和证据统一使用既有工作区。 */
 export default function SavedProjectPage() {
   const { id } = useParams();
-  const { user, refreshSession } = useAuth();
   const projectId = Number(id);
+  const { refreshSession } = useAuth();
   const [params, setParams] = useSearchParams();
   const [project, setProject] = useState<ProjectDetail | null>(null);
   const [revision, setRevision] = useState<RevisionDetail | null>(null);
   const [trace, setTrace] = useState<RunTrace | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
+  const [traceLoading, setTraceLoading] = useState(false);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
-  const invalidId = !Number.isSafeInteger(projectId) || projectId < 1;
-  const selectedRevisionId =
-    Number(params.get("revision")) ||
-    project?.final_revision_id ||
-    project?.revisions[0]?.id;
-
+  const [traceError, setTraceError] = useState("");
+  const [reload, setReload] = useState(0);
+  const invalid = !Number.isSafeInteger(projectId) || projectId < 1;
+  const revisionParam = params.get("revision");
+  const selected = revisionParam
+    ? Number(revisionParam)
+    : project?.revisions[0]?.id;
   useEffect(() => {
-    if (invalidId) return;
+    if (invalid) return;
     const controller = new AbortController();
     void getSavedProject(projectId, controller.signal)
       .then(setProject)
       .catch((cause: unknown) => {
         if (!controller.signal.aborted) {
+          setError(cause instanceof Error ? cause.message : "无法读取计划");
           if (cause instanceof ProjectsError && cause.code === "unauthorized")
             void refreshSession();
-          setError(cause instanceof Error ? cause.message : "无法读取计划。");
         }
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
       });
     return () => controller.abort();
-  }, [projectId, user?.id, invalidId, refreshSession]);
-
+  }, [projectId, invalid, reload, refreshSession]);
   useEffect(() => {
-    if (!project || !selectedRevisionId) return;
+    if (!selected || invalid) return;
     const controller = new AbortController();
-    void getSavedRevision(project.id, selectedRevisionId, controller.signal)
+    void getSavedRevision(projectId, selected, controller.signal)
       .then(setRevision)
       .catch((cause: unknown) => {
         if (!controller.signal.aborted) {
+          setError(cause instanceof Error ? cause.message : "无法读取版本");
           if (cause instanceof ProjectsError && cause.code === "unauthorized")
             void refreshSession();
-          setError(cause instanceof Error ? cause.message : "无法读取版本。");
         }
       });
     return () => controller.abort();
-  }, [project, selectedRevisionId, refreshSession]);
+  }, [projectId, selected, invalid, reload, refreshSession]);
 
-  const activeRevision = revision?.id === selectedRevisionId ? revision : null;
-
-  async function chooseFinal() {
-    if (
-      !project ||
-      !activeRevision ||
-      activeRevision.id !== selectedRevisionId ||
-      saving
-    )
-      return;
-    setSaving(true);
-    setNotice("");
+  /** 成功提交后同步服务端摘要并回到最新版本，不写入浏览器草稿。 */
+  async function refreshVersion(revisionId: number) {
+    let detail: ProjectDetail;
+    let saved: RevisionDetail;
     try {
-      const updated = await setSavedFinal(project.id, activeRevision.id);
-      setProject((current) => (current ? { ...current, ...updated } : current));
-      setNotice(`已选定第 ${activeRevision.number} 版为最终方案`);
-    } catch (cause) {
-      if (cause instanceof ProjectsError && cause.code === "unauthorized")
-        void refreshSession();
-      setNotice(cause instanceof Error ? cause.message : "保存最终方案失败。");
-    } finally {
-      setSaving(false);
+      [detail, saved] = await Promise.all([
+        getSavedProject(projectId),
+        getSavedRevision(projectId, revisionId),
+      ]);
+    } catch {
+      throw new Error("新版本已保存，但工作区刷新失败，请刷新页面查看。");
     }
+    setProject(detail);
+    setRevision(saved);
+    setParams({});
+    setTrace(null);
+    setTraceError("");
   }
-
-  async function showTrace() {
-    if (
-      !project ||
-      !activeRevision?.generation_run_id ||
-      activeRevision.id !== selectedRevisionId
-    )
-      return;
-    setNotice("");
+  /** 保存活动编辑；版本冲突交给界面提示，原输入保留供用户处理。 */
+  async function saveTrip(trip: Trip) {
+    if (!revision) return;
+    const saved = await saveProjectRevision(projectId, revision.id, trip);
+    await refreshVersion(saved.id);
+  }
+  /** 最终方案写回服务端，跨设备可读。 */
+  async function chooseFinal(revisionId: number) {
+    const summary = await setSavedFinal(projectId, revisionId);
+    setProject((current) => (current ? { ...current, ...summary } : current));
+  }
+  /** 仅请求当前版本关联的公开轨迹，避免旧请求覆盖新版本。 */
+  async function showTrace(runId: number) {
+    if (traceLoading) return;
+    setTraceLoading(true);
+    setTraceError("");
     try {
-      setTrace(
-        await getSavedTrace(project.id, activeRevision.generation_run_id),
+      setTrace(await getSavedTrace(projectId, runId));
+    } catch (cause) {
+      setTraceError(
+        cause instanceof Error ? cause.message : "无法读取生成轨迹",
       );
-    } catch (cause) {
-      if (cause instanceof ProjectsError && cause.code === "unauthorized")
-        void refreshSession();
-      setNotice(cause instanceof Error ? cause.message : "无法读取生成轨迹。");
+    } finally {
+      setTraceLoading(false);
     }
   }
 
-  return (
-    <div className="app-shell plans-shell saved-project-shell">
-      <header className="topbar">
-        <Brand />
-        <span className="brand-divider" />
-        <Link className="saved-back" to="/plans">
-          <ArrowLeft size={16} /> 我的旅行计划
+  const invalidRevision =
+    revisionParam !== null &&
+    (!Number.isSafeInteger(Number(revisionParam)) || Number(revisionParam) < 1);
+  if (invalid || invalidRevision || error)
+    return (
+      <main className="not-found">
+        <h1>
+          {invalid ? "计划 ID 无效" : invalidRevision ? "版本 ID 无效" : error}
+        </h1>
+        <button
+          className="button secondary"
+          onClick={() => {
+            setError("");
+            setReload((value) => value + 1);
+          }}
+        >
+          重新读取
+        </button>
+        <Link className="button primary" to="/plans">
+          返回全部计划
         </Link>
-        <AccountChip />
-      </header>
-      <main className="plans-main saved-project-main">
-        {invalidId && (
-          <p className="saved-error" role="alert">
-            计划 ID 无效。
-          </p>
-        )}
-        {loading && !invalidId && <p role="status">正在读取已保存的计划…</p>}
-        {error && (
-          <p className="saved-error" role="alert">
-            {error}
-          </p>
-        )}
-        {!loading && project && (
-          <>
-            <div className="saved-heading">
-              <div>
-                <span className="saved-eyebrow">已保存的计划</span>
-                <h1>{project.name}</h1>
-                <p>
-                  <MapPin size={16} /> {project.destination} ·{" "}
-                  {project.revision_count} 个版本
-                </p>
-              </div>
-              <Link className="button secondary" to="/plans">
-                返回列表
-              </Link>
-            </div>
-            <div className="saved-layout">
-              <aside className="saved-revisions" aria-label="行程版本">
-                <h2>
-                  <History size={17} /> 行程版本
-                </h2>
-                {project.revisions.map((item) => (
-                  <button
-                    key={item.id}
-                    className={item.id === selectedRevisionId ? "selected" : ""}
-                    onClick={() => {
-                      setRevision(null);
-                      setTrace(null);
-                      setError("");
-                      setParams({ revision: String(item.id) });
-                    }}
-                    aria-pressed={item.id === selectedRevisionId}
-                  >
-                    <strong>
-                      第 {item.number} 版 · {item.title}
-                    </strong>
-                    <small>
-                      {new Date(item.created_at).toLocaleString("zh-CN")}
-                    </small>
-                    {item.id === project.final_revision_id && <em>最终方案</em>}
-                  </button>
+      </main>
+    );
+  if (!project || !revision || revision.id !== selected)
+    return (
+      <main className="not-found" role="status">
+        正在读取行程工作区…
+      </main>
+    );
+  const view: PlanProject = {
+    id: `saved-${project.id}`,
+    name: project.name,
+    createdAt: revision.created_at,
+    updatedAt: project.updated_at,
+    trip: revision.result.trip,
+    messages: [],
+    requests: [],
+    pending: null,
+    draft: false,
+    finalRevisionId:
+      project.final_revision_id === null
+        ? null
+        : String(project.final_revision_id),
+    revisions: [
+      {
+        id: String(revision.id),
+        number: revision.number,
+        title: revision.title,
+        createdAt: revision.created_at,
+        trip: revision.result.trip,
+      },
+    ],
+  };
+  const runId = revision.generation_run_id;
+  return (
+    <PlannerPage
+      project={view}
+      server={{
+        projectId,
+        revisionId: revision.id,
+        revisions: project.revisions,
+        saveTrip,
+        chooseFinal,
+        onGenerated: refreshVersion,
+        evidence: (
+          <details className="workspace-evidence">
+            <summary>地点来源、研究证据与生成轨迹</summary>
+            <SavedPlanResult result={revision.result} evidenceOnly />
+            {runId && (
+              <button
+                className="saved-trace-button"
+                disabled={traceLoading}
+                onClick={() => void showTrace(runId)}
+              >
+                {traceLoading ? "正在读取轨迹…" : "查看生成轨迹"}
+              </button>
+            )}
+            {traceError && (
+              <p className="saved-error" role="alert">
+                {traceError}
+              </p>
+            )}
+            {trace?.run_id === runId && (
+              <section className="saved-trace">
+                <h3>公开生成轨迹</h3>
+                {trace.model_calls.map((call) => (
+                  <details key={`${call.agent}-${call.call_index}`}>
+                    <summary>
+                      {call.agent} · 第 {call.call_index} 次调用
+                    </summary>
+                    {call.content && <pre>{call.content}</pre>}
+                    {call.reasoning && <pre>{call.reasoning}</pre>}
+                    {call.tool_calls?.map((tool, index) => (
+                      <p key={index}>工具：{tool.name}</p>
+                    ))}
+                  </details>
                 ))}
-                {!project.revisions.length && <p>暂无已保存版本。</p>}
-              </aside>
-              <section className="saved-content">
-                {activeRevision?.id !== selectedRevisionId &&
-                  !error &&
-                  !!project.revisions.length && (
-                    <p role="status">正在读取版本…</p>
-                  )}
-                {activeRevision && (
-                  <>
-                    <div className="saved-version-header">
-                      <div>
-                        <span className="saved-eyebrow">
-                          第 {activeRevision.number} 版
-                        </span>
-                        <h2>{activeRevision.title}</h2>
-                      </div>
-                      <button
-                        className="button primary"
-                        disabled={
-                          saving ||
-                          project.final_revision_id === activeRevision.id
-                        }
-                        onClick={() => void chooseFinal()}
-                      >
-                        <Check size={16} />
-                        {project.final_revision_id === activeRevision.id
-                          ? "已设为最终方案"
-                          : saving
-                            ? "正在保存…"
-                            : "设为最终方案"}
-                      </button>
-                    </div>
-                    {notice && (
-                      <p className="saved-notice" role="status">
-                        {notice}
-                      </p>
-                    )}
-                    <SavedPlanResult result={activeRevision.result} />
-                    {activeRevision.generation_run_id && (
-                      <button
-                        className="saved-trace-button"
-                        onClick={() => void showTrace()}
-                      >
-                        查看生成轨迹
-                      </button>
-                    )}
-                    {trace &&
-                      trace.run_id === activeRevision.generation_run_id && (
-                        <section className="saved-trace" aria-label="生成轨迹">
-                          <h3>
-                            生成轨迹 · 第 {trace.run_id} 次运行 ·
-                            {trace.status === "succeeded" ? "已完成" : "失败"}
-                          </h3>
-                          {trace.error_message && <p>{trace.error_message}</p>}
-                          {trace.error_stage && (
-                            <p>失败阶段：{trace.error_stage}</p>
-                          )}
-                          {trace.error_code && (
-                            <p>错误码：{trace.error_code}</p>
-                          )}
-                          <p>调研资料与工具证据见上方“调研资料”。</p>
-                          {trace.model_calls.map((call) => (
-                            <details key={`${call.agent}-${call.call_index}`}>
-                              <summary>
-                                {call.agent} · 第 {call.call_index} 次调用 ·{" "}
-                                {call.model_name}
-                              </summary>
-                              <p>
-                                {new Date(call.started_at).toLocaleString(
-                                  "zh-CN",
-                                )}
-                                {call.finished_at &&
-                                  ` 至 ${new Date(call.finished_at).toLocaleString("zh-CN")}`}
-                                {call.duration_ms !== null &&
-                                  ` · ${call.duration_ms} 毫秒`}
-                                {call.provider && ` · ${call.provider}`}
-                              </p>
-                              {call.content && <pre>{call.content}</pre>}
-                              {call.reasoning && (
-                                <>
-                                  <strong>公开推理</strong>
-                                  <pre>{call.reasoning}</pre>
-                                </>
-                              )}
-                              {call.tool_calls &&
-                                call.tool_calls.length > 0 && (
-                                  <ul>
-                                    {call.tool_calls.map((tool, index) => (
-                                      <li key={`${tool.id}-${index}`}>
-                                        工具调用：{tool.name}
-                                        {tool.id && `（${tool.id}）`}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                )}
-                            </details>
-                          ))}
-                          {!trace.model_calls.length && (
-                            <p>这次运行没有保存公开模型调用。</p>
-                          )}
-                        </section>
-                      )}
-                  </>
+                {trace.model_calls.length === 0 && (
+                  <p>本次没有保存公开模型调用。</p>
                 )}
               </section>
-            </div>
-          </>
-        )}
-      </main>
-    </div>
+            )}
+          </details>
+        ),
+      }}
+    />
   );
 }

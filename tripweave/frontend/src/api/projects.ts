@@ -205,6 +205,7 @@ export function getSavedTrace(
 /** 规划期间由服务端真实回调产生的进度，不包含工具原始参数。 */
 export interface GenerationProgress {
   event:
+    | "reply"
     | "started"
     | "progress"
     | "model_start"
@@ -217,14 +218,15 @@ export interface GenerationProgress {
 }
 
 /** 生成并保存行程；逐帧处理 SSE，只有持久化成功才兑现最终结果。 */
-export async function generateSavedPlan(
-  input: GeneratePlanInput,
+async function streamRequest<T>(
+  path: string,
+  input: unknown,
   onProgress: (event: GenerationProgress) => void,
   signal: AbortSignal,
-): Promise<GeneratedPlan> {
+): Promise<T> {
   let response: Response;
   try {
-    response = await fetch("/api/plans/generate", {
+    response = await fetch(path, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -272,7 +274,7 @@ export async function generateSavedPlan(
         if (!data) continue; // 心跳注释不表示进度。
         const event = JSON.parse(data) as
           | GenerationProgress
-          | { event: "complete"; data: GeneratedPlan }
+          | { event: "complete"; data: T }
           | { event: "error"; error: { code: string; message: string } };
         if (event.event === "error")
           throw new ProjectsError(event.error.code, event.error.message);
@@ -295,6 +297,72 @@ export async function generateSavedPlan(
     await reader.cancel().catch(() => undefined);
     reader.releaseLock();
   }
+}
+
+/** 生成行程并实时接收阶段，在持久化成功后返回项目标识。 */
+export function generateSavedPlan(
+  input: GeneratePlanInput,
+  onProgress: (event: GenerationProgress) => void,
+  signal: AbortSignal,
+) {
+  return streamRequest<GeneratedPlan>(
+    "/api/plans/generate",
+    input,
+    onProgress,
+    signal,
+  );
+}
+
+export interface ConversationTurn {
+  id: number;
+  base_revision_id: number;
+  result_revision_id: number | null;
+  day_id: number;
+  generate: boolean;
+  user_text: string;
+  assistant_text: string;
+  status: "running" | "succeeded" | "failed" | "cancelled";
+  error_code: string | null;
+  created_at: string;
+}
+
+/** 读取服务端项目对话，刷新或切换设备后仍保留。 */
+export function getProjectMessages(projectId: number, signal?: AbortSignal) {
+  return request<ConversationTurn[]>(`/api/projects/${projectId}/messages`, {
+    signal,
+  });
+}
+
+/** 普通聊天默认不授权工具；重新生成由显式操作触发。 */
+export function sendProjectMessage(
+  projectId: number,
+  input: {
+    text: string;
+    base_revision_id: number;
+    day_id: number;
+    generate: boolean;
+  },
+  onProgress: (event: GenerationProgress) => void,
+  signal: AbortSignal,
+) {
+  return streamRequest<ConversationTurn>(
+    `/api/projects/${projectId}/messages`,
+    input,
+    onProgress,
+    signal,
+  );
+}
+
+/** 根据最新版本保存手动编辑，服务端校验事实字段与版本冲突。 */
+export function saveProjectRevision(
+  projectId: number,
+  baseRevisionId: number,
+  trip: Trip,
+) {
+  return request<RevisionDetail>(`/api/projects/${projectId}/revisions`, {
+    method: "POST",
+    body: JSON.stringify({ base_revision_id: baseRevisionId, trip }),
+  });
 }
 
 /** 删除整个服务端计划，后端同时删除其全部版本及关联记录。 */

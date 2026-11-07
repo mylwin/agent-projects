@@ -4,6 +4,7 @@ import {
   useState,
   type CSSProperties,
   type FormEvent,
+  type ReactNode,
 } from "react";
 import {
   BookOpen,
@@ -34,6 +35,8 @@ import type { Activity, PlanProject, Trip } from "../types/trip";
 import RouteMap from "../components/RouteMap";
 import AssistantPanel from "../components/AssistantPanel";
 import Brand from "../components/Brand";
+import ChatAssistant from "../components/ChatAssistant";
+import type { RevisionSummary } from "../api/projects";
 import { saveRevision, updateProject } from "../api/workspaceStore";
 
 const icons: Record<string, LucideIcon> = {
@@ -45,6 +48,16 @@ const icons: Record<string, LucideIcon> = {
   lotus: Flower2,
   hotel: Hotel,
 };
+/** 服务端工作区沿用同一行程视图，持久化操作由上层容器提供。 */
+export interface ServerWorkspace {
+  projectId: number;
+  revisionId: number;
+  revisions: RevisionSummary[];
+  saveTrip: (trip: Trip) => Promise<void>;
+  chooseFinal: (revisionId: number) => Promise<void>;
+  onGenerated: (revisionId: number) => Promise<void>;
+  evidence: ReactNode;
+}
 /**
  * 展示项目行程、历史版本和本地调整助手。
  *
@@ -52,13 +65,22 @@ const icons: Record<string, LucideIcon> = {
  * @param props.project - 当前旅行项目及其行程、对话和历史版本。
  * @returns 可编辑的行程详情页面。
  */
-export default function PlannerPage({ project }: { project: PlanProject }) {
+export default function PlannerPage({
+  project,
+  server,
+}: {
+  project: PlanProject;
+  server?: ServerWorkspace;
+}) {
   const [params, setParams] = useSearchParams();
   const viewedRevision = project.revisions.find(
     (revision) => revision.id === params.get("revision"),
   );
   const trip = viewedRevision?.trip ?? project.trip;
-  const [dayId, setDayId] = useState(trip.days.length > 1 ? 2 : 1);
+  const [selectedDayId, setDayId] = useState(trip.days.length > 1 ? 2 : 1);
+  const dayId = trip.days.some((day) => day.id === selectedDayId)
+    ? selectedDayId
+    : trip.days[0].id;
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [notice, setNotice] = useState("");
   const [editing, setEditing] = useState<Activity | null>(null);
@@ -72,8 +94,9 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
   const [changedIds, setChangedIds] = useState<string[]>([]);
   const changeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const noticeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const finalRevision = project.revisions.find(
-    (revision) => revision.id === project.finalRevisionId,
+  const revisionOptions = server?.revisions ?? project.revisions;
+  const finalRevision = revisionOptions.find(
+    (revision) => String(revision.id) === project.finalRevisionId,
   );
   const displayedRevision =
     viewedRevision ?? (!project.draft ? project.revisions.at(-1) : undefined);
@@ -81,7 +104,7 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
     !!displayedRevision && displayedRevision.id === project.finalRevisionId;
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
-      !isFinal && currentLocation.pathname !== nextLocation.pathname,
+      !server && !isFinal && currentLocation.pathname !== nextLocation.pathname,
   );
   const leaving = blocker.state === "blocked";
   const requests = project.requests;
@@ -91,7 +114,21 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
    * @param next - 新行程或从当前行程计算新值的同步函数。
    * @returns 是否成功写入浏览器本地存储。
    */
-  function setTrip(next: Trip | ((current: Trip) => Trip)) {
+  async function setTrip(next: Trip | ((current: Trip) => Trip)) {
+    if (server) {
+      setBusy(true);
+      try {
+        await server.saveTrip(
+          typeof next === "function" ? next(project.trip) : next,
+        );
+        return true;
+      } catch (cause) {
+        inform(cause instanceof Error ? cause.message : "保存失败，请重试");
+        return false;
+      } finally {
+        setBusy(false);
+      }
+    }
     return updateProject(project.id, (current) => {
       const trip = typeof next === "function" ? next(current.trip) : next;
       if (JSON.stringify(trip) === JSON.stringify(current.trip)) return current;
@@ -104,6 +141,10 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
    * @param id - 要查看的历史版本 ID。
    */
   function viewRevision(id: string) {
+    if (busy) {
+      inform("请先等待或停止当前请求，再切换版本");
+      return;
+    }
     setParams({ revision: id });
   }
   /** 切换助手侧栏，保留对话及输入状态。 */
@@ -237,7 +278,22 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
    *
    * @returns 是否成功写入浏览器本地存储。
    */
-  function chooseFinal() {
+  async function chooseFinal() {
+    if (server) {
+      if (!displayedRevision) return false;
+      setBusy(true);
+      try {
+        await server.chooseFinal(Number(displayedRevision.id));
+        setConfirmed(true);
+        inform(`已选定第 ${displayedRevision.number} 版为最终方案`);
+        return true;
+      } catch (cause) {
+        inform(cause instanceof Error ? cause.message : "保存最终方案失败");
+        return false;
+      } finally {
+        setBusy(false);
+      }
+    }
     let number = 0;
     const success = updateProject(project.id, (current) => {
       const next =
@@ -271,9 +327,9 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
   /**
    * 保存最终方案，成功后继续被阻止的导航。
    */
-  function finalizeAndLeave() {
+  async function finalizeAndLeave() {
     if (blocker.state !== "blocked" || busy) return;
-    if (chooseFinal()) blocker.proceed();
+    if (await chooseFinal()) blocker.proceed();
     else setLeaveError("未能保存到浏览器，请重试。当前选择和行程仍在页面中。");
   }
 
@@ -305,7 +361,7 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
    *
    * @param event - 活动编辑表单的提交事件。
    */
-  function updateActivity(event: FormEvent<HTMLFormElement>) {
+  async function updateActivity(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!editing) return;
     const form = new FormData(event.currentTarget);
@@ -321,7 +377,7 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
       setEditing(null);
       return;
     }
-    const success = setTrip((current) => ({
+    const success = await setTrip((current) => ({
       ...current,
       days: current.days.map((entry) =>
         entry.id !== dayId
@@ -336,6 +392,7 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
             },
       ),
     }));
+    if (!success && server) return;
     setEditing(null);
     inform(
       success
@@ -394,7 +451,9 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
                 <span>
                   正在查看第 {viewedRevision.number} 版：{viewedRevision.title}
                 </span>
-                <button onClick={() => setParams({})}>返回当前计划</button>
+                <button disabled={busy} onClick={() => setParams({})}>
+                  返回当前计划
+                </button>
               </div>
             )}
             <nav className="project-breadcrumb" aria-label="计划导航">
@@ -506,82 +565,104 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
                   })}
                 </ol>
                 <aside className="visual-column" aria-label="目的地与路线">
-                  <div
-                    className="visual-switch"
-                    role="group"
-                    aria-label="目的地视图"
-                  >
-                    <button
-                      aria-pressed={visualView === "map"}
-                      aria-controls="destination-map"
-                      onClick={() => setVisualView("map")}
-                    >
-                      <Map size={16} />
-                      路线地图
-                    </button>
-                    <button
-                      aria-pressed={visualView === "photo"}
-                      aria-controls="destination-photo"
-                      onClick={() => setVisualView("photo")}
-                    >
-                      <Image size={16} />
-                      目的地照片
-                    </button>
-                  </div>
-                  <div
-                    className="visual-pane"
-                    hidden={visualView !== "map"}
-                    id="destination-map"
-                  >
-                    <div className="map-heading">
-                      <h3>当日路线</h3>
-                      <span>
-                        {
-                          day.activities.filter((activity) => activity.point)
-                            .length
-                        }{" "}
-                        个地点
-                      </span>
-                    </div>
-                    <div className="map-frame">
-                      <RouteMap
-                        activities={day.activities}
-                        selectedId={selectedId}
-                        onSelect={selectActivity}
-                      />
-                      <div className="map-legend">
-                        <span>
-                          <i />
-                          当日动线（
-                          {day.distance === "待核实"
-                            ? "里程待核实"
-                            : `约 ${day.distance} 公里`}
-                          ）
-                        </span>
-                        <span>
-                          <Footprints size={13} />
-                          步行为主 · 慢慢逛
-                        </span>
+                  {server ? (
+                    <section className="workspace-places">
+                      <h3>
+                        <MapPin size={17} />
+                        当天地点
+                      </h3>
+                      <ol>
+                        {day.activities.map((activity) => (
+                          <li key={activity.id}>
+                            <button onClick={() => selectActivity(activity.id)}>
+                              {activity.location}
+                            </button>
+                          </li>
+                        ))}
+                      </ol>
+                      <p>地点来源见下方资料；路线与交通耗时待核实。</p>
+                    </section>
+                  ) : (
+                    <>
+                      <div
+                        className="visual-switch"
+                        role="group"
+                        aria-label="目的地视图"
+                      >
+                        <button
+                          aria-pressed={visualView === "map"}
+                          aria-controls="destination-map"
+                          onClick={() => setVisualView("map")}
+                        >
+                          <Map size={16} />
+                          路线地图
+                        </button>
+                        <button
+                          aria-pressed={visualView === "photo"}
+                          aria-controls="destination-photo"
+                          onClick={() => setVisualView("photo")}
+                        >
+                          <Image size={16} />
+                          目的地照片
+                        </button>
                       </div>
-                    </div>
-                    <p className="route-caption">
-                      路线为示意，出发前请核实具体位置。
-                    </p>
-                  </div>
-                  <figure
-                    className="garden-photo visual-pane"
-                    hidden={visualView !== "photo"}
-                    id="destination-photo"
-                  >
-                    <img
-                      src="/images/suzhou-garden.png"
-                      alt="白墙黛瓦的月洞门框住一院春色与水中倒影"
-                    />
-                    <figcaption>
-                      <span>园林一隅 · 框住一院江南</span>
-                      <span>江南 · 春日</span>
-                    </figcaption>
-                  </figure>
+                      <div
+                        className="visual-pane"
+                        hidden={visualView !== "map"}
+                        id="destination-map"
+                      >
+                        <div className="map-heading">
+                          <h3>当日路线</h3>
+                          <span>
+                            {
+                              day.activities.filter(
+                                (activity) => activity.point,
+                              ).length
+                            }{" "}
+                            个地点
+                          </span>
+                        </div>
+                        <div className="map-frame">
+                          <RouteMap
+                            activities={day.activities}
+                            selectedId={selectedId}
+                            onSelect={selectActivity}
+                          />
+                          <div className="map-legend">
+                            <span>
+                              <i />
+                              当日动线（
+                              {day.distance === "待核实"
+                                ? "里程待核实"
+                                : `约 ${day.distance} 公里`}
+                              ）
+                            </span>
+                            <span>
+                              <Footprints size={13} />
+                              步行为主 · 慢慢逛
+                            </span>
+                          </div>
+                        </div>
+                        <p className="route-caption">
+                          路线为示意，出发前请核实具体位置。
+                        </p>
+                      </div>
+                      <figure
+                        className="garden-photo visual-pane"
+                        hidden={visualView !== "photo"}
+                        id="destination-photo"
+                      >
+                        <img
+                          src="/images/suzhou-garden.png"
+                          alt="白墙黛瓦的月洞门框住一院春色与水中倒影"
+                        />
+                        <figcaption>
+                          <span>园林一隅 · 框住一院江南</span>
+                          <span>江南 · 春日</span>
+                        </figcaption>
+                      </figure>
+                    </>
+                  )}
                 </aside>
               </div>
               {dayRequests.length > 0 && (
@@ -611,6 +692,7 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
                   ))}
                 </section>
               )}
+              {server?.evidence}
             </div>
           </div>
           <div className="journal-footnote final-selection-bar">
@@ -629,9 +711,9 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
                   }
                 >
                   <option value="">
-                    当前计划 · {project.revisions.length} 个版本
+                    当前计划 · {revisionOptions.length} 个版本
                   </option>
-                  {project.revisions
+                  {revisionOptions
                     .slice()
                     .reverse()
                     .map((revision) => (
@@ -696,16 +778,31 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
             aria-label="当前计划的旅行助手"
             inert={collapsed}
           >
-            <AssistantPanel
-              project={project}
-              dayId={dayId}
-              active={mobileTab === "assistant"}
-              readOnly={!!viewedRevision}
-              onRevision={viewRevision}
-              onBusy={setBusy}
-              onChanged={highlightChanges}
-              onCollapse={toggleAssistant}
-            />
+            {server ? (
+              <ChatAssistant
+                projectId={server.projectId}
+                name={project.name}
+                revisionId={server.revisionId}
+                dayId={dayId}
+                active={mobileTab === "assistant"}
+                historical={!!viewedRevision}
+                onBusy={setBusy}
+                onRevision={viewRevision}
+                onSaved={server.onGenerated}
+                onCollapse={toggleAssistant}
+              />
+            ) : (
+              <AssistantPanel
+                project={project}
+                dayId={dayId}
+                active={mobileTab === "assistant"}
+                readOnly={!!viewedRevision}
+                onRevision={viewRevision}
+                onBusy={setBusy}
+                onChanged={highlightChanges}
+                onCollapse={toggleAssistant}
+              />
+            )}
           </aside>
         </div>
       </main>
@@ -783,8 +880,12 @@ export default function PlannerPage({ project }: { project: PlanProject }) {
                 >
                   取消
                 </button>
-                <button className="button primary" type="submit">
-                  更新活动
+                <button
+                  className="button primary"
+                  type="submit"
+                  disabled={busy}
+                >
+                  {busy ? "正在保存…" : "更新活动"}
                 </button>
               </div>
             </form>

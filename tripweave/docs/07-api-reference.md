@@ -626,7 +626,7 @@ Set-Cookie: tripweave_session=<signed-value>; HttpOnly; SameSite=Lax; Path=/
 - 用户认证使用 MySQL；同步生成接口不保存结果。
 - 计划和版本只读接口、最终方案接口及生成持久化已实现。
 - 生成接口是同步的，可能持续数十秒到数分钟；暂无 SSE、异步任务或取消接口。
-- 暂无局部修改、服务端对话、分享协作和 token 刷新/撤销接口。
+- 暂无自动局部修改、分享协作和 token 刷新/撤销接口。服务端对话和手动版本保存见下文。
 
 
 ## 生成接口的流式进度
@@ -679,3 +679,46 @@ data: {"event":"tool_start","message":"景点研究：正在调用地点搜索",
 前端在计划列表提供删除入口，确认弹窗明确全部版本和关联记录都会永久删除。
 本地草稿也可整项删除；浏览器存储失败时保留完整草稿并显示错误。
 本阶段没有单独删除版本的接口或按钮。
+
+
+## 项目对话与手动编辑
+
+部署前需执行 [对话表迁移](../resource/migrations/20261107_conversation.sql)。
+以下接口均要求登录并校验项目归属。
+
+### GET `/api/projects/{project_id}/messages`
+
+返回 `ApiSuccess[list[ConversationTurnData]]`，最近 50 轮按 ID 正序排列。
+每轮包含 `id`、`user_text`、`assistant_text`、`status`、`base_revision_id`、
+`result_revision_id`、`day_id`、`generate`、`error_code` 和 UTC `created_at`。
+失败和取消轮次仍可回读；默认仅最近 20 轮成功对话进入模型上下文。
+
+### POST `/api/projects/{project_id}/messages`
+
+```json
+{
+  "text": "为什么第一天这样安排？",
+  "base_revision_id": 34,
+  "day_id": 1,
+  "generate": false
+}
+```
+
+固定返回 SSE，支持与生成相同的阶段、工具、心跳、完成和错误事件。
+新增 `reply` 事件，`message` 为累积公开正文，前端替换当前回复。
+`complete.data` 为已提交的对话轮次；只有显式完整规划可能包含非空 `result_revision_id`。
+`generate=false` 时不绑定工具，问候或解释不会创建版本。
+`generate=true` 允许根据当前需求重新规划整趟，仍受完整 TripRequest 校验约束；
+模型也可先追问，不能用此操作自动局部修改。历史版本只能聊天，不能授权生成。
+
+预检失败仍返回统一 JSON；项目不存在/越权返回 404，当前项目忙或依据版本过期返回 409。
+模型或工具失败以 `error` 终态结束并保存失败轮次；断流会取消关联任务，不自动重发请求。
+普通聊天缺少地图配置仍可运行；授权规划时检查完整配置。
+
+### POST `/api/projects/{project_id}/revisions`
+
+请求包含 `base_revision_id` 和完整 `trip`，成功返回 `ApiSuccess[RevisionDetail]`。
+只接受最新版本的原活动标题、说明与 HH:MM 时间变化，保持时间顺序且不能重复；
+地点 ID、地点地址、费用、日期和事实来源都不能通过此接口变更。
+相同内容不重复创建版本。冲突返回 `409 revision_conflict`，非法改动返回 `422 invalid_revision`。
+手动版本保留原地点、警告、研究和轨迹关联。`RevisionDetail` 现在包含 `generation_run_id`。
