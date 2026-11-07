@@ -135,3 +135,18 @@ async def get_run_trace(
             404, ApiError(code="run_not_found", message="生成记录不存在")
         )
     return ApiSuccess(data=await projects_service.run_trace(db, project, run))
+
+
+@router.delete(
+    "/{project_id}",
+    response_model=ApiSuccess[None],
+    responses={**ERROR_RESPONSES, 409: {"model": ApiFailure}},
+)
+async def delete_project(
+    db: Annotated[AsyncSession, Depends(get_db, scope="function")],
+    user: Annotated[User, Depends(get_current_user)],
+    project_id: Annotated[int, Path(ge=1)],
+) -> ApiSuccess[None]:
+    """删除当前用户计划及其全部版本、运行、研究资料和模型轨迹。"""
+    await projects_service.delete_project(db, user.id, project_id)
+    return ApiSuccess(data=None)

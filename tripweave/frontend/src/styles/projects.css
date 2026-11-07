@@ -1908,3 +1908,47 @@
 .plans-shell .modal {
   width: min(450px, calc(100vw - 40px));
 }
+
+.saved-project-card-link {
+  display: grid;
+  gap: 11px;
+  min-width: 0;
+}
+.saved-project-card-link > span,
+.saved-project-card-link small {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.saved-project-card-link strong {
+  overflow-wrap: anywhere;
+}
+.delete-plan-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  justify-self: start;
+  min-height: 36px;
+  font-size: 12px;
+  color: #a03d4a;
+}
+.delete-plan-button:hover {
+  text-decoration: underline;
+}
+.project-card-links {
+  flex-wrap: wrap;
+}
+.delete-plan-dialog > p {
+  font-size: 14px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+.delete-plan-dialog .modal-actions .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}

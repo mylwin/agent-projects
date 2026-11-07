@@ -1,6 +1,6 @@
 """旅行项目与版本的数据库读写。"""
 
-from sqlalchemy import func, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from backend.models.generation_run import GenerationRun
@@ -125,3 +125,46 @@ async def list_model_calls(db: AsyncSession, run_id: int) -> list[ModelCall]:
         .order_by(ModelCall.started_at, ModelCall.id)
     )
     return list(result)
+
+
+async def lock_project(
+    db: AsyncSession, user_id: int, project_id: int
+) -> Project | None:
+    """锁定当前用户的项目，使删除与新生成运行的创建按序执行。"""
+    return await db.scalar(
+        select(Project)
+        .where(Project.id == project_id, Project.user_id == user_id)
+        .with_for_update()
+    )
+
+
+async def has_running_generation(db: AsyncSession, project_id: int) -> bool:
+    """检查项目是否仍有生成任务，避免删除后再写回结果。"""
+    return (
+        await db.scalar(
+            select(GenerationRun.id)
+            .where(
+                GenerationRun.project_id == project_id,
+                GenerationRun.status == "running",
+            )
+            .limit(1)
+        )
+        is not None
+    )
+
+
+async def delete_project(db: AsyncSession, project_id: int) -> None:
+    """依次清理项目的全部关联数据；事务由调用方提交或整体回滚。"""
+    runs = select(GenerationRun.id).where(GenerationRun.project_id == project_id)
+    reports = select(ResearchReport.id).where(ResearchReport.run_id.in_(runs))
+    # ORM 只有逻辑关联，显式删除也适用于未安装外键的数据库。
+    statements = (
+        delete(ToolEvidence).where(ToolEvidence.report_id.in_(reports)),
+        delete(ModelCall).where(ModelCall.run_id.in_(runs)),
+        delete(ResearchReport).where(ResearchReport.run_id.in_(runs)),
+        delete(PlanRevision).where(PlanRevision.project_id == project_id),
+        delete(GenerationRun).where(GenerationRun.project_id == project_id),
+        delete(Project).where(Project.id == project_id),
+    )
+    for statement in statements:
+        await db.execute(statement.execution_options(synchronize_session=False))

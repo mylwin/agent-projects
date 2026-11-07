@@ -79,4 +79,7 @@ uv run pytest backend/tests -q
 页面可读取服务端计划并创建新计划，生成期间通过 SSE 显示真实阶段、模型调用和工具状态；
 校验保存成功后跳转，失败或断流后结束等待并允许重试。原有本地草稿仍单独保存在浏览器。
 
+计划列表支持删除整个服务端计划或本地草稿；删除包含全部版本与关联记录，
+需确认后执行。正在生成的计划会提示稍后重试，不提供单独删除版本。
+
 [文档入口](docs/README.md) · [Agent 使用说明](docs/02-agent.md) · [数据库设计](docs/05-database.md) · [接口 Schema](docs/06-api-schema.md) · [接口文档](docs/07-api-reference.md) · [开发约定](AGENTS.md)
