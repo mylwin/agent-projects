@@ -49,6 +49,7 @@ CREATE TABLE IF NOT EXISTS tb_generation_run (
     model_name    VARCHAR(255) NOT NULL                COMMENT '使用的模型名称',
     map_provider  VARCHAR(100) NOT NULL                COMMENT '地图服务提供方',
     started_at    DATETIME(6)  NOT NULL DEFAULT CURRENT_TIMESTAMP(6) COMMENT '开始时间',
+    deadline_at   DATETIME(6)  NULL                    COMMENT '最晚提交时间；旧运行可为空，按已中断处理',
     finished_at   DATETIME(6)  NULL                    COMMENT '结束时间，可为空',
     duration_ms   INT          NULL                    COMMENT '耗时（毫秒），可为空',
     PRIMARY KEY (id),

@@ -67,8 +67,11 @@ def test_saved_result_uses_same_persistence(
     async def save(*args):
         """保存时确认模型已完成。"""
         calls.append("save")
-        return GeneratePlanData(
-            **args[6].model_dump(), project_id=12, revision_id=34, run_id=56
+        return (
+            GeneratePlanData(
+                **args[6].model_dump(), project_id=12, revision_id=34, run_id=56
+            ),
+            None,
         )
 
     monkeypatch.setattr(plans.saved_generation, "start_run", start)

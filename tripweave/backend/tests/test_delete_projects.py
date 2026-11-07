@@ -26,11 +26,11 @@ def database() -> Generator[tuple[AsyncSession, Session]]:
     engine = create_engine("sqlite://")
     definitions = (
         "CREATE TABLE tb_project (id INTEGER PRIMARY KEY, user_id INTEGER, name TEXT, destination TEXT, final_revision_id INTEGER, created_at DATETIME, updated_at DATETIME)",
-        "CREATE TABLE tb_generation_run (id INTEGER PRIMARY KEY, project_id INTEGER REFERENCES tb_project(id), user_id INTEGER, status TEXT)",
+        "CREATE TABLE tb_generation_run (id INTEGER PRIMARY KEY, project_id INTEGER REFERENCES tb_project(id), user_id INTEGER, status TEXT, deadline_at DATETIME, finished_at DATETIME, error_code TEXT, error_stage TEXT, error_message TEXT)",
         "CREATE TABLE tb_plan_revision (id INTEGER PRIMARY KEY, project_id INTEGER REFERENCES tb_project(id), generation_run_id INTEGER REFERENCES tb_generation_run(id))",
         "CREATE TABLE tb_research_report (id INTEGER PRIMARY KEY, run_id INTEGER REFERENCES tb_generation_run(id))",
         "CREATE TABLE tb_tool_evidence (id INTEGER PRIMARY KEY, report_id INTEGER REFERENCES tb_research_report(id))",
-        "CREATE TABLE tb_conversation_turn (id INTEGER PRIMARY KEY, project_id INTEGER REFERENCES tb_project(id), status TEXT, deadline_at DATETIME)",
+        "CREATE TABLE tb_conversation_turn (id INTEGER PRIMARY KEY, project_id INTEGER REFERENCES tb_project(id), status TEXT, deadline_at DATETIME, error_code TEXT, finished_at DATETIME)",
         "CREATE TABLE tb_model_call (id INTEGER PRIMARY KEY, run_id INTEGER REFERENCES tb_generation_run(id))",
     )
     with engine.begin() as connection:
@@ -48,7 +48,7 @@ def database() -> Generator[tuple[AsyncSession, Session]]:
                 row_id = project_id * 10 + index
                 connection.execute(
                     text(
-                        "INSERT INTO tb_generation_run VALUES (:id, :project, :project, :status)"
+                        "INSERT INTO tb_generation_run (id, project_id, user_id, status) VALUES (:id, :project, :project, :status)"
                     ),
                     {
                         "id": row_id,
@@ -130,7 +130,9 @@ def test_running_generation_blocks_deletion(database) -> None:
     db, session = database
     with session.begin():
         session.execute(
-            text("UPDATE tb_generation_run SET status='running' WHERE id=10")
+            text(
+                "UPDATE tb_generation_run SET status='running', deadline_at=datetime('now', '+5 minutes') WHERE id=10"
+            )
         )
     with pytest.raises(ApiException) as caught, session.begin():
         asyncio.run(projects.delete_project(db, 1, 1))

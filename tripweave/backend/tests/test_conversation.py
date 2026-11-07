@@ -384,8 +384,12 @@ def test_authorized_full_generation_uses_existing_planner(factory, monkeypatch):
         on_progress("正在研究景点")
         return make_result()
 
+    async def redundant_finish(*_args, **_kwargs):
+        raise AssertionError("原子保存成功后不应再打开终态事务")
+
     monkeypatch.setattr(conversation, "create_chat_model", lambda *_args: Model())
     monkeypatch.setattr(conversation, "generate_trip", generate)
+    monkeypatch.setattr(conversation, "finish_turn", redundant_finish)
 
     async def scenario():
         """实际执行运行创建、规划装配、保存版本和对话完成。"""

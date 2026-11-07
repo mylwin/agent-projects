@@ -5,7 +5,9 @@ from datetime import datetime
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from backend.errors import ApiException
 from backend.models.conversation_turn import ConversationTurn
+from backend.schemas.api import ApiError
 
 
 async def list_turns(
@@ -49,7 +51,7 @@ async def expire_running_turns(
         .where(
             ConversationTurn.project_id == project_id,
             ConversationTurn.status == "running",
-            ConversationTurn.deadline_at < now,
+            ConversationTurn.deadline_at <= now,
         )
         .values(status="failed", error_code="conversation_interrupted", finished_at=now)
     )
@@ -106,6 +108,25 @@ async def lock_turn(db: AsyncSession, turn_id: int) -> ConversationTurn | None:
     return await db.scalar(
         select(ConversationTurn).where(ConversationTurn.id == turn_id).with_for_update()
     )
+
+
+async def lock_active_turn(
+    db: AsyncSession, turn_id: int, user_id: int, project_id: int, now: datetime
+) -> ConversationTurn:
+    """持有项目锁后锁定仍有效的所属轮次，阻止过期或已结束的工作提交。"""
+    turn = await lock_turn(db, turn_id)
+    if turn is None or turn.user_id != user_id or turn.project_id != project_id:
+        raise ApiException(
+            404, ApiError(code="conversation_not_found", message="对话不存在")
+        )
+    if turn.status != "running" or turn.deadline_at <= now:
+        raise ApiException(
+            409,
+            ApiError(
+                code="conversation_interrupted", message="本轮已结束或超时，请重新发起"
+            ),
+        )
+    return turn
 
 
 async def save_turn_result(

@@ -14,8 +14,9 @@ from backend.api.app import app
 from backend.api.dependencies import get_settings
 from backend.api.routes import plans
 from backend.config.planner import PlannerSettings
-from backend.errors import PlanningError
+from backend.errors import ApiException, PlanningError
 from backend.models.user import User
+from backend.schemas.api import ApiError
 from backend.schemas.projects import GeneratePlanData
 from backend.services.model_trace import ModelTrace
 from backend.tests.test_api import REQUEST, fake_generate, make_result
@@ -41,8 +42,9 @@ def test_create_saved_plan(client: TestClient, monkeypatch: pytest.MonkeyPatch) 
     """新计划会创建运行并返回持久化标识。"""
     calls: list[str] = []
 
-    async def start_run(_factory, user_id, project_id, request, _model, _map):
+    async def start_run(_factory, user_id, project_id, request, _model, _map, timeout):
         """确认运行归属和计划输入。"""
+        assert timeout > 0
         assert (user_id, project_id, request.destination) == (1, None, "成都")
         calls.append("start")
         return 56
@@ -54,8 +56,11 @@ def test_create_saved_plan(client: TestClient, monkeypatch: pytest.MonkeyPatch) 
         assert (user_id, project_id, name, run_id) == (1, None, "成都周末", 56)
         assert isinstance(model_calls, list)
         calls.append("save")
-        return GeneratePlanData(
-            **result.model_dump(), project_id=12, revision_id=34, run_id=56
+        return (
+            GeneratePlanData(
+                **result.model_dump(), project_id=12, revision_id=34, run_id=56
+            ),
+            None,
         )
 
     monkeypatch.setattr(plans.saved_generation, "start_run", start_run)
@@ -124,6 +129,31 @@ def test_failed_generation_records_error(
     assert response.status_code == 502
     assert response.json()["error"]["code"] == "upstream_failed"
     assert failed == [(56, "upstream_failed", "weather 研究")]
+
+
+def test_expired_save_preserves_conflict_error(
+    client: TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """持久化阶段的任务失效仍返回409，不能误报成服务器故障。"""
+
+    async def start(*_args):
+        return 56
+
+    async def save(*_args):
+        raise ApiException(
+            409, ApiError(code="generation_interrupted", message="生成已过期")
+        )
+
+    async def failed(*_args):
+        return None
+
+    monkeypatch.setattr(plans.saved_generation, "start_run", start)
+    monkeypatch.setattr(plans.saved_generation, "save_result", save)
+    monkeypatch.setattr(plans.saved_generation, "mark_failed", failed)
+    monkeypatch.setattr(plans, "generate_trip", fake_generate(make_result()))
+    response = client.post("/api/plans/generate", json={**REQUEST, "name": "成都周末"})
+    assert response.status_code == 409
+    assert response.json()["error"]["code"] == "generation_interrupted"
 
 
 def test_model_trace_keeps_only_public_redacted_output() -> None:
