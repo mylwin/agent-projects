@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import {
   ArrowUpRight,
@@ -17,6 +17,7 @@ import {
   generateSavedPlan,
   listSavedProjects,
   type ProjectSummary,
+  type GenerationProgress,
 } from "../api/projects";
 import { useAuth } from "../auth/AuthProvider";
 import { useWorkspace } from "../hooks/useWorkspace";
@@ -36,6 +37,16 @@ export default function PlansPage() {
   const [creating, setCreating] = useState(false);
   const [createPending, setCreatePending] = useState(false);
   const [createError, setCreateError] = useState("");
+  const [progress, setProgress] = useState<GenerationProgress[]>([]);
+  const generationController = useRef<AbortController | null>(null);
+  const progressLog = useRef<HTMLOListElement>(null);
+  useEffect(() => () => generationController.current?.abort(), []);
+  useEffect(() => {
+    if (progressLog.current) {
+      progressLog.current.scrollTop = progressLog.current.scrollHeight;
+      progressLog.current.scrollIntoView({ block: "nearest" });
+    }
+  }, [progress]);
   const [savedProjects, setSavedProjects] = useState<ProjectSummary[]>([]);
   const [savedOwnerId, setSavedOwnerId] = useState<number | null>(null);
   const [savedLoading, setSavedLoading] = useState(true);
@@ -69,6 +80,12 @@ export default function PlansPage() {
   const filtered = workspace.projects
     .filter((p) => `${p.name} ${p.trip.destination}`.includes(query.trim()))
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  /** 打开新建表单时清除上轮生成记录和错误。 */
+  function openCreate() {
+    setProgress([]);
+    setCreateError("");
+    setCreating(true);
+  }
   /**
    * 从表单读取需求，调用生成接口并打开保存后的版本。
    *
@@ -76,7 +93,7 @@ export default function PlansPage() {
    */
   async function create(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (createPending) return;
+    if (createPending || generationController.current) return;
     const form = new FormData(event.currentTarget);
     const name = String(form.get("name") ?? "").trim();
     const destination = String(form.get("destination") ?? "").trim();
@@ -85,30 +102,39 @@ export default function PlansPage() {
     const budget = String(form.get("budget") ?? "");
     const count = Number(form.get("days"));
     if (!name || !destination) return;
+    const controller = new AbortController();
+    generationController.current = controller;
+    setProgress([]);
     setCreatePending(true);
     setCreateError("");
     try {
-      const result = await generateSavedPlan({
-        name,
-        destination,
-        start_date: start,
-        day_count: count,
-        travelers,
-        budget,
-        pace: "balanced",
-        interests: [],
-        instruction: String(form.get("instruction") ?? "").trim(),
-      });
+      const result = await generateSavedPlan(
+        {
+          name,
+          destination,
+          start_date: start,
+          day_count: count,
+          travelers,
+          budget,
+          pace: "balanced",
+          interests: [],
+          instruction: String(form.get("instruction") ?? "").trim(),
+        },
+        (event) => setProgress((current) => [...current, event]),
+        controller.signal,
+      );
       navigate(
         `/saved-projects/${result.project_id}?revision=${result.revision_id}`,
       );
     } catch (cause) {
+      if (controller.signal.aborted) return;
       if (cause instanceof ProjectsError && cause.code === "unauthorized")
         void refreshSession();
       setCreateError(
         cause instanceof Error ? cause.message : "生成失败，请稍后重试。",
       );
     } finally {
+      generationController.current = null;
       setCreatePending(false);
     }
   }
@@ -119,10 +145,7 @@ export default function PlansPage() {
         <span className="brand-divider" />
         <span className="product-label">我的旅行计划</span>
         <span className="plans-top-note">把想去的地方，慢慢变成旅程。</span>
-        <button
-          className="button primary new-plan-button"
-          onClick={() => setCreating(true)}
-        >
+        <button className="button primary new-plan-button" onClick={openCreate}>
           <Plus size={17} />
           <span className="new-plan-label">新建计划</span>
         </button>
@@ -301,10 +324,7 @@ export default function PlansPage() {
               </article>
             );
           })}
-          <button
-            className="new-project-card"
-            onClick={() => setCreating(true)}
-          >
+          <button className="new-project-card" onClick={openCreate}>
             <span>
               <Plus size={26} strokeWidth={1.2} />
             </span>
@@ -372,78 +392,111 @@ export default function PlansPage() {
               </button>
             </div>
             <form onSubmit={create}>
-              <label>
-                计划名称
-                <input
-                  name="name"
-                  autoFocus
-                  required
-                  maxLength={40}
-                  placeholder="例如：周末苏州慢游"
-                />
-              </label>
-              <label>
-                目的地
-                <input
-                  name="destination"
-                  required
-                  maxLength={100}
-                  placeholder="例如：成都"
-                />
-              </label>
-              <label>
-                出发日期
-                <input
-                  name="date"
-                  type="date"
-                  max="2100-12-28"
-                  required
-                />
-              </label>
-              <div className="form-pair">
+              <fieldset
+                className="generation-fields"
+                disabled={createPending}
+                hidden={createPending}
+              >
                 <label>
-                  出游天数
-                  <select name="days" defaultValue="3">
-                    <option value="1">1 天</option>
-                    <option value="2">2 天</option>
-                    <option value="3">3 天</option>
-                    <option value="4">4 天</option>
-                    <option value="5">5 天</option>
-                  </select>
+                  计划名称
+                  <input
+                    name="name"
+                    autoFocus
+                    required
+                    maxLength={40}
+                    placeholder="例如：周末苏州慢游"
+                  />
                 </label>
                 <label>
-                  同行人数
+                  目的地
                   <input
-                    name="travelers"
+                    name="destination"
+                    required
+                    maxLength={100}
+                    placeholder="例如：成都"
+                  />
+                </label>
+                <label>
+                  出发日期
+                  <input name="date" type="date" max="2100-12-28" required />
+                </label>
+                <div className="form-pair">
+                  <label>
+                    出游天数
+                    <select name="days" defaultValue="3">
+                      <option value="1">1 天</option>
+                      <option value="2">2 天</option>
+                      <option value="3">3 天</option>
+                      <option value="4">4 天</option>
+                      <option value="5">5 天</option>
+                    </select>
+                  </label>
+                  <label>
+                    同行人数
+                    <input
+                      name="travelers"
+                      type="number"
+                      min="1"
+                      max="12"
+                      defaultValue="2"
+                      required
+                    />
+                  </label>
+                </div>
+                <label>
+                  全团预算（元）
+                  <input
+                    name="budget"
                     type="number"
-                    min="1"
-                    max="12"
-                    defaultValue="2"
+                    min="0.01"
+                    max="1000000"
+                    step="0.01"
+                    defaultValue="3000"
                     required
                   />
                 </label>
-              </div>
-              <label>
-                全团预算（元）
-                <input
-                  name="budget"
-                  type="number"
-                  min="0.01"
-                  max="1000000"
-                  step="0.01"
-                  defaultValue="3000"
-                  required
-                />
-              </label>
-              <label>
-                补充要求（选填）
-                <textarea
-                  name="instruction"
-                  maxLength={500}
-                  rows={3}
-                  placeholder="例如：节奏轻松，想尝尝当地小吃"
-                />
-              </label>
+                <label>
+                  补充要求（选填）
+                  <textarea
+                    name="instruction"
+                    maxLength={500}
+                    rows={3}
+                    placeholder="例如：节奏轻松，想尝尝当地小吃"
+                  />
+                </label>
+              </fieldset>
+              {progress.length > 0 && (
+                <section
+                  className="generation-progress"
+                  aria-label="行程生成进度"
+                >
+                  <p role="status">
+                    {createPending
+                      ? progress.at(-1)?.message
+                      : "本次生成已结束"}
+                  </p>
+                  <ol
+                    ref={progressLog}
+                    role="log"
+                    aria-label="实际生成记录"
+                    aria-live="polite"
+                    aria-relevant="additions"
+                  >
+                    {progress.map((event, index) => (
+                      <li
+                        key={index}
+                        className={
+                          event.event === "tool_error"
+                            ? "generation-tool-error"
+                            : ""
+                        }
+                      >
+                        {event.message}
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+              )}
               {createError && (
                 <p className="saved-error" role="alert">
                   {createError}

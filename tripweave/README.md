@@ -75,7 +75,8 @@ uv run pytest backend/tests -q
 
 测试使用内存 MCP、Streamable HTTP 的 ASGI 替身、模型 HTTP 替身及 FastAPI TestClient，不访问真实供应商。
 
-前端在 frontend/ 执行 `pnpm dev`，检查为 `pnpm typecheck`、`pnpm lint`、`pnpm build`。
-页面可读取服务端计划并创建新计划，原有本地草稿仍单独保存在浏览器。
+前端在 frontend/ 执行 `pnpm dev`，检查为 `pnpm typecheck`、`pnpm lint`、`pnpm test`、`pnpm build`。
+页面可读取服务端计划并创建新计划，生成期间通过 SSE 显示真实阶段、模型调用和工具状态；
+校验保存成功后跳转，失败或断流后结束等待并允许重试。原有本地草稿仍单独保存在浏览器。
 
 [文档入口](docs/README.md) · [Agent 使用说明](docs/02-agent.md) · [数据库设计](docs/05-database.md) · [接口 Schema](docs/06-api-schema.md) · [接口文档](docs/07-api-reference.md) · [开发约定](AGENTS.md)

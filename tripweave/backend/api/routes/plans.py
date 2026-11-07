@@ -4,7 +4,9 @@ import asyncio
 import logging
 from typing import Annotated, Any, cast
 
+from anyio import CancelScope
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from backend.api.dependencies import get_generation_limit, get_settings
@@ -14,6 +16,7 @@ from backend.schemas.api import ApiError, ApiFailure, ApiSuccess
 from backend.schemas.projects import GeneratePlanData, GeneratePlanRequest
 from backend.schemas.trip import PlanResult
 from backend.services import saved_generation
+from backend.services.generation_stream import GenerationStream
 from backend.services.model_trace import ModelTrace
 from backend.services.planning import generate_trip
 
@@ -45,21 +48,27 @@ def log_progress(message: str) -> None:
 @router.post(
     "/plans/generate",
     response_model=ApiSuccess[PlanResult | GeneratePlanData],
-    responses=PLAN_ERROR_RESPONSES,
+    responses={
+        200: {
+            "description": "默认返回 JSON；Accept: text/event-stream 时返回 SSE 进度与终态",
+            "content": {"text/event-stream": {"schema": {"type": "string"}}},
+        },
+        **PLAN_ERROR_RESPONSES,
+    },
 )
 async def generate(
     request: GeneratePlanRequest,
     http_request: Request,
     settings: Annotated[PlannerSettings, Depends(get_settings)],
     limit: Annotated[asyncio.Semaphore, Depends(get_generation_limit)],
-) -> ApiSuccess[PlanResult | GeneratePlanData]:
+) -> ApiSuccess[PlanResult | GeneratePlanData] | StreamingResponse:
     """
-    运行一次完整规划，返回统一成功体；失败由统一异常处理器转换。
+    运行一次完整规划，按 Accept 返回统一 JSON 或实时 SSE 进度。
 
     :param request: 已校验的旅行需求。
     :param settings: 模型与地图配置。
     :param limit: 应用级并发生成限制。
-    :return: 包含 PlanResult 的统一成功响应。
+    :return: 包含 PlanResult 的统一成功响应，或以 complete/error 结束的事件流。
     """
     # 如果请求中计划名称不为 None，或者项目 ID 不为 None，则保存计划。
     save = request.name is not None or request.project_id is not None
@@ -89,87 +98,98 @@ async def generate(
     # 如果并发生成已满，则返回错误。
     if limit.locked():
         raise ApiException.busy()
-    async with limit:
-        # 单独提交运行记录并返回运行的ID。
-        run_id = (
-            await saved_generation.start_run(
-                factory,
-                user.id,
-                request.project_id,
-                request,
-                settings.model_name,
-                settings.map_provider,
-            )
-            if save
-            else None
-        )
-        # 创建模型调用追踪器
-        trace = (
-            ModelTrace(
-                settings.model_name,
-                (settings.model_api_key, settings.amap_api_key, settings.baidu_api_key),
-            )
-            if save
-            else None
-        )
-        try:
-            # 生成旅途规划
-            result = await generate_trip(
-                request,
-                settings,
-                on_progress=log_progress,
-                callback=trace,
-            )
-        except TimeoutError:
-            # 如果是规划超时，则保存失败记录并返回超时错误。
-            if run_id is not None:
-                await saved_generation.mark_failed(
-                    factory, run_id, "planning_timeout", None
-                )
-            raise ApiException.timeout() from None
-        except PlanningError as exc:
-            # 如果是规划错误，则保存失败记录并返回错误。
-            error = ApiException.from_planning(exc)
-            if run_id is not None:
-                await saved_generation.mark_failed(
-                    factory, run_id, error.error.code, exc.stage
-                )
-            raise error from None
-        except Exception as exc:
-            # 如果是系统内部错误，则保存失败记录并返回错误。
-            if run_id is not None:
-                await saved_generation.mark_failed(
-                    factory, run_id, "internal_error", None
-                )
-            # 系统密钥
-            secrets = (
-                settings.model_api_key,
-                settings.amap_api_key,
-                settings.baidu_api_key,
-            )
-            logger.error(
-                "生成行程时发生未处理异常 [%s]：%s",
-                type(exc).__name__,
-                redact(str(exc), secrets),
-            )
-            raise ApiException.internal() from None
+    secrets = (settings.model_api_key, settings.amap_api_key, settings.baidu_api_key)
+    stream = (
+        GenerationStream(settings.model_name, secrets)
+        if "text/event-stream" in http_request.headers.get("accept", "")
+        else None
+    )
 
-    # 如果运行记录不为 None，则保存结果并返回结果。
-    if run_id is not None:
-        try:
-            saved = await saved_generation.save_result(
-                factory,
-                user.id,
-                request.project_id,
-                request.name,
-                request,
-                run_id,
-                result,
-                trace.calls if trace is not None else [],
-            )
-        except Exception:
-            await saved_generation.mark_failed(factory, run_id, "save_failed", "持久化")
-            logger.exception("保存生成结果失败")
-            raise ApiException.internal() from None
-        return ApiSuccess(data=saved)
-    return ApiSuccess(data=result)
+    async def execute() -> ApiSuccess[PlanResult | GeneratePlanData]:
+        """共用生成、保存和错误映射，持久化成功后才返回完成结果。"""
+        if limit.locked():
+            raise ApiException.busy()
+        run_id: int | None = None
+        stage = "行程规划"
+        async with limit:
+            try:
+                if save:
+                    run_id = await saved_generation.start_run(
+                        factory,
+                        user.id,
+                        request.project_id,
+                        request,
+                        settings.model_name,
+                        settings.map_provider,
+                    )
+                trace = stream or (
+                    ModelTrace(settings.model_name, secrets) if save else None
+                )
+                if stream:
+                    stream.progress("正在连接地图服务并发现可用工具")
+                result = await generate_trip(
+                    request,
+                    settings,
+                    on_progress=stream.progress if stream else log_progress,
+                    callback=trace,
+                )
+                if run_id is None:
+                    return ApiSuccess(data=result)
+                stage = "持久化"
+                if stream:
+                    stream.progress("正在保存行程和研究资料")
+                saved = await saved_generation.save_result(
+                    factory,
+                    user.id,
+                    request.project_id,
+                    request.name,
+                    request,
+                    run_id,
+                    result,
+                    trace.calls if trace is not None else [],
+                )
+                return ApiSuccess(data=saved)
+            except asyncio.CancelledError:
+                if run_id is not None:
+                    with CancelScope(shield=True):
+                        await saved_generation.mark_failed(
+                            factory, run_id, "generation_cancelled", stage
+                        )
+                raise
+            except Exception as exc:
+                if stage == "持久化":
+                    error = ApiException.internal()
+                    code = "save_failed"
+                elif isinstance(exc, TimeoutError):
+                    error = ApiException.timeout()
+                    code = error.error.code
+                elif isinstance(exc, PlanningError):
+                    error = ApiException.from_planning(exc)
+                    stage = exc.stage
+                    code = error.error.code
+                else:
+                    error = ApiException.internal()
+                    code = error.error.code
+                if run_id is not None:
+                    await saved_generation.mark_failed(
+                        factory,
+                        run_id,
+                        code,
+                        stage
+                        if stage == "持久化" or isinstance(exc, PlanningError)
+                        else None,
+                    )
+                logger.error(
+                    "生成行程失败 [%s]：%s",
+                    type(exc).__name__,
+                    redact(str(exc), secrets),
+                )
+                raise error from None
+
+    if stream:
+        return StreamingResponse(
+            stream.iterate(execute),
+            media_type="text/event-stream",
+            headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+        )
+    return await execute()

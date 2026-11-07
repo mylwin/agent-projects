@@ -626,3 +626,39 @@ Set-Cookie: tripweave_session=<signed-value>; HttpOnly; SameSite=Lax; Path=/
 - 计划和版本只读接口、最终方案接口及生成持久化已实现。
 - 生成接口是同步的，可能持续数十秒到数分钟；暂无 SSE、异步任务或取消接口。
 - 暂无局部修改、服务端对话、分享协作和 token 刷新/撤销接口。
+
+
+## 生成接口的流式进度
+
+`POST /api/plans/generate` 使用相同请求体，增加 `Accept: text/event-stream` 即返回 SSE。
+不指定该请求头时继续返回原有统一 JSON，不增加额外模型调用。
+
+认证、输入校验、项目归属、配置及初步并发检查失败时，仍返回相应 HTTP 状态和统一 JSON。
+流开始后的失败通过 `error` 终态事件表示，此时 HTTP 状态已经是 200，不能再依赖状态码判断生成成功。
+
+每帧包含 `event:` 和 JSON `data:`，以空行结束。JSON 内也包含同名 `event` 字段：
+
+```text
+event: progress
+data: {"event":"progress","message":"正在查询天气"}
+
+event: tool_start
+data: {"event":"tool_start","message":"景点研究：正在调用地点搜索","call_id":"本次工具调用 UUID"}
+```
+
+| 事件 | 内容与含义 |
+| --- | --- |
+| `started` | 开始执行；不代表已经生成成功 |
+| `progress` | 实际规划阶段、校验和保存进度 |
+| `model_start` / `model_end` | 实际模型调用开始与完成 |
+| `tool_start` / `tool_end` / `tool_error` | 实际工具调用状态，通过 `call_id` 关联；单次工具失败可由 Agent 恢复，不代表整轮结束 |
+| `complete` | 唯一成功终态，`data` 与原 JSON 成功体的 `data` 相同；保存请求只在提交成功后发送 |
+| `error` | 失败终态，`error` 含原有 `code`、`message`、`stage`；客户端结束等待 |
+
+空闲时每 15 秒发送 `: heartbeat` 注释，不代表阶段进度。响应禁用缓存，并发送
+`X-Accel-Buffering: no`；部署代理也应支持流式转发、避免缓冲和短空闲超时。
+
+流内不发送工具参数、工具原文、模型正文分片或推理，也不把未完成的结构化参数展示为正式行程。
+未收到 `complete` 就断流属于结果未确认，页面提示检查计划列表后再重试；不会自动重发昂贵的生成请求。
+连接断开时取消请求关联任务、释放并发名额，并尝试把尚在运行的记录标记为失败，错误码为
+`generation_cancelled`。已成功提交的版本不被覆盖。本轮不提供后台继续执行、事件重放或断线续传。
