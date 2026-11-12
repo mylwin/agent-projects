@@ -5,20 +5,22 @@
 - 管理工具：uv（本次使用 0.12.21）。
 - Python：3.12 系列（本次选择已安装的 CPython 3.12.14）。
 - 平台：macOS arm64。
-- 依赖：完整沿用 C8 的 13 项直接依赖约束，间接依赖由 `uv.lock` 固定。
+- 依赖：保留 C8 的 13 项直接依赖约束，新增 `langchain-openai>=0.3.27,<0.4.0`，
+  间接依赖由 `uv.lock` 固定。
 - 软件源：本次沿用本机 uv 配置的清华 PyPI 镜像，锁文件保留实际下载来源。
 
 在项目根目录执行 `uv sync --locked`，无需激活虚拟环境，也无需 conda 或 pip。
 
 ## 配置
 
-复制 `.env.example` 为 `.env`，设置 `MOONSHOT_API_KEY`。
+复制 `.env.example` 为 `.env`，设置服务商的 API 基础地址、密钥和模型名称。
 不要将真实密钥提交到 Git，也无需将密钥写入源码。
 
 | 配置项 | 默认值或作用 |
 | --- | --- |
-| `MOONSHOT_API_KEY` | 问答程序必填；纯数据与向量索引检查不需要 |
-| `MOONSHOT_MODEL` | 留空使用上游 `kimi-k2-0711-preview`；按账户可用模型覆盖 |
+| `LLM_BASE_URL` | 必填，OpenAI Chat Completions 兼容 API 基础地址；别名 `OPENAI_BASE_URL` |
+| `LLM_API_KEY` | 必填，服务商密钥；别名 `OPENAI_API_KEY`；本地免鉴权服务可填占位值 |
+| `LLM_MODEL` | 必填，服务商的模型名称；别名 `OPENAI_MODEL`，无默认模型 |
 | `EMBEDDING_MODEL` | 留空使用 `BAAI/bge-small-zh-v1.5`，也支持本地模型目录 |
 | `HF_ENDPOINT` | 可选的 Hugging Face 端点，遵循用户本地配置 |
 | `HF_HOME` | 启动脚本默认设置为本项目 `.cache/huggingface`，可自行覆盖 |
@@ -31,8 +33,14 @@ uv run --locked python scripts/run.py
 ```
 
 启动适配器会加载项目根目录的 `.env`，将工作目录切换到 `code/C8`，
-并使用项目内的绝对数据和索引路径。原始 `main.py` 保持上游原样；
-若直接运行原始入口，仍应遵循教程的工作目录和环境变量要求。
+并使用项目内的绝对数据和索引路径。配置中的非空 `LLM_*` 优先于对应 `OPENAI_*`。
+已有进程环境变量优先于 `.env` 中的同名变量。旧 `MOONSHOT_*` 变量需迁移到新配置。
+直接从 `code/C8` 执行 `uv run --project ../.. python main.py` 也支持这些通用配置。
+
+基础地址按服务商填写，通常以 `/v1` 结尾，不要附加 `/chat/completions`。
+本项目显式使用 Chat Completions，支持同一服务的普通回答和 SSE 流式输出，
+不请求流式 token 用量字段；原生其他协议需要独立适配。
+切换生成模型无需重建向量索引。
 
 ## 数据与模型
 
@@ -49,7 +57,7 @@ uv run --locked python scripts/run.py
 `check.py --index` 会用全部菜谱构建索引，先在临时目录验证保存与加载，
 成功后保存到正式缓存目录。检查记录中的检索示例仅验证链路，不代表系统性质量评估。
 
-## 本次验证（2026-11-12）
+## 首次导入验证（2026-11-12）
 
 | 检查 | 结果 |
 | --- | --- |
@@ -67,12 +75,34 @@ uv run --locked python scripts/run.py
 | 混合检索 | “西红柿炒鸡蛋需要哪些食材？”返回西红柿炒鸡蛋及温泉蛋的父文档 |
 | 正式索引缓存 | 已写入 `code/C8/vector_index/index.faiss` 与 `index.pkl` |
 | 跨目录启动 | 从项目外执行 `scripts/run.sh`，正确定位项目并提示缺少密钥 |
-| API 问答 | 未执行：本项目尚未配置 `.env`，当前进程也没有 `MOONSHOT_API_KEY` |
+| API 问答 | 未执行：尚未配置真实服务商密钥 |
 
 嵌入模型下载快照：`BAAI/bge-small-zh-v1.5`，
 提交 `7999e1d3359715c523056ef9478215996d62a620`。
 本次模型下载使用 `HF_HUB_DISABLE_XET=1`，切换普通 HTTP 后成功完成。
-默认 Kimi 模型的账户可用性和三类实际回答尚未验证。
+首次导入时的默认生成模型未执行实际 API 验证，现已由通用配置替代。
+
+## 通用模型适配验证（2026-11-12）
+
+```bash
+uv run --locked python -m unittest discover -s tests -v
+uv run --locked python scripts/check.py
+uv pip check
+uv lock --check --offline
+```
+
+- 本地 HTTP 模拟服务的 7 项集成测试通过，覆盖查询路由与重写、两类普通回答、
+  两类 SSE 流式回答、配置别名与优先级、缺少配置、无效地址和构造参数覆盖。
+- 测试确认请求发送到配置地址下的 `/chat/completions`，使用配置的模型与鉴权信息，
+  不发送 `stream_options`，未调用真实服务商 API。
+- 656 个未修改的上游文件哈希校验通过，3 个本地适配文件存在；
+  323 份菜谱、1,764 个子块、父文档回溯和 BM25 检查通过。
+- uv 锁文件共 145 个包，本机安装 122 个包；依赖兼容性与锁文件检查通过。
+- 未配置服务商信息时，启动入口正确报告所缺少的通用配置。
+- 本次没有重建嵌入索引；上一次已验证的索引可继续复用。
+- 尚未配置真实服务商密钥，真实 API 连通性和回答质量未验证。
+
+本地 HTTP 测试需要允许监听 `127.0.0.1` 的临时端口。
 
 ## 后续 API 联调
 
@@ -81,4 +111,4 @@ uv run --locked python scripts/check.py --api
 ```
 
 该命令验证菜品做法、菜品推荐、食材查询，会调用账户中的模型。
-教程默认模型的当前可用性必须以实际账户调用为准。
+服务商模型的当前可用性必须以实际账户调用为准。

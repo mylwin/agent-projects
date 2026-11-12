@@ -2,6 +2,11 @@
   "repository": "https://github.com/datawhalechina/all-in-rag",
   "commit": "cec956e80ae28d6c0ca84c9d39dddcf61ad633fd",
   "imported_on": "2026-11-12",
+  "local_modifications": [
+    "code/C8/config.py",
+    "code/C8/main.py",
+    "code/C8/rag_modules/generation_integration.py"
+  ],
   "paths": [
     "code/C8",
     "data/C8"

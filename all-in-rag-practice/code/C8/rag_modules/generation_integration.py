@@ -2,12 +2,12 @@
 生成集成模块
 """
 
-import os
 import logging
 from typing import List
 
 from langchain_core.prompts import ChatPromptTemplate, PromptTemplate
-from langchain_community.chat_models.moonshot import MoonshotChat
+from langchain_openai import ChatOpenAI
+from config import RAGConfig, get_llm_api_key
 from langchain_core.documents import Document
 from langchain_core.runnables import RunnablePassthrough
 from langchain_core.output_parsers import StrOutputParser
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 class GenerationIntegrationModule:
     """生成集成模块 - 负责LLM集成和回答生成"""
     
-    def __init__(self, model_name: str = "kimi-k2-0711-preview", temperature: float = 0.1, max_tokens: int = 2048):
+    def __init__(self, model_name: str = None, temperature: float = 0.1, max_tokens: int = 2048, base_url: str = None):
         """
         初始化生成集成模块
         
@@ -25,8 +25,16 @@ class GenerationIntegrationModule:
             model_name: 模型名称
             temperature: 生成温度
             max_tokens: 最大token数
+            base_url: OpenAI 兼容的 API 基础地址，未传时从环境变量读取
         """
-        self.model_name = model_name
+        config = RAGConfig.from_env()
+        if model_name is not None:
+            config.llm_model = model_name
+        if base_url is not None:
+            config.llm_base_url = base_url
+        config.validate_llm()
+        self.model_name = config.llm_model
+        self.base_url = config.llm_base_url
         self.temperature = temperature
         self.max_tokens = max_tokens
         self.llm = None
@@ -36,15 +44,16 @@ class GenerationIntegrationModule:
         """初始化大语言模型"""
         logger.info(f"正在初始化LLM: {self.model_name}")
 
-        api_key = os.getenv("MOONSHOT_API_KEY")
-        if not api_key:
-            raise ValueError("请设置 MOONSHOT_API_KEY 环境变量")
-
-        self.llm = MoonshotChat(
+        self.llm = ChatOpenAI(
             model=self.model_name,
             temperature=self.temperature,
             max_tokens=self.max_tokens,
-            moonshot_api_key=api_key
+            api_key=get_llm_api_key(),
+            base_url=self.base_url,
+            use_responses_api=False,
+            stream_usage=False,
+            timeout=60,
+            max_retries=2,
         )
         
         logger.info("LLM初始化完成")

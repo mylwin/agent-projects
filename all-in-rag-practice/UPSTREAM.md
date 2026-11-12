@@ -10,8 +10,9 @@
 - 导入方式：临时目录稀疏检出后复制文件，不在本项目嵌套 Git 仓库。
 - 校验清单：[docs/upstream-manifest.json](docs/upstream-manifest.json)
 
-导入共 659 个文件，其中 323 个菜谱 Markdown。所有导入文件均与上游 Git blob
-逐字节校验一致。326 个资源文件在上游为 Git LFS 文本指针，本地按原样保留；
+初次导入共 659 个文件，其中 323 个菜谱 Markdown，导入时均与上游 Git blob
+逐字节校验一致。通用模型适配修改了下述 3 个源文件，其余 656 个文件保持原样。
+326 个资源文件在上游为 Git LFS 文本指针，本地按原样保留；
 这些文件不是可显示的图片，当前 RAG 只读取 Markdown，不需要下载对应图片实体。
 
 ## 署名与许可
@@ -27,10 +28,20 @@
 
 ## 本地新增内容
 
-`code/C8/` 与 `data/C8/` 保持上游原样。本地新增 uv 项目配置、依赖锁文件、
-环境变量示例、启动与验证脚本及中文说明，便于在 Python 3.12 环境中复现。
-启动适配器将数据、索引及模型缓存路径固定到项目内，并支持
-`MOONSHOT_MODEL`、`EMBEDDING_MODEL` 覆盖默认模型。
+本地新增 uv 项目配置、依赖锁文件、环境变量示例、启动与验证脚本、
+通用模型接口集成测试及中文说明。启动适配器将数据、索引及模型缓存路径固定到项目内。
+
+通用模型适配修改以下上游文件：
+
+- `code/C8/config.py`：增加通用模型配置加载、别名兼容与校验。
+- `code/C8/main.py`：使用通用配置初始化生成模块。
+- `code/C8/rag_modules/generation_integration.py`：将 MoonshotChat 替换为 ChatOpenAI，
+  显式使用 Chat Completions，支持普通与流式回答。
+
+新增 `langchain-openai` 依赖。生成模型通过 `LLM_BASE_URL`、`LLM_API_KEY`、
+`LLM_MODEL` 配置，也支持 `OPENAI_*` 别名；嵌入模型仍由 `EMBEDDING_MODEL` 配置。
+校验清单保留初次导入的哈希，并在 `local_modifications` 中记录以上 3 个文件。
+验证脚本对原样文件比对哈希，对本地适配文件检查存在性；适配改动由 Git 记录。
 
 ## 后续同步
 

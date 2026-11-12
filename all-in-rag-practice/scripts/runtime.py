@@ -1,4 +1,4 @@
-"""集中处理本地启动配置，保留上游 C8 源码不变。"""
+"""集中处理本地启动配置与通用模型环境变量。"""
 
 import os
 import sys
@@ -19,12 +19,13 @@ def prepare_environment():
 
 
 def load_config():
-    from config import DEFAULT_CONFIG
+    from config import RAGConfig
+
+    config = RAGConfig.from_env()
 
     return replace(
-        DEFAULT_CONFIG,
+        config,
         data_path=str(PROJECT_ROOT / "data" / "C8" / "cook"),
         index_save_path=str(CODE_DIR / "vector_index"),
-        llm_model=os.getenv("MOONSHOT_MODEL") or DEFAULT_CONFIG.llm_model,
-        embedding_model=os.getenv("EMBEDDING_MODEL") or DEFAULT_CONFIG.embedding_model,
+        embedding_model=os.getenv("EMBEDDING_MODEL") or config.embedding_model,
     )

@@ -2,7 +2,6 @@
 RAG系统主程序
 """
 
-import os
 import sys
 import logging
 from pathlib import Path
@@ -11,7 +10,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent))
 
 from dotenv import load_dotenv
-from config import DEFAULT_CONFIG, RAGConfig
+from config import RAGConfig
 from rag_modules import (
     DataPreparationModule,
     IndexConstructionModule,
@@ -37,9 +36,9 @@ class RecipeRAGSystem:
         初始化RAG系统
 
         Args:
-            config: RAG系统配置，默认使用DEFAULT_CONFIG
+            config: RAG系统配置，默认从环境变量加载模型配置
         """
-        self.config = config or DEFAULT_CONFIG
+        self.config = config or RAGConfig.from_env()
         self.data_module = None
         self.index_module = None
         self.retrieval_module = None
@@ -49,9 +48,7 @@ class RecipeRAGSystem:
         if not Path(self.config.data_path).exists():
             raise FileNotFoundError(f"数据路径不存在: {self.config.data_path}")
 
-        # 检查API密钥
-        if not os.getenv("MOONSHOT_API_KEY"):
-            raise ValueError("请设置 MOONSHOT_API_KEY 环境变量")
+        self.config.validate_llm()
     
     def initialize_system(self):
         """初始化所有模块"""
@@ -72,6 +69,7 @@ class RecipeRAGSystem:
         print("🤖 初始化生成集成模块...")
         self.generation_module = GenerationIntegrationModule(
             model_name=self.config.llm_model,
+            base_url=self.config.llm_base_url,
             temperature=self.config.temperature,
             max_tokens=self.config.max_tokens
         )

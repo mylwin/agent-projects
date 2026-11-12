@@ -1,7 +1,7 @@
 # All-in-RAG 第 8 章实战
 
 基于 Datawhale 的“尝尝咸淡”菜谱 RAG 命令行项目，使用 **uv + Python 3.12** 管理。
-完整保留 `code/C8` 核心源码及 `data/C8` 配套数据，便于对照教程学习。
+保留 `code/C8` 源码结构及 `data/C8` 配套数据，生成模块已适配通用模型接口。
 
 ## 快速开始
 
@@ -10,19 +10,36 @@
 ```bash
 uv sync --locked
 cp .env.example .env
-# 在编辑器中填写 .env 的 MOONSHOT_API_KEY
+# 在编辑器中填写 .env 的 LLM_BASE_URL、LLM_API_KEY、LLM_MODEL
 uv run --locked python scripts/run.py
 ```
 
-默认使用教程的 `kimi-k2-0711-preview`。如果账户无法使用该模型，
-在 `.env` 中设置 `MOONSHOT_MODEL` 为账户可用的模型名称。
+在 `.env` 配置服务商的 OpenAI Chat Completions 兼容接口，例如：
+
+```dotenv
+LLM_BASE_URL=https://api.example.com/v1
+LLM_API_KEY=你的API密钥
+LLM_MODEL=你的模型名称
+```
+
+地址、密钥和模型名称均按实际服务商填写。基础地址通常包含 `/v1`，
+也可能是服务商指定的其他前缀；不要附加 `/chat/completions`。
+也支持 `OPENAI_BASE_URL`、`OPENAI_API_KEY`、`OPENAI_MODEL`，非空的 `LLM_*` 优先。
+模型无默认值，原有 Moonshot 配置请迁移到这三项。
+无需密钥的本地兼容服务也需给 `LLM_API_KEY` 填一个非空占位值。
+其他厂商的原生协议（如 Messages API）需要独立适配。
+
 首次启动会下载 `BAAI/bge-small-zh-v1.5` 并构建索引。
+仅更换生成模型时，可复用已有向量索引。
 
 也可从任意目录执行 `bash /本项目绝对路径/scripts/run.sh`。
 
 ## 验证
 
 ```bash
+# 本地模拟服务测试：配置、鉴权、模型传递、普通回答与 SSE；无需真实密钥
+uv run --locked python -m unittest discover -s tests -v
+
 # 检查依赖、菜谱加载、分块、父文档映射和 BM25，无需密钥或模型下载
 uv run --locked python scripts/check.py
 
@@ -39,6 +56,7 @@ uv run --locked python scripts/check.py --api
 code/C8/              上游配置、命令行入口及四个核心模块
 data/C8/cook/dishes/   上游菜谱 Markdown 及仓库中的配套资源
 scripts/              uv 启动、配置适配和验证脚本
+tests/                通用模型接口本地集成测试
 docs/setup.md         环境说明、限制及本次验证结果
 UPSTREAM.md           来源、版本、许可及文件校验信息
 uv.lock               完整依赖锁文件，需提交版本控制

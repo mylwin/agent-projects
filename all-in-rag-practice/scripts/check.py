@@ -3,7 +3,6 @@
 import argparse
 import json
 import logging
-import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
@@ -19,12 +18,16 @@ def check_imported_files():
     import hashlib
 
     manifest = json.loads((PROJECT_ROOT / "docs/upstream-manifest.json").read_text())
+    modified = set(manifest.get("local_modifications", []))
+    require(modified <= {entry["path"] for entry in manifest["files"]}, "本地适配清单包含未知文件")
     for entry in manifest["files"]:
         path = PROJECT_ROOT / entry["path"]
         require(path.is_file(), f"上游文件缺失：{entry['path']}")
+        if entry["path"] in modified:
+            continue
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
         require(digest == entry["sha256"], f"文件已偏离上游快照：{entry['path']}")
-    return len(manifest["files"])
+    return len(manifest["files"]) - len(modified), len(modified)
 
 
 def check_data(config):
@@ -101,11 +104,14 @@ def main():
     args = parser.parse_args()
     prepare_environment()
     logging.basicConfig(level=logging.WARNING)
-    if args.api and not os.getenv("MOONSHOT_API_KEY", "").strip():
-        parser.error("请先在项目根目录 .env 中配置 MOONSHOT_API_KEY")
     config = load_config()
-    count = check_imported_files()
-    print(f"上游快照校验通过：{count} 个文件")
+    if args.api:
+        try:
+            config.validate_llm()
+        except ValueError as error:
+            parser.error(str(error))
+    count, modified = check_imported_files()
+    print(f"上游原样文件校验通过：{count} 个；本地适配文件：{modified} 个（检查存在性）")
     data, chunks = check_data(config)
     if args.index:
         (PROJECT_ROOT / ".cache").mkdir(exist_ok=True)
