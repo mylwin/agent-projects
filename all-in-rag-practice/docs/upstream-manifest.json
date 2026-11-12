@@ -1,0 +1,3965 @@
+{
+  "repository": "https://github.com/datawhalechina/all-in-rag",
+  "commit": "cec956e80ae28d6c0ca84c9d39dddcf61ad633fd",
+  "imported_on": "2026-11-12",
+  "paths": [
+    "code/C8",
+    "data/C8"
+  ],
+  "files": [
+    {
+      "path": "code/C8/config.py",
+      "git_blob_sha1": "de9a441bc8e177ad61eba5c13c5385a44d3ca179",
+      "sha256": "ee7971495f2922e313766063d3e6fd8b4829d189c03b8c5ec42c3086c2a8856c",
+      "bytes": 814
+    },
+    {
+      "path": "code/C8/main.py",
+      "git_blob_sha1": "ccaca56891f81ac691653bafb489fcd23e42ddd4",
+      "sha256": "85dd45b4a8b72af27da352e1fcfd8196927c43539c64b3c273281a5799ea9866",
+      "bytes": 11440
+    },
+    {
+      "path": "code/C8/rag_modules/__init__.py",
+      "git_blob_sha1": "38f979553e631e3949f26ce6caeb1da82dc490d1",
+      "sha256": "a00a19eb37a2c55cf69b6d0dcbee6eebb2db5875be68926ac80c8364313cbbf1",
+      "bytes": 404
+    },
+    {
+      "path": "code/C8/rag_modules/data_preparation.py",
+      "git_blob_sha1": "c49a8c62b586225b2e2318a32a4fc72a400d5c6b",
+      "sha256": "511db2f6784515019a8bdba590cc637e0275aabbb0675bb2c18733085fd46fb9",
+      "bytes": 12690
+    },
+    {
+      "path": "code/C8/rag_modules/generation_integration.py",
+      "git_blob_sha1": "271c17d6779f543c991ed8766d5e1fe5816428b0",
+      "sha256": "da096902f0256adf73d858c3202b3018db60159bd6efe3fcfdf69b964a29c2d0",
+      "bytes": 12275
+    },
+    {
+      "path": "code/C8/rag_modules/index_construction.py",
+      "git_blob_sha1": "9eaac97a8d2d657f92a3c437b5e0f086ab182a3a",
+      "sha256": "4bd80b098dc3ee2a13b5dde9cd8abe8b62c613c9b04b85841d41d58096c949f5",
+      "bytes": 4156
+    },
+    {
+      "path": "code/C8/rag_modules/retrieval_optimization.py",
+      "git_blob_sha1": "ae5720830c92d1305eaa6f96943f048a6478f9d0",
+      "sha256": "1fd1d42a9ab949db063b6b1451972222d0995664a34176fbd81aba8aeaa51d10",
+      "bytes": 5276
+    },
+    {
+      "path": "code/C8/requirements.txt",
+      "git_blob_sha1": "c341e24d03670b4f5b803019701e11050f774734",
+      "sha256": "8f72da200e5c1d398702cef3a24059fa548f9d0eca3466920e8a33dbd58378cf",
+      "bytes": 297
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/咖喱炒蟹.md",
+      "git_blob_sha1": "adca9693013b61fe21659ed484bc5715b553516f",
+      "sha256": "7682641f4a76a2c08634d648c4584fb0adfa942c4fa24f1155eaaca9bbee2174",
+      "bytes": 1855
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/小龙虾/小龙虾.md",
+      "git_blob_sha1": "daa595dc4ac3c2fcff867e025ce930aba2883498",
+      "sha256": "697b9dd62eca8d24654dc850185c05e6500ac5bb9bccf6e6153a9fdbbeeaa947",
+      "bytes": 1501
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/小龙虾/成品.jpg",
+      "git_blob_sha1": "164c7eb926789bd2e6dc309eb471cb571713690c",
+      "sha256": "c1b6da6b423cc1f0dac7dab6d3fbed1cd7aa04b2ee2c0574ca0d70a927f2192d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/干煎阿根廷红虾/干煎阿根廷红虾.jpg",
+      "git_blob_sha1": "c715fca0899800720f7a3a966200feef8d84b01a",
+      "sha256": "326a2897f6d4e427504f89feb2a70e9f77f93a767b5e45eaa460dd979fc5fb5d",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/干煎阿根廷红虾/干煎阿根廷红虾.md",
+      "git_blob_sha1": "d13cddbadd81305e8ce71efe3e1dc9e8e00ec3dd",
+      "sha256": "b12e005ca5a19120286df9729db3c8016d8af3909aec2287c79424d8e9a27e82",
+      "bytes": 2366
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/微波葱姜黑鳕鱼.md",
+      "git_blob_sha1": "4996d2e34610ca260c395f147af6811363cce0da",
+      "sha256": "eeae576643177b0176c2cf8938d5c68c098715012d24fc6a6845167fe9c0ed5a",
+      "bytes": 2016
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/水煮鱼.md",
+      "git_blob_sha1": "9f3863ea737b3568713c4dffe3332938a4d71151",
+      "sha256": "1483dc090efbb4eadfaf7438b1f08e2b1dd47c0e1d5733f1188dfd51067dc83c",
+      "bytes": 2608
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/油焖大虾/油焖大虾.jpg",
+      "git_blob_sha1": "d7f86ca6599c2032789cbc37426e7ebc87bd7a77",
+      "sha256": "86d6edd8baa7fd96baf8b5e54ad0cae4123118b50cd6d2ebdb95534e338a35c2",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/油焖大虾/油焖大虾.md",
+      "git_blob_sha1": "a6ce5f4c9f6de6df8f8cc21a068bc6d858b3ef23",
+      "sha256": "77bdbf79af0dab39d42c213deaf6bc29c5eb2579219526c0eb16e2c6acf88def",
+      "bytes": 1179
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/混合烤鱼/烤鱼.jpg",
+      "git_blob_sha1": "e0df7d8fef52345e1a4d6b01a9e28f7ba50d18fd",
+      "sha256": "00bd49085afff98e23ddd066e60d73f78860a4ab323e49fc912145d93596d17d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/混合烤鱼/烤鱼.md",
+      "git_blob_sha1": "6f2a9b3de9f1f1e3f2ef7c3e384f922a019783ea",
+      "sha256": "33bcd4bafdf823d46a7468664f3ae59efa56e374a537e71678467249e4ac0a29",
+      "bytes": 2615
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/清蒸生蚝.md",
+      "git_blob_sha1": "dbc0d13c36899a5596bc59d8d1df2d9a09662af4",
+      "sha256": "69f55700bc41ba807e1d8bca0d0f2cbc21a1a2b968e66ad79d839b58059c6e49",
+      "bytes": 750
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/清蒸鲈鱼/摆盘.jpg",
+      "git_blob_sha1": "0c005384b5eba0d60767d2a48bab4c1a481b1ccb",
+      "sha256": "8153666b59ebf1df839322e824067efdf681fe107081476fb4576c5a5b7f13a6",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/清蒸鲈鱼/改刀.jpg",
+      "git_blob_sha1": "29420bbb54040d92de6999d53c94629bf648ad2c",
+      "sha256": "d3783141360c1da48124baa1b850258efb3f41243933dabc9ae4cbbd5b12fd92",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/清蒸鲈鱼/清蒸鲈鱼.jpg",
+      "git_blob_sha1": "b10870e753fc654046e7dc30c3997dc6f8bbe8ba",
+      "sha256": "09cdedd227decad3e8364613372ee4ab16333304a4f53f15b99be1be2fdb3029",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/清蒸鲈鱼/清蒸鲈鱼.md",
+      "git_blob_sha1": "b8f0ee10f0039afc991b15bdbe17e2a037684765",
+      "sha256": "8d99776710c085133d634247698f224db4c98b2a93a511f744d1930dee768204",
+      "bytes": 1836
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/白灼虾/白灼虾.md",
+      "git_blob_sha1": "e12126829714e34416fa40f91e9b7c493748e2b8",
+      "sha256": "1a456507c43b6ee3f3fd90b85cb5db1fa2fdea32713a042422fc0aa86aa1536b",
+      "bytes": 1453
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/白灼虾/白灼虾.webp",
+      "git_blob_sha1": "9a0d155d89529471899f0f7588d7f6311fda326e",
+      "sha256": "2699ff2f234af748bc5241f39f714af4d96a0316877226142db17c422547b7ac",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/糖醋鲤鱼/成品.jpg",
+      "git_blob_sha1": "5f5d7a6e289bbe1b37b380fe40c4ecb54cb95fa2",
+      "sha256": "1048a51d42d832566f571b9b496e7368f3570ea3945d3476d0f9b05d2941a2e3",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/糖醋鲤鱼/糖醋鲤鱼.md",
+      "git_blob_sha1": "421a06727697afbfaf8eff6474b95e6a30fd8bf7",
+      "sha256": "d34be9342909040e14b7043bb68e023f5a9343293d5faacc6628414b34681e80",
+      "bytes": 2678
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/糖醋鲤鱼/腌制.jpg",
+      "git_blob_sha1": "279f6d94f85b474f1541b4b43e1ca5c4c40fab3b",
+      "sha256": "798102344c46eb7a458cd0ceca9c2fab03dd70cab2f724314fb46ae300b0c548",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/红烧鱼.md",
+      "git_blob_sha1": "9aca93a9306a0933ca73f02a8d3c1ed1679ff3c4",
+      "sha256": "2172ed5fbe314aaaf74df6ad3caaf928fd7dc746143a0d93c7a7c1dffa493728",
+      "bytes": 2274
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/红烧鱼头.md",
+      "git_blob_sha1": "7d17a19ae0d38baa160fa5e56fdb9789ca96d911",
+      "sha256": "c23b3bc663c15a42ee895b71d05f1579220960c35f089d08bae8478c08849d64",
+      "bytes": 3092
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/红烧鲤鱼.md",
+      "git_blob_sha1": "81c68edc652ff9b3fee03083bf1ee0940ac5cbca",
+      "sha256": "9a9aa3d3c1eeed7c57895bd4c412ac69ee65021a7348a5006c78141df48dd10b",
+      "bytes": 2048
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/芥末黄油罗氏虾/芥末黄油罗氏虾.jpg",
+      "git_blob_sha1": "816b045ed1d7183fd8e2db90df2e9bdd171f2b12",
+      "sha256": "bb38a954eaae89332b970e940fc6f9b71093563d9c6a1710e13277e3c35e68b0",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/芥末黄油罗氏虾/芥末黄油罗氏虾.md",
+      "git_blob_sha1": "f42a836513f3aec9d9a70021b5f955ed037e4ef1",
+      "sha256": "da0ca690ba3564b7fdfe1ba2be3e7561b58caaf5b5893f7551bf7ba794b1a231",
+      "bytes": 1626
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/葱油桂鱼/10.jpg",
+      "git_blob_sha1": "c9eb72d7554539041020baab2e242f465d538a30",
+      "sha256": "3e82b4c36acebb42fa5bb154be18bec4227f4f71b6bc9da5061c3dcf6c95070a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/葱油桂鱼/葱油桂鱼.jpg",
+      "git_blob_sha1": "fce0a18e02c15106d790e4854bcc85aefd9864c5",
+      "sha256": "b2d29bcb72da37d6fd6cdfc85a797eb0ebc6a496bc84e278f1d17dc0008a6d3b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/葱油桂鱼/葱油桂鱼.md",
+      "git_blob_sha1": "68560b9bd148538accba6cdd5c928ca3bbb7eed8",
+      "sha256": "545876281ba9debb63cce77ed93dd2da1b9e43afceb8343ff69db383b160df04",
+      "bytes": 3521
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/葱油桂鱼/葱油鲈鱼.jpg",
+      "git_blob_sha1": "2ce41f7ecd54879250c56a019a53130280180175",
+      "sha256": "ef517eea4e405a5b886945db333376186d4da9dfc4fb09a3dd91293ed0e56163",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/葱烧海参/海参.jpeg",
+      "git_blob_sha1": "7cc9d7694b78eca20d9b9b1d52adcb62f1f3ff98",
+      "sha256": "4a820e46698d7457b2242ebdb64fc49289a52b1ed51f3ce77a0c043e35a35d9a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/葱烧海参/葱烧海参.jpeg",
+      "git_blob_sha1": "081c1580486aa05f2cbea469519849ed5481ffc2",
+      "sha256": "3bff67bcbb749042bd2da4dc524b4435c4fcd2b674e73f355bc705f5d69143e4",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/葱烧海参/葱烧海参.md",
+      "git_blob_sha1": "36c35f6ea6037b7c28a60eb9781a55c2e79161d0",
+      "sha256": "5b9e33f10dd11d07cf381f7ca415803873112353ade590638271de31e2cc618d",
+      "bytes": 1476
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/葱烧海参/葱白.jpeg",
+      "git_blob_sha1": "cbeaef462979588bcd2dc9c83037e04d738c0d04",
+      "sha256": "53d4c88091777ae67992652d1b0d4bc679053564395aed1f06996eec57cee6c9",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/葱烧海参/酱汁.jpeg",
+      "git_blob_sha1": "8baebb44cf5eaf04865939258b272eab7229df96",
+      "sha256": "c740205bc77e9434356cb3472aaae0aa14fefbb1556d2f7aa900e7e5108bb2a7",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/蒜蓉虾/1.jpeg",
+      "git_blob_sha1": "7282e2417c7e606c3a71c087e7b03799be0c7106",
+      "sha256": "8278fe9a25b87fea5f926c47407d86205fb965398eb13be1554030d8b8f7fcbe",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/蒜蓉虾/2.jpeg",
+      "git_blob_sha1": "25cd1c54020d3dcc057b34e91bfc3bb7474b6ed0",
+      "sha256": "aa07daee0c83064411df7f955e245beb7b75a55f843e2ea63d638594334afad3",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/蒜蓉虾/蒜蓉虾.md",
+      "git_blob_sha1": "0816414ba21e3fb41cd723ba1754ccdf1b3feaa2",
+      "sha256": "068d18409a90ff1e8ad5ae2d377f9c5b9eef686b14819b9619c5f87b70358ce2",
+      "bytes": 576
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/蒜香黄油虾/1.jpg",
+      "git_blob_sha1": "b801b4d8d7567be0a66f5d45fabe84d6783a093b",
+      "sha256": "03df9675a4a358d58c8168746e52d624f9e067ed23ce5dac027ec0bcf5ed36e9",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/蒜香黄油虾/蒜香黄油虾.md",
+      "git_blob_sha1": "78c9b9d8df65003a9650c3c9d0f003abb33c97d3",
+      "sha256": "1b2847e73b0c07d53ae8cc5a6da023eeda7363250de9fedfe1be77a9bb4ad9e9",
+      "bytes": 1322
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/蛏抱蛋/1.jpeg",
+      "git_blob_sha1": "1e187116b0230fb17ef71d225d5b96472c56b88d",
+      "sha256": "ecf14a49b63192e4fd73d8e0b72aec0c889add0e8f1a1e1dff260c608b5b006b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/蛏抱蛋/2.jpeg",
+      "git_blob_sha1": "c378552a47d69d3a5e4b16e0341d7a92dd3877ea",
+      "sha256": "276865b7e92008f27b69b954b4a3d28bf4c60c103fc48f58ac265a6f3a3f683f",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/蛏抱蛋/3.jpeg",
+      "git_blob_sha1": "82f4ca62a2beb5cf388d0f6108aae4d4aa26cbf9",
+      "sha256": "cb3b9a6c1d0ad619e0b29ef15456f3638cda10de8ab37b2ae973c589a1723182",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/蛏抱蛋/蛏抱蛋.md",
+      "git_blob_sha1": "327d2bb16fc689e5eb4fbbb9a9de82022bbebbd0",
+      "sha256": "cbb629457a23e5dfb0b7891bd399be7822dd9f5bf31424fdcfd536e9020cce05",
+      "bytes": 1063
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/香煎翘嘴鱼/香煎翘嘴鱼.jpeg",
+      "git_blob_sha1": "0b59d66c43777cd3533bde33537b73ac26a8ac81",
+      "sha256": "67ea93dacca1cf8976317ccae53fc4950ede612b186f91e7f17b5f95583c3667",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/香煎翘嘴鱼/香煎翘嘴鱼.md",
+      "git_blob_sha1": "a7a33d740f69c148587c46add83ad108aae0b65b",
+      "sha256": "cf5fc365fcd0cec0caf43dae6ee897b1adf1e73f2b485ceaf83244e748e94fd9",
+      "bytes": 2162
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/鲤鱼炖白菜/鲤鱼炖白菜.jpeg",
+      "git_blob_sha1": "fa6e9632154212f8dbe6e0831136fc05b7948b89",
+      "sha256": "3d694cd3e2f12aa2c2201378c8427ec4e914ea42129bb3c33d49d218acb3d22d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/鲤鱼炖白菜/鲤鱼炖白菜.md",
+      "git_blob_sha1": "1138b9b088a0e4c51541383eec64f647927d9938",
+      "sha256": "1009fbe2f302d4214064678e3b7bdc1481427faffa0b7531f3bbfb0b5a74af58",
+      "bytes": 1308
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/鳊鱼炖豆腐/鳊鱼炖豆腐.jpg",
+      "git_blob_sha1": "a4cfa972a929ca8a23a8ff0871fcdb8fbd917805",
+      "sha256": "ebcac15094bb89cc0c6e5522116cb83d6fbf59068082a06913637d8ffb1a2110",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/鳊鱼炖豆腐/鳊鱼炖豆腐.md",
+      "git_blob_sha1": "d35b93f649f424b45400ab9124cf468e46db3f21",
+      "sha256": "28db5e6d0c437828c6300bf671e13f9b6e79270bcab71bc162fd5069d031c934",
+      "bytes": 1625
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/黄油煎虾/黄油煎虾.jpg",
+      "git_blob_sha1": "fff05a435757f44c287d410b4eeda7a751b831c2",
+      "sha256": "1183860420828f2d90a6debb1af550310402ce42592f41a234125164c7513532",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/aquatic/黄油煎虾/黄油煎虾.md",
+      "git_blob_sha1": "291ce434e4f1e583295cf3e0a2bf006f925ae902",
+      "sha256": "1e3a3abfddfc928eb08d84c32dceed8d0c10b0f7f913c733b117a10ec5b79a34",
+      "bytes": 1342
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/吐司果酱.md",
+      "git_blob_sha1": "ed6e643db75b7270f360b77aaa78a0019f061ddd",
+      "sha256": "2425d7730c4a1304314253948e10105214d0ac67a1de5c99717850f98279aa0b",
+      "bytes": 812
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/太阳蛋.md",
+      "git_blob_sha1": "584221aee1f890433f2b981b585fc73c8db2c31d",
+      "sha256": "b3e590db0cb066bf1b707998dfe171eee9feb0e9b8093f507115e8c4e89eab60",
+      "bytes": 1583
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/完美水煮蛋.md",
+      "git_blob_sha1": "d1e1a05a785481204c6e262c5548bda311aa0046",
+      "sha256": "b4ee46af7846c009977b94588ab125e0166fcf59f5e82f50b1baf7360a2cb27f",
+      "bytes": 1260
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/微波炉荷包蛋.md",
+      "git_blob_sha1": "8959d66f93b83692c9246a9b3c2af4ec539b8032",
+      "sha256": "ea6ad70705b4b3b040a3af110dc7b198a86b639ca82c19161933ff1653ad76bb",
+      "bytes": 888
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/微波炉蛋糕.md",
+      "git_blob_sha1": "67b4234a8cae5f9eb7678e069969d16ae8e425cb",
+      "sha256": "7f4e063e57bde014b36598275783963c35f97371a0fd79892c90003b2087faf3",
+      "bytes": 1821
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/手抓饼.md",
+      "git_blob_sha1": "9502350cb317787ab9f1f9e3a16feddce64b4128",
+      "sha256": "718a6ce24ec9eaf8d259e1b0c29c9e3d64a65550351a6f4cfae3163decb7b300",
+      "bytes": 1299
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/桂圆红枣粥.md",
+      "git_blob_sha1": "6f78ad812d9eb846062d3d90b27e12a137e64918",
+      "sha256": "ff831d1e4543563804e54809eb52bcb6922f4bf7a27af435d606162778f8072d",
+      "bytes": 782
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/水煮玉米.md",
+      "git_blob_sha1": "3d1b1245b1b7d33ab0edf2d0e5e8d46fc2ce3afd",
+      "sha256": "b7c936efbab650d53e6575ce1c4ace0c33659bf3d28f110f91ced55ffcdc4177",
+      "bytes": 661
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/温泉蛋/温泉蛋.md",
+      "git_blob_sha1": "74f9bd585c8d24dab1c6f2f5fac54fcbb8fe15e6",
+      "sha256": "22aae3aa72e25ba2db70a1c3a9d6d6341cc8c047db33945d6bfb349dbf18f0d1",
+      "bytes": 1760
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/溏心蛋.md",
+      "git_blob_sha1": "e293854bc47b6d5def2ac3d65b8ec596e6cfcb1d",
+      "sha256": "92b9eed5fb3b1f9e4e293ceb79ed3d3fe091cda70756942627fc639fb5563a59",
+      "bytes": 1070
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/煎饺.md",
+      "git_blob_sha1": "031bf750bffc7d6b04fff3b24846c772dee3930d",
+      "sha256": "20a10d024d8f5ca4cc049edaad8c123bbe74d2741646c003478712864ca669a8",
+      "bytes": 812
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/燕麦鸡蛋饼.md",
+      "git_blob_sha1": "f37fe47767af32c136debdef28c3926b86c18595",
+      "sha256": "cd22fa395282e783315e3fa82ff82cf72b3d85204274c054a3d939d6c25a6f4d",
+      "bytes": 1370
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/牛奶燕麦.md",
+      "git_blob_sha1": "26429324e66ff6be140bd2785065db0987f11b92",
+      "sha256": "65e6c02a209c12587c6b976c2cfe968b3ab291380e1b41087f9202e1fee10ced",
+      "bytes": 1424
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/空气炸锅面包片.md",
+      "git_blob_sha1": "a6e0e103f723825d3576993e38e915a3ce0a9736",
+      "sha256": "6d209ece746508804eac509e221c01e13d383896fc396011d64a19c7bcb5a545",
+      "bytes": 552
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/美式炒蛋.md",
+      "git_blob_sha1": "197f197cfe52fd55e5f9b84597ba38ce5b931736",
+      "sha256": "d2f49c1e07e0d36fc870a56108f8bac29b60702503c2aed35282be5c3802d2bc",
+      "bytes": 1015
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/苏格兰蛋/egg1.png",
+      "git_blob_sha1": "6f678437e46f575168115877f3c5c16d2fe10b79",
+      "sha256": "c767823add221ae941f4481bcf8cb42de084f842c2d28c49934f64c9fc757802",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/苏格兰蛋/egg2.png",
+      "git_blob_sha1": "b04db5d750ff7e5e93fb956dc222b58f026f58f4",
+      "sha256": "a3a39852494b7182f9096e47392f246d2eafc121b1c72ea2046218fd95f9bc22",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/苏格兰蛋/egg3.png",
+      "git_blob_sha1": "6ec34d6e6e4f6ada2f3e9daae8d4dd40e305176d",
+      "sha256": "e5fc703982d8ad9b56ec70d7ba29caa46f9c686ead3734ea9a5dfa56b03ffc6b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/苏格兰蛋/苏格兰蛋.md",
+      "git_blob_sha1": "0e66d7517f4419fbbb727629c9934dfd3a0c81d3",
+      "sha256": "c6805d1a6c847d1eaf84d18f27053f2eb7633e7d1fedd3d595033e85d73aad75",
+      "bytes": 1547
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/茶叶蛋.md",
+      "git_blob_sha1": "a197369f8a7551725725a6eee9fc569dd071d8b2",
+      "sha256": "bfdc3339311014491d9e37279bb513a31e868fa551a9e05c7858ed53b76d43ff",
+      "bytes": 1261
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/蒸水蛋.md",
+      "git_blob_sha1": "a954add1c03b60145f0f5fac414847b1f0b0259a",
+      "sha256": "b14ba78df259e5afce4cf5210af243afcad56d834dce44516b2a4c3378a8e9f7",
+      "bytes": 945
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/蒸花卷.md",
+      "git_blob_sha1": "37f1cea860dda5dbbc2a1f3238088000ebc68d28",
+      "sha256": "49cf2555d350ccbdf56e409bdd3eec06498d4843434b816fbec44827801f543c",
+      "bytes": 1029
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/蛋煎糍粑.md",
+      "git_blob_sha1": "73ad72a0e66c4451f6d5d2506bd1c5d73b3eee24",
+      "sha256": "0e35ee86f3d8ecc70ac24d4abc1546bb0c02f7375ab34be7067f882497179c78",
+      "bytes": 1035
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/金枪鱼酱三明治.md",
+      "git_blob_sha1": "1e3133790eda08667612d22bf3681002055f2264",
+      "sha256": "448afbaf5800ed05a423ca9e08b20d27637a21df5d0f2c683298f4299e45415d",
+      "bytes": 1151
+    },
+    {
+      "path": "data/C8/cook/dishes/breakfast/鸡蛋三明治.md",
+      "git_blob_sha1": "97992a9d15ce2b82a06ea05bc54484e642a9dbb9",
+      "sha256": "23146f2c77c71b7dcd853557f455f320030f860b97a77e2041b276e8fba56b3c",
+      "bytes": 617
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/油泼辣子/口水鸡+油泼辣子.jpg",
+      "git_blob_sha1": "bfc97eb583d2f402aa64ec9c2d219f637433e7aa",
+      "sha256": "9e5a73f357cf95860dfd2d6fc8f0ff740607106229e38f0e4923b5c6af942d7a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/油泼辣子/油泼辣子.jpg",
+      "git_blob_sha1": "3d91fe09829a35dbb23a7de2af077d32c226f2bc",
+      "sha256": "df71ac30d5cbec7da1dfdba556028e08ff48c5f4f53d0ef6646f7bbd82552810",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/油泼辣子/油泼辣子.md",
+      "git_blob_sha1": "fdf81b2aaba9725df22b7285994632e030bc252c",
+      "sha256": "7574d4028ac9257169305b6810bfa0ef75459e8627448a8af60abb781355e211",
+      "bytes": 1840
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/油酥.md",
+      "git_blob_sha1": "cadd73cabf049bdf8d60be2a3a00fcf7f087a8d1",
+      "sha256": "fcfc874481cee354dd7358d3cb0f4d2ab5c05bb2ae994f0af78faacdbd0b2716",
+      "bytes": 513
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/炸串酱料.md",
+      "git_blob_sha1": "056ffc7a665de6df95beced92747a3a6ea085bcb",
+      "sha256": "ae1db2fee21c163f6fabf05fcfb24c8cdea3d2266a39e9530f7204041e847025",
+      "bytes": 917
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/简易版炒糖色.md",
+      "git_blob_sha1": "b6cec53254e9593e665df9011184b4e5850092a1",
+      "sha256": "70532aebebd1dfe2968f7470b493c9bc9e98fcac2f7d337618329977fcae6671",
+      "bytes": 1585
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/糖醋汁.md",
+      "git_blob_sha1": "8ae77cf5e4850a068b0cbd6a2a3eacafccf4218f",
+      "sha256": "7e84b48b6c40d0492db8574959fce64a0e09ae0627c5888de6aa1e1f534e8956",
+      "bytes": 821
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/草莓酱/做好的草莓酱.png",
+      "git_blob_sha1": "cc2e3201ee8baf5f74975ee70a0a86f1090aa13b",
+      "sha256": "fb920f3a10d733692e44ccb8bc82e26b80138f8668fed364d91d4c560a27eb8e",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/草莓酱/洗好的草莓.jpeg",
+      "git_blob_sha1": "279c21d4d9e694d8857fddbcc34bff79159fcc5d",
+      "sha256": "5265048b55eb8cacde6d082336ca5f92ca8cd0ddaf645b73d8554288e4aa9337",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/草莓酱/混合好的草莓.jpeg",
+      "git_blob_sha1": "381f75915c1d83920d84469619ab7d65273911d6",
+      "sha256": "e143863a132305c7aada15d4a9d18aa76ba3efa35f482fb7c2fc56ab77c2c8d6",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/草莓酱/熬煮的草莓.jpeg",
+      "git_blob_sha1": "c99ce944c6a6b1083a9108bb83beb5ef1786a6c1",
+      "sha256": "87916f35a60d1812182a5b6ccdeeea446d38cb6db1911de7206daffbe74881ee",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/草莓酱/草莓酱.md",
+      "git_blob_sha1": "e06082e92a903feac026099daf6b3904f1dc9efb",
+      "sha256": "f6bc35f20fb9af4f59f4a547ec5edf30bc0aba61f1f166f6616a4b8a7f8527cb",
+      "bytes": 871
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/葱油.md",
+      "git_blob_sha1": "4509d7dd67e6902c05e3d15e91537a88428f6d9f",
+      "sha256": "fe35b2d787822af107e00aadad1df58ff2bf37b7f9f1fc594f7464e2d8782e40",
+      "bytes": 950
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/蒜香酱油.md",
+      "git_blob_sha1": "cd1671536d673c46e1ec85f665a77fb4a4854bb7",
+      "sha256": "3477e68a51e01b464bfae87406af10d8349763605e195d2c2f5d4b6dab1ba6df",
+      "bytes": 473
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/蔗糖糖浆/bottle.jpg",
+      "git_blob_sha1": "a9ac0327da2dfb5975724f31d9d4bdefe7fccf15",
+      "sha256": "9f2a84a9db21d203ecc698dcdf9e9e2f1b456346d1ecb2f58ab299f0ed3913d6",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/condiment/蔗糖糖浆/蔗糖糖浆.md",
+      "git_blob_sha1": "d10da1723fbe8866606782989cdc3b5a597e17cf",
+      "sha256": "457af750fa8ad743fdbf7c16e464fbc402c3377f333b5a387e7747770e8ed440",
+      "bytes": 740
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/反沙芋头/反沙芋头.md",
+      "git_blob_sha1": "35545b282eb948ed50652e5201e56ed493709721",
+      "sha256": "7ca829ac16d46941847ffa4fd592c45285996efc8a8da75eae3b8da95a8fcaa5",
+      "bytes": 1059
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/反沙芋头/反沙芋头成品.jpg",
+      "git_blob_sha1": "4c6c155232c7fc0ca39fd19cf82f3a426f2e8ab8",
+      "sha256": "65baadcfb005ab20fb47f4e2458cb03ee914e00d40b72d66e9d6b34ff9deb86a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/咖啡椰奶冻/咖啡椰奶冻.md",
+      "git_blob_sha1": "6285e7041abf1719ae3befad8defd9729e642092",
+      "sha256": "449d3ec6f8976ac4b0d6a1e8862c7a1516627df4ce18ccc68243001d771db187",
+      "bytes": 1490
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/咖啡椰奶冻/咖啡椰奶冻.png",
+      "git_blob_sha1": "6f74c50d12ed9bb00e4242fb889ce2dfc56b81eb",
+      "sha256": "eefdf838bef596c5f321e679c3e7dac88fa4800b8d372b0773fbc206392c3e62",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/奥利奥冰淇淋/奥利奥冰淇淋.md",
+      "git_blob_sha1": "77f12d3d9d66152b6e01c6414ae9840b2ca69540",
+      "sha256": "04a76372e04a5b9a7f0f503aae19ac6d17dc9f2b66cacf7b292314882a2cd2ba",
+      "bytes": 1664
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08606.jpg",
+      "git_blob_sha1": "6d30727c4e9bc4ed8ab063acbcebd0f1e4a19af0",
+      "sha256": "8ce6d0b1042dfcecd60aa5c6736d71c0a49ca9b8a48a60f117de326258bebd30",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08608.jpg",
+      "git_blob_sha1": "4f30542599ae8c50613346ba54658d7ef76128ed",
+      "sha256": "7b40f597ec3b1a1c666e508fc1455d2c835ae6b514fa194a55bd0534fe701777",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08612.jpg",
+      "git_blob_sha1": "f4528b5843fde1ec667f118e266725affa51f5a0",
+      "sha256": "cdd225a1fee14f6d2f117f65cef538d1cfdac0a065febee79b10a9d0ebb54242",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08618.jpg",
+      "git_blob_sha1": "97ae8c5cbea7214860506d9890447a1032c7c9e0",
+      "sha256": "4a981448cbbba8db1a2684efeec7ee541ae6527ccc63eeb59c582b4b78168d78",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08621.jpg",
+      "git_blob_sha1": "6334ead82e40e0a1cf6834190358a0c112dce272",
+      "sha256": "f21bcfe022aa37603b194b7d86b61006f5fd2e96a25d6e3a377f9edda7ec8256",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08627.jpg",
+      "git_blob_sha1": "2127b66cde59e5ec86d0f5d289512de200bd52de",
+      "sha256": "9e555334a23fcb5962c06aa7dafc2c3cfd37b79f5a9c7a893f61bfaa57ef3309",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08716.jpg",
+      "git_blob_sha1": "901020e0307fc7033394cbdad62dba0888f31a37",
+      "sha256": "077c8140236575d0b3ce8187cb57ced1bac704beafcd376d04ced890b855342b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/戚风蛋糕/IMG_0269.jpg",
+      "git_blob_sha1": "c8cf73868d2cb6653e86b862d6510895a4c41ca7",
+      "sha256": "25743a812accaf8a9baf278dfd1e5734f02a5eb9fcd08d2552af043ab7c2ed5d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/戚风蛋糕/IMG_1516.jpg",
+      "git_blob_sha1": "71177a964ce34cb03dcb0f32f619ffbf02ee24ee",
+      "sha256": "8f3571a56f2558cd2d0f057317fcda70c68b82375e8cd1cf90aa680d2b388128",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/戚风蛋糕/戚风蛋糕.md",
+      "git_blob_sha1": "988fc106ce9d4361e4d3391fa3a1f6f829d09235",
+      "sha256": "63a8fc4d61f9efdd4cd485e2185474005530626b598b79d2878e1d9201f0dcad",
+      "bytes": 6841
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/提拉米苏/提拉米苏.md",
+      "git_blob_sha1": "941a342dd68d91faeda0f361e654dc28cdcd4383",
+      "sha256": "6f6553561a6b2b156462e2c1d507b34cd84efb3466520f4ec964e1121949b5e1",
+      "bytes": 1449
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/提拉米苏/提拉米苏成品.jpg",
+      "git_blob_sha1": "c2785e3c541e583c95cf1e31419bdc2323dd0963",
+      "sha256": "a150376bcb15101b2b34a9d5aa0877be922edb936dd557baa19794d92afa719c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/无厨师机蜂蜜面包/无厨师机蜂蜜面包.jpg",
+      "git_blob_sha1": "669ac96fe62c644404640835880d2c5ad7c6a89c",
+      "sha256": "3ba319b20f7072ed37da1bf75e70fef313dd0c114a467107edf0ab5ff5353ae4",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/无厨师机蜂蜜面包/无厨师机蜂蜜面包.md",
+      "git_blob_sha1": "dd051d9af97fd655adf9b03adfb53610bbeb8a29",
+      "sha256": "eb151dc67de944395a58c35ccf45e0754e7f93ffb6c46ef5e104963e4fbd2d02",
+      "bytes": 2489
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/炸鲜奶/炸鲜奶.jpg",
+      "git_blob_sha1": "df3c7ba7d72bf92702d62fe641f143bae72bccb3",
+      "sha256": "b7a259f44c2293ce1a7ce6f3ccb4315f58451e608747e09085263b82d49489ff",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/炸鲜奶/炸鲜奶.md",
+      "git_blob_sha1": "e64e36555a3554b71454b5e0d83f9199e32afa8a",
+      "sha256": "08ad5d4714161f27fec63081951b2826a90a555053e0e43e2782ae7202189552",
+      "bytes": 1308
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/烤蛋挞/烤蛋挞.md",
+      "git_blob_sha1": "a651e5a2761c77e29955be983b9236af788493d1",
+      "sha256": "277ee83072f68109843b40d23b69f3bdeed718d7d4f2c44bf329ad4e99be10b1",
+      "bytes": 1875
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/烤蛋挞/烤蛋挞.png",
+      "git_blob_sha1": "951426b53b0c64acbe5468cf3962235516ae0533",
+      "sha256": "b39fa49376d922569b8a064ffba48a234fd46feecea59d5831070e3e760eebed",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/玛格丽特饼干/玛格丽特饼干.jpg",
+      "git_blob_sha1": "4687be98d6a3802e21de2389659a9f44ddf08ddc",
+      "sha256": "2f81b308dc06ae1e748ee636813099c939a283021aa7ed10a0a1d866c531f78e",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/玛格丽特饼干/玛格丽特饼干.md",
+      "git_blob_sha1": "b94e296ac17b7a78a8df056bf46af8ff57c976b5",
+      "sha256": "642448fa9124d3d0c9307fcbfb35ba299caf0bd104f3e7bf9ca083041e6b668d",
+      "bytes": 1699
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/红柚蛋糕/红柚蛋糕.md",
+      "git_blob_sha1": "7fd9591d3eb21529ca9e192fa21151919f14022c",
+      "sha256": "2c9c2a1db156e92476c8aa4f48474c0be07f9fae0ff53d68c2c320f054007238",
+      "bytes": 1417
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/芋泥雪媚娘/芋泥雪媚娘.md",
+      "git_blob_sha1": "6ebc053e12facfe66e33acfa1aeb2588ceb6e98e",
+      "sha256": "6f0a81ad20bf82b8357cafee0f3d6618af8092f502a9edaa0b679f137d36bade",
+      "bytes": 1892
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/芋泥雪媚娘/芋泥雪媚娘成品.jpg",
+      "git_blob_sha1": "1d8768021e90963f9f90dccc07dd3c9481e77c8e",
+      "sha256": "2df669659c5c5c59a8ab913e4c687c607d813672a7da0736e7316d5401ae6628",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/英式司康/英式司康.md",
+      "git_blob_sha1": "8469ce071a5b00044ca941b24490548dedc81c83",
+      "sha256": "d904760a38c400a5a8d04c8e2d8e79cbbe5d669b99aedc0232f155313232410c",
+      "bytes": 1439
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/英式司康/英式司康.png",
+      "git_blob_sha1": "6b069fa4e990a85cb596e87473f3b8ad820d780f",
+      "sha256": "cc3070e9bd473c7cd18658d3d7d1bcd10839cf8cd5fe78405c4c5faa7776f3f7",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/草莓冰淇淋/草莓冰淇淋.md",
+      "git_blob_sha1": "56c38e9f5f7eb3feac452b444a3afcc762997d2e",
+      "sha256": "4520dc787ee5bb136231bb1467305ab7123d8fb4cf26262dcc5b080696a5fa43",
+      "bytes": 1656
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/酸奶意式奶冻/酸奶意式奶冻.md",
+      "git_blob_sha1": "34980c5ff2d48ad080ee559ba946d04d96e7e5c6",
+      "sha256": "5e31c12239e1105c2e2664431cb4570cc98ac67b2f9fec632bf4b63f2de237a3",
+      "bytes": 1019
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/酸奶意式奶冻/酸奶意式奶冻.png",
+      "git_blob_sha1": "5c27c60aab23f9327aee1142a35f9686bb9bd0f1",
+      "sha256": "1285c3cceba33b054ab5f10c72863ca0119e2ba5948f284676a30d07ece7eb3f",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/雪花酥/雪花酥.md",
+      "git_blob_sha1": "d22a2c9e44d6d56f3b5dcbba9b0d6847cd34774c",
+      "sha256": "f0f69592d6d233182746dca92764796eba4964f8f0f47854709a89f92e405654",
+      "bytes": 1768
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/雪花酥/雪花酥成品.jpg",
+      "git_blob_sha1": "21c516426db31b55192411312391152c9e39162a",
+      "sha256": "0cbf9e94824e8a03d50cf997391da0813415d081cd2f61f2f9c15d26615d8903",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/魔芋蛋糕/魔芋蛋糕.md",
+      "git_blob_sha1": "8e562663fca51ed0b78327cc399434dc3ca23d82",
+      "sha256": "7682705671ea1e0aeb8151110711c82cf9fe4fdb781ae5e1ef4dd5fa3102c2c6",
+      "bytes": 3342
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/龟苓膏/龟苓膏.md",
+      "git_blob_sha1": "aba586ec9dbb183e73960d4771f8406f39ab2173",
+      "sha256": "7e193efa822c311f99fc30fafdcc391e289399e6db1020beaa1b039d17df7acb",
+      "bytes": 1224
+    },
+    {
+      "path": "data/C8/cook/dishes/dessert/龟苓膏/龟苓膏成品.jpg",
+      "git_blob_sha1": "f3dbb9b79c965b323781f22dabc06a1afdfaf534",
+      "sha256": "1c54c69df686bcd86fd19b411df4f53a995945dab1bb38946fe0160c29665d80",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/B52轰炸机.md",
+      "git_blob_sha1": "d9e8e4cfbf1db5eb3102abd22bf82be8d38e1ba5",
+      "sha256": "995e56adf316499c83f8d51e0d32bb34b15e7e6a18a9cb11ec618afd6906070d",
+      "bytes": 1445
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/Mojito莫吉托.md",
+      "git_blob_sha1": "6d1984f135ae05703985c8de898c4653dd2dff6c",
+      "sha256": "b218233feec0d12e60b72b7ce6108d36642ef817b384a454e1048a0feed7e8fb",
+      "bytes": 1166
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/冬瓜茶.md",
+      "git_blob_sha1": "c9833ac658f2d91a5176bac9008660fcd3cdcf71",
+      "sha256": "ada25635069c2bc6fb546841a778fe6cddf142342366301b9be7c663cf0219fe",
+      "bytes": 1194
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/冰粉/冰粉.md",
+      "git_blob_sha1": "b325fcce9230cbe008ee01fa2b8bdc3afba678c0",
+      "sha256": "b2e74d95e5e4056d2daac840c5bad2c69f5302d6ad20df272f1370c6c24d22de",
+      "bytes": 1628
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/冰粉/石凉粉(冰粉)成品1.jpg",
+      "git_blob_sha1": "d2983b943447e881f60f88cc44f66762bb3c166c",
+      "sha256": "951e3e921848e5280ac2c7af3b26d2e62b6f16a289275fec31f8770ee04200f0",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/冰粉/石凉粉(冰粉)成品2.jpg",
+      "git_blob_sha1": "1df5cf55902eda2773bc5e539ffd293d6ef2a9a5",
+      "sha256": "d820bed55bb01d07940805c81d36d323a7270d9729c7bd55e1cf0734ea746f4c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/可乐桶.md",
+      "git_blob_sha1": "e87d8207315895ac87cb20adce03585f54197fff",
+      "sha256": "f14936b264eae9929c95a9575f1b89c22f88cb4ea2f6201d33045b5fb43b48a9",
+      "bytes": 1299
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/奇异果菠菜特调/kiwi-example.jpg",
+      "git_blob_sha1": "77c1d07534a73b6058da1d94292326ab5916df45",
+      "sha256": "ab30af958b1423dc0e010d2d34c80175a7546b9e62ae65ad2d943917e1487fb5",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/奇异果菠菜特调/奇异果菠菜特调.md",
+      "git_blob_sha1": "639dff6eb56dc0fa8fb980202c62cca22f1b0629",
+      "sha256": "9911c179858645149b342dfa04e68c70f5f60a97969e9cd008705fd07934ad00",
+      "bytes": 847
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/奶茶.md",
+      "git_blob_sha1": "637f93b4809ccfcbf5f7df85fa244748290b3bd9",
+      "sha256": "e147acde8db39c1db56c592d17e95b541b26d3ef44bad1f446fae102d47c7fa9",
+      "bytes": 954
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/杨枝甘露.md",
+      "git_blob_sha1": "5d7b62f610678723656fc4c9fb647544d193c1da",
+      "sha256": "81ac63bc781b9f758745d2a1153414f92cdcb967f4410efc1a3e750973daa81b",
+      "bytes": 768
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/柠檬水/柠檬水.jpg",
+      "git_blob_sha1": "b3c3a75f5096203d1f4d222ee72ec83e84ea1207",
+      "sha256": "376428bb11f856bb8afa56e1015cf961b99c700d3e19c7d4ad865218e8f54146",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/柠檬水/柠檬水.md",
+      "git_blob_sha1": "6d776de3738962aa3e298921443c9aafa32238e7",
+      "sha256": "1624c7271e9688a280af34c18970123a3f1e595376e4bb456ccb49dc06dd495d",
+      "bytes": 544
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/泰国手标红茶/泰国手标红茶.jpg",
+      "git_blob_sha1": "8cdfaa60354061422f7046385a8766d8a98439be",
+      "sha256": "5bae5c1d9046799c3634d3cb8850b4ba90f90f402bacda12193c7e0673cac740",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/泰国手标红茶/泰国手标红茶.md",
+      "git_blob_sha1": "0650e042833cec3f15d06198c5aa346dff184076",
+      "sha256": "8c4e9f40406a27520de94ca9559615c5ebbd96b72de7bbfef448aa292dd39ea2",
+      "bytes": 849
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/海边落日/海边落日.jpg",
+      "git_blob_sha1": "0af0528e8a6a048611e49ae4c0e17eb03e057d92",
+      "sha256": "6134f2e283db21febfabc0db90a346b083b58fa91b09d3254946aa1411a858e1",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/海边落日/海边落日.md",
+      "git_blob_sha1": "ddf906397596795a9857d65ab8e58de37c18c775",
+      "sha256": "0f4cbe014d057b2a2b7b78e473e2d42853223eb6366e9bd38c1b9f0aac609638",
+      "bytes": 1064
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/百香果橙子特调/soda-version.jpg",
+      "git_blob_sha1": "4478109f83201c6cb5d0a16ed5a37164757d5d42",
+      "sha256": "2e57c3cbede5b1abcc0feac05fa8e54e18f4fa9a4c5c38dbcc14570e1ccdbca0",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/百香果橙子特调/tea-version.jpg",
+      "git_blob_sha1": "e7ba2a97fdf48031035ebb8697c3d5ba19ca35d5",
+      "sha256": "4bb6dea3c2b6c8af2b0ce1d4269695b1369fda8d5b8c95dc3d0716055f726a56",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/百香果橙子特调/百香果橙子特调.md",
+      "git_blob_sha1": "993025067aca0c573a6f1096d917eb1f6be2eec7",
+      "sha256": "c80ccae9ccc37efdb9c2311e83b47cdcdb8f8b09c3e972355b0e15ed660bbbf9",
+      "bytes": 2273
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/砂糖椰子冰沙/砂糖椰子冰沙-1.jpg",
+      "git_blob_sha1": "f83f3af4c692faaef19f53e75bafba09f12a5655",
+      "sha256": "9fcc04bf03a0484de6c65c066155c5b85da28ae98f738bf06bb08b08deab54d5",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/砂糖椰子冰沙/砂糖椰子冰沙.md",
+      "git_blob_sha1": "6797f3e259aa40b4f40b5bba7f143b4ab977bb2a",
+      "sha256": "45d45aefb586bfa579b392370a15e2d33065ac5ab8442d9950129338fd6fc25e",
+      "bytes": 1201
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/耙耙柑茶/citrus-tea.jpg",
+      "git_blob_sha1": "9bbd9745e197bdddaaa9d1239444ae36c27daddb",
+      "sha256": "a6e1d598b683832e400827bb3200a1dd9631bddeb2fd83ee2778e4c13db31bfa",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/耙耙柑茶/耙耙柑茶.md",
+      "git_blob_sha1": "3333dd742f37ae349dbbe558d666fb15ed757b3a",
+      "sha256": "0f7129398a15b8d972bf1d3a16ee17be997598cbe3f09b75b10ce62a13b89cf0",
+      "bytes": 1379
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/菠萝咖啡特调/菠萝咖啡特调.md",
+      "git_blob_sha1": "5ec23855d71185038ab3871e9d9859754938acd9",
+      "sha256": "fd95bacdd4f0b8210f8fbad8ba4048ce0ec4c47951f5d740d18e88be5bf9ac08",
+      "bytes": 1122
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/菠萝咖啡特调/菠萝咖啡特调.png",
+      "git_blob_sha1": "3104e394b1efd66cfaea313f7c74aca38aa85369",
+      "sha256": "63d71f47b98fdfdd52ec6dc7664c0ffa2e660d0a45e94ed87b9247a0bb8edc6b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/酒酿醪糟/酒酿米糕.jpeg",
+      "git_blob_sha1": "fa1429dfe22bc2a5c0054d61c057ba6a790c3811",
+      "sha256": "9cd70a741c16772f470fb2b4e546938ebb715909726f320bb09f47668378579a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/酒酿醪糟/酒酿醪糟.jpeg",
+      "git_blob_sha1": "b424d23b6fdb4ac358e3542769e2b0905c9bfd4a",
+      "sha256": "05af380b37839bdfaf462d3596ebe4fb420480c03ebae8d29c0752b93b8e4e9d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/酒酿醪糟/酒酿醪糟.md",
+      "git_blob_sha1": "083b5136c49987dc976d42337ec051d98afb3d51",
+      "sha256": "b2e5c278ea9564edcbe72cc298eaf1a51be798113e36c23191471afe97c2f75e",
+      "bytes": 3018
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/酸梅汤/imges/sour_plum_soup.jpg",
+      "git_blob_sha1": "fc4d9d0f6841a5d31f295ec92ae5c51667cf153f",
+      "sha256": "2e378ead53c1c8dadbd3fbd6011c994c3f08a0dd84d5fecff2a5c70b38a63248",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/酸梅汤/酸梅汤.md",
+      "git_blob_sha1": "0bc549e5edce9cf10c506e19f976c7e6736b6528",
+      "sha256": "5c9cd87649753c8c4c6e39a48a15470146263b10ed9363aa1e51c6524f0cdbc3",
+      "bytes": 1254
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/酸梅汤（半成品加工）.md",
+      "git_blob_sha1": "a99a077fe061bd3cd54fa63170d9314d09f4f43e",
+      "sha256": "f3332fce3178efffcedc21b4c9a9ab0bb846c683571dfc36d77cb38a7bf5b7c7",
+      "bytes": 863
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/金汤力/gin-tonic.jpg",
+      "git_blob_sha1": "4cfda93b2ca8ee2dd9b44c9bf68a863d6726404d",
+      "sha256": "badac10d11b6678e21a328eb6e188df78f3f45822fae72e5e5d58bd9d0db4f50",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/金汤力/金汤力.md",
+      "git_blob_sha1": "b8b067c5bbfa2f989cb3699866112cce83b8fc6c",
+      "sha256": "2d50c1c8a715da723c94e80cce04259d04e50ac8de410d770d53c3f3952805e8",
+      "bytes": 1237
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/金菲士/gin-fizz.jpg",
+      "git_blob_sha1": "b0059e7122e0f99b9ca77f2f59a01028d0bb2bec",
+      "sha256": "d19e5bda57a1196eaf28498084e9294ef97b7ca35ba67f0d861ad2ee48075f6b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/金菲士/金菲士.md",
+      "git_blob_sha1": "e8c1413a56e52b1936428ffb3b61404b1cf763df",
+      "sha256": "9bf961f97f34e2e469f36619aa29887ff204dc17b96a0d80b3fd54c8c0e6e23d",
+      "bytes": 1693
+    },
+    {
+      "path": "data/C8/cook/dishes/drink/长岛冰茶.md",
+      "git_blob_sha1": "497dbf2cac95819b65017e1d55af564f83dd6359",
+      "sha256": "55cb941c2454c2442216ec20ba1005289fc8654c36c666e5bf7a69082a995b4b",
+      "bytes": 1129
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/乡村啤酒鸭.md",
+      "git_blob_sha1": "1ed5185766f8630e6654e014a2fbd7de1f631806",
+      "sha256": "7eb3a663aca3c15b4ca7bcdce675957f84458118efdd7490410565a117ba89d5",
+      "bytes": 2301
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/农家一碗香/农家一碗香.md",
+      "git_blob_sha1": "4aac95c57ac9e74548222ac504f7ef1ec69b0e45",
+      "sha256": "4a3172d94a651530027ec52374c0cdb1d5445b142cce4aaddad63b79523e2fc6",
+      "bytes": 1764
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/农家一碗香/农家一碗香成品.jpg",
+      "git_blob_sha1": "a2b4d0007a703070fbfd119ec47c9d40571c41db",
+      "sha256": "4db16b2872a4ebfab49e5b541ceedaa7ea845cead1f38641904ccf98f958287a",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/冬瓜酿肉/冬瓜形状.jpg",
+      "git_blob_sha1": "a6e7a4ae95b8e346d5d2e4f9275a61f052dab938",
+      "sha256": "439e4a8bf69a946190a678744e60984bc4f29365d6800e0bc1c241c689cca1d8",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/冬瓜酿肉/冬瓜酿肉.md",
+      "git_blob_sha1": "78c0d58c07e7d15a76559227690e66821a7d75ed",
+      "sha256": "15c93e7646120d9a5e1bad725c612f8b53ceb8eb176f1e1f354de05f2cef4ebe",
+      "bytes": 1884
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/冬瓜酿肉/冬瓜酿肉成品.jpg",
+      "git_blob_sha1": "8f032f70280f7531b724f643398eda7785ff7c1f",
+      "sha256": "daf8ec51758654b50d11e69f0c4cfdb6129f897d9c1cb9ba7cb6052948b1e4b7",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/冬瓜酿肉/卷肉.jpg",
+      "git_blob_sha1": "c1fe0214f331b5fc942e5c9bb32576c53dd52a53",
+      "sha256": "3dd40a3057a781571b88bc6d2168d41c0f9a03e627cb7c0755f552852d8bf49d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/冬瓜酿肉/打鸡蛋.jpg",
+      "git_blob_sha1": "9dff9ffe2706633ef0080d2b02dbca51f94b2323",
+      "sha256": "55e28d12f755229a720b8626f420c842568dc52ae6159cf51f2575e87aeff9e4",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/冬瓜酿肉/摆盘.jpg",
+      "git_blob_sha1": "707a7796da965a193807f6a1e4e0d5d9211daef5",
+      "sha256": "21567f3ce43f61d42dfcbe7910fe8bc0da3fb86761bc051d4a6bd231b97daa20",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/冬瓜酿肉/腌制好的冬瓜.jpg",
+      "git_blob_sha1": "ae937e7516d7436ac067b0d400ceafa52e41425d",
+      "sha256": "b168aee6f6f8a5df8363f33f44206a56a93f33dced9717b23c6a8cb788e712f3",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/冷吃兔.md",
+      "git_blob_sha1": "eaf45302e39af21c9f1a9f36139f933f4db9a79a",
+      "sha256": "670b17b999e6f7a3bfbbc914f50b15f4bf6e5e5e08bc00d2102fd125083d7611",
+      "bytes": 2233
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/凉拌鸡丝/凉拌鸡丝.jpg",
+      "git_blob_sha1": "6fdce19e6a4e6099a49c02ee3e8008c914057ef0",
+      "sha256": "6fa31312f27a7b77954a0a5861718690e94424d05094bb07b7f7dc1c530661ec",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/凉拌鸡丝/凉拌鸡丝.md",
+      "git_blob_sha1": "d255542614971d0aaaf73f9b8d17453aedddab56",
+      "sha256": "693f9d7fc44947cbde0ae637aa1581775bb25ee3fba55065299f747acd6a28e2",
+      "bytes": 1436
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/凉拌鸡丝/凉拌鸡丝_撕.jpg",
+      "git_blob_sha1": "7e1d5c6237c7793f8f41c6709501dba30241f9bc",
+      "sha256": "c6fef8909e7c7f28d1a488f4a6b400418bbc5548de6756efd005c49408ee2112",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/凉拌鸡丝/凉拌鸡丝_焯水.jpg",
+      "git_blob_sha1": "407d4473dc3cb7de39ec88b6c85e401fcae632e2",
+      "sha256": "15640e0c5fb7654b2a45b00354a49b9bd3fab5367d04ae12a1d83502bb50db8b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/卤菜/卤水.jpeg",
+      "git_blob_sha1": "fa490bb3faacb694dc852fc413965de5836c817b",
+      "sha256": "80bee422b5d5b7149178c648947e30e0f9a92f8a170a9f18e081868bbcf4c70d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/卤菜/卤牛肉.jpeg",
+      "git_blob_sha1": "dd0f3684414a10f995db70c422d75d9c8d088596",
+      "sha256": "9958fdcec707003a586ead304c04470a86194f0e0633cc1da6c00f6bb68d60c8",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/卤菜/卤菜.md",
+      "git_blob_sha1": "9a7b13d6b4b40f4169bf9f57beb72322ad4b9768",
+      "sha256": "6b3508d8e25c6ae73ac192823d0162f5538572eb392a6d42f8a609bfdba736bb",
+      "bytes": 3342
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/卤菜/牛肉面.jpeg",
+      "git_blob_sha1": "3fda58fdbd1061bf25cfebe460ca8cd42bb073e2",
+      "sha256": "6e1af1393e9144657a670a9e5c22633a90a2bc895d73e96f4aff291ed975e91d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/口水鸡/口水鸡.jpg",
+      "git_blob_sha1": "7ca90ff576be4874ba7959c5756d2146428fadb3",
+      "sha256": "2541f2b81c3b783225242c35cb1d33000e78ffa3e7b36eb119ecf3b755ca8763",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/口水鸡/口水鸡.md",
+      "git_blob_sha1": "14ad6145c8c10bab950c2e987c7e8cf2e96a80b7",
+      "sha256": "404a940d03c398927dadf20bce18440bcaadab47c58411504a640eca7f359f9d",
+      "bytes": 1750
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/可乐鸡翅.md",
+      "git_blob_sha1": "2bafe96d0452aa7713621243f5759c01d16c42b1",
+      "sha256": "5310826c199542fe22aab931fa3bdc01c806b50823150f130e3256575b1f6e8e",
+      "bytes": 1604
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/台式卤肉饭/1.jpg",
+      "git_blob_sha1": "3cc1fa424594ac0a6e18b799dc32048973a6703f",
+      "sha256": "eddba4ce0b56699aa1381a01c7434d24db9b80fb7bb0b90f24393f3e5ec343ef",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/台式卤肉饭/台式卤肉饭.md",
+      "git_blob_sha1": "797ed8e102939f05f205fb5ebf04996ccd4caca5",
+      "sha256": "56c40dc181268274ba1d8e00dd77c7016709846bd46d32181ff4232e96163c2a",
+      "bytes": 3090
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/咕噜肉.md",
+      "git_blob_sha1": "6f50ecdb49c49495b2ca539214c6db00d127127b",
+      "sha256": "27e8e1e119c18824f53e3419ebd2ff555dc1f0549f1321b799ea4ebcadc203b8",
+      "bytes": 1637
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/咖喱肥牛/咖喱肥牛.jpg",
+      "git_blob_sha1": "36128d654b41765b224aacfc2ad08f50430f0617",
+      "sha256": "c652547d5fafd1105cdf27dcfa6f28869462ee1ea70611dc07229b5bc4c73a7d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/咖喱肥牛/咖喱肥牛.md",
+      "git_blob_sha1": "c886834fc30a3eb13a46cd4000d3601aa2b9c850",
+      "sha256": "7676bb4ed5febfc367662d70e59f3f2a6cce6700038eceaa56b88f9963f5973e",
+      "bytes": 1650
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/商芝肉.md",
+      "git_blob_sha1": "0d0482b3c8f336ec9c8cafc8b55be4f44ff3e6d3",
+      "sha256": "8b754d045cf5c24aba830261e9d5c86606a24bba5669ba041418eee740b22209",
+      "bytes": 2343
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/啤酒鸭/啤酒鸭.jpg",
+      "git_blob_sha1": "cbe808bf430c0cecbf867a8f2a1b0e128061e7ca",
+      "sha256": "c274f49166c5e8ba8cc168ab99d08072307208e81f02fc84e9461a60a3f309e9",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/啤酒鸭/啤酒鸭.md",
+      "git_blob_sha1": "79521dcc2ccaa284215d74a14f72eca672a68d56",
+      "sha256": "b802cdd824b4801784fdd6596fe7adbf37adfc831685e4cf7e8f60457bf4ad2d",
+      "bytes": 1485
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/回锅肉/1.jpeg",
+      "git_blob_sha1": "11c5bfebb7fc2e47e4b75f9a1d7c88d44baef2f6",
+      "sha256": "44098eb04b5046bfe00827f7f29ce3b36c4bbe14b4c48cbb27c245ff68e38c66",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/回锅肉/2.jpeg",
+      "git_blob_sha1": "47350b58c0c038f31e11ad4674146ccff14be2fc",
+      "sha256": "828ebc02e061875214e4b0ed8afc4be269d1efa6812bece2f2f369285b0f66bf",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/回锅肉/回锅肉.md",
+      "git_blob_sha1": "c952038966dac445804e625801633013226a163c",
+      "sha256": "8a8f88f546f51b49de98fb7cb8ac7965397fb90f03dfcacf1dc1a861cc599ddc",
+      "bytes": 2801
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/土豆炖排骨/土豆炖排骨.md",
+      "git_blob_sha1": "93adf21a1012dcb58f5a8c4e611920bd9feba1a3",
+      "sha256": "da18e52c73dcb3f42f9a9b7651930436df407d4c0ea8920128cbe286104414f6",
+      "bytes": 1259
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/土豆炖排骨/排骨1.jpg",
+      "git_blob_sha1": "d882ae8b8057d409c6fe7ba7f75212928bc7ba13",
+      "sha256": "3a48fed8df6d8ad5305d0604d42fa935a801c026a15a91c6888d420f221d9f52",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/土豆炖排骨/排骨2.jpg",
+      "git_blob_sha1": "843ea5466faa4feb8f63fa304c5d56ac17ace80d",
+      "sha256": "9cdfd4571fad35ca84f7453f5a9b09b8ab47ae11e7cc65e6b1136a674feef084",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/奶酪培根通心粉/onepot.png",
+      "git_blob_sha1": "0a42faca9c35ad8fffaefe1dd8b4bfa2ef61b6fc",
+      "sha256": "7b355d2d2481bb4e9b3d83e3da23088ffeeea1ba2a6f861ec1be625a184f8409",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/奶酪培根通心粉/oven.jpg",
+      "git_blob_sha1": "da53fe54cff02460d4b17c48e8a2aa4dc129787a",
+      "sha256": "6062464c3d5d798813576e94ee6288712c24a8c07647a6d3cfd0c9b755e5f54e",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/奶酪培根通心粉/奶酪培根通心粉.md",
+      "git_blob_sha1": "25a195a2520a4e80ebe217e1c28e3bb3716e8db7",
+      "sha256": "e4cd5364d5b245e1eb8b58e4bbb94606942f2f4198661d83f40a4c81b35e8deb",
+      "bytes": 1441
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/姜炒鸡/姜炒鸡.jpg",
+      "git_blob_sha1": "5fcc9c09347f1829184c6ed835d862e05a94f86c",
+      "sha256": "a6e4140656a557440edafb581d55cd8c19333525ffb7bd3f54c3a333bf603c01",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/姜炒鸡/姜炒鸡.md",
+      "git_blob_sha1": "fd1383cfd430fa86a6e453292f1318783421e449",
+      "sha256": "3abafeb61381049cf9debd8cb243824acc7ff532048d23bbc490c1b7a196be55",
+      "bytes": 1115
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/姜葱捞鸡/姜葱捞鸡.md",
+      "git_blob_sha1": "75b70237eeea4636db0a13e671c4271a7560459a",
+      "sha256": "d317b2c40509ec385b833ca9a7d0591f0b27176319670107bc53c028b5db7d05",
+      "bytes": 1094
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/孜然牛肉.md",
+      "git_blob_sha1": "2ebffcc4be19c5d8abffae31764ffe45272543ff",
+      "sha256": "eaf010e1c763452ec3f9aeb56630eb37094672f3afe8cd76303469adefcda771",
+      "bytes": 1347
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/宫保鸡丁/宫保鸡丁.jpg",
+      "git_blob_sha1": "1b79c18e94add6436e2f82a7ca4ff4fdead62bba",
+      "sha256": "94f9ea80cff4b4203ef1be057316c9ef67515231fd7d65c5367d825ed22d8e8b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/宫保鸡丁/宫保鸡丁.md",
+      "git_blob_sha1": "ab7aeeea509b69f8275a83f5e227d2cf01bc6289",
+      "sha256": "b10c0bf0058eb9796997ccfd20759890e13efcaea8efbcb7cd05534a601f3a29",
+      "bytes": 4080
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/小炒肉.md",
+      "git_blob_sha1": "e0f135a698c680b3790710404c695359848faa4a",
+      "sha256": "ba98aaec33025d256da072c7cf75e1360397228e27a6edba734643f040a90c5c",
+      "bytes": 877
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/小炒鸡肝/小炒鸡肝.md",
+      "git_blob_sha1": "43748a7d779b1d2aaa0170fca1771a9bdb307019",
+      "sha256": "e18150bd0a7b7d905a2db58e818e040828926834f8b42ce5bc2d7d26a0789b8a",
+      "bytes": 2392
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/小炒鸡肝/成品.jpg",
+      "git_blob_sha1": "c9a3e009ac984d2f02d0eea7fe2770f000a7fe7e",
+      "sha256": "0af2e971d2969d5b1250e7a7964771abd99a592a78a6102ad803c3859fe2c50d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/小炒黄牛肉/小炒黄牛肉.jpg",
+      "git_blob_sha1": "d062e88f2926def36724ce6cbbb84a51d5354fa6",
+      "sha256": "43171c937f45cd1f8f6a44f69a242f4703f634e0b3f72f9d14af8ecf9aaffc32",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/小炒黄牛肉/小炒黄牛肉.md",
+      "git_blob_sha1": "c2fdacc0edb534f4187f185542d756ed39e14328",
+      "sha256": "8f8312def7f719e205720e2517e2dcf9f20f97d46e1adc0247200c33ed4bda42",
+      "bytes": 972
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/小米辣炒肉.md",
+      "git_blob_sha1": "129a33de249f61452ac366d132b446bc4b2de5ff",
+      "sha256": "a4a8c25b6f496d0042495240079b9b516d08df43f9fe852f8ea0b42c368e934b",
+      "bytes": 914
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/小酥肉.md",
+      "git_blob_sha1": "528dbffd45e85bee3b47925ad396be4c3a9125e5",
+      "sha256": "ab02191560a764eb3bccbc465aec1524d4f5c56909d03db2461cc52c21c93de5",
+      "bytes": 2223
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/尖叫牛蛙/尖叫牛蛙.jpg",
+      "git_blob_sha1": "06a63411c9e671638a0a80121832bcd158bf47ab",
+      "sha256": "ced9805901ba5be04df3b61ab6c61247bdf899f6adf86e867469a345809c9a3b",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/尖叫牛蛙/尖叫牛蛙.md",
+      "git_blob_sha1": "311d7cdffbe449e9e97866a6e01fbaf0c97bfc59",
+      "sha256": "d697d5760d8624882e4859385bf69eb7a84ebe3e70e0274afe9a31dee5548a3c",
+      "bytes": 2857
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/尖椒炒牛肉.md",
+      "git_blob_sha1": "a7f9b10d434675016c693cf2757e0ea506b5b701",
+      "sha256": "1ce380548132379911e76dd37bc3907168cd22860a4c5b971575bc06cb91d409",
+      "bytes": 1031
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/山西过油肉.md",
+      "git_blob_sha1": "450b1eda0dd8dc3dbc888e639a24d0c696523fae",
+      "sha256": "9f00b96939fca60c0f1c94e873db2dcb3a781e3aec4c2740777a1e557ff59b86",
+      "bytes": 1426
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/倒入番茄蓉.png",
+      "git_blob_sha1": "2b7b0e571944da1eb020c0d7800a076f1d165636",
+      "sha256": "dc3155130d780aaaada3f7358bbcd985844233ffc50b5379192f7a21ebb7e370",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/巴基斯坦牛肉咖喱.md",
+      "git_blob_sha1": "e7a968deed6d9cd4c25005e9ff0aacb630d343ee",
+      "sha256": "bc8fc53acc085fad67ed6c591bec507d64c4ed896e5cfdd92fe05d6587d4aa8d",
+      "bytes": 2118
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/巴基斯坦牛肉咖喱.png",
+      "git_blob_sha1": "8e320e0ba416e1c11d36361a0642d3ee27152df6",
+      "sha256": "ea5be1ba7817776e3cbd7d5ac71cc67fc4f7694d2864a128922fb15bcd7d80aa",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/油.png",
+      "git_blob_sha1": "6ec6686b6228966737cb5ee7e76780bb17c51266",
+      "sha256": "6daf8bc059bbb60c1b7d147367e7595727f4a12028384a09faeb6b808f4fba47",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/牛肉.png",
+      "git_blob_sha1": "f216c6b17780deb42d045dbe2c1642b3dd536a47",
+      "sha256": "03074f48c23af2e8422234d625adc103e5babb4464f43143ac29208e62582a74",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/番茄蓉.png",
+      "git_blob_sha1": "4910eb3ef12bfabb6659c087ddd5c6c41894c3fb",
+      "sha256": "c3025e881eb34bf2d2894d659063ae9a29f41b307c9a8f680f04657c8d7bd22c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/红.png",
+      "git_blob_sha1": "a7f86d4ac019c88f77f108ca3a5a926941c12236",
+      "sha256": "10a8f4814aa58035239b9b965d83ffec05eb871f526240ca6facd947a5353d60",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/带把肘子.md",
+      "git_blob_sha1": "13b4223888771933ecfb2c77838d6a172a13ac70",
+      "sha256": "e8c7528580eb315941febb67044ea66439934b6ecae82301f667699830b483c1",
+      "bytes": 2116
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/干煸仔鸡/干煸仔鸡.md",
+      "git_blob_sha1": "21ec25e539a00bba72626a22d0a407abd43a227f",
+      "sha256": "ec5aafb7de36dc281d747497cbff8bb184da15574553ee378b0bfd5fc5204c44",
+      "bytes": 2235
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/干煸仔鸡/干煸仔鸡成品.jpg",
+      "git_blob_sha1": "274604f7d9e29e5ae0868cec7766679e1008bcd7",
+      "sha256": "570fbcc4af43429e2d07bd0c2c473756a605c30c197bcf1d6cedd476cc915406",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/广式萝卜牛腩/广式萝卜牛腩.md",
+      "git_blob_sha1": "19272122aec17178f27347ce63e58881f62c43d5",
+      "sha256": "808e18610d42ccfcaf7534d148877b04fc67ff01739255c4c413e03c1e6a1048",
+      "bytes": 1578
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/广式萝卜牛腩/广式萝卜牛腩.webp",
+      "git_blob_sha1": "54602fae959f20d13a7b3685f4ff9599585f2c25",
+      "sha256": "0b38f030e696c44a4a6775c787dc20854763c2d2535cf0eac928bcae9a4c23dc",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/徽派红烧肉/1.jpeg",
+      "git_blob_sha1": "65bc9c52bbc6318a6d7cf90bbd59fc9908dac4a0",
+      "sha256": "769a3a50b7063c8261239b08fd10c4189b5bbb6c3b8807547c7d016490c074f8",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/徽派红烧肉/2.jpeg",
+      "git_blob_sha1": "9b62de9e5fd6f9ec13cc039ad004f42663ae7886",
+      "sha256": "d27c974089aa8b656a56a93373e4c9fba550418ed72ecee2080ef546b217341b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/徽派红烧肉/徽派红烧肉.md",
+      "git_blob_sha1": "404c09b85336d1be0b22c7e5abdc8ffa01614a7e",
+      "sha256": "e415724ae40e34bf41477b60f36d52359bde933bb20caf06b155ac252772927c",
+      "bytes": 1259
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/意式烤鸡.md",
+      "git_blob_sha1": "4452df2a6c8739b95d257e18e46363460929c474",
+      "sha256": "e4bedd812ec930dc453183c54bc32cd16af88dd61d978b83cfffc4d896a698ad",
+      "bytes": 1070
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/新疆大盘鸡/大盘鸡.jpeg",
+      "git_blob_sha1": "53a7318809d17962df38f606df2f5ae0f016de71",
+      "sha256": "5e73cb7cddd9e34004654cc98b55a8a4a69e02927a15d52559859df8c3c52591",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/新疆大盘鸡/大盘鸡皮带面.jpeg",
+      "git_blob_sha1": "4f89bf258487987df792807dc855605aac38aaa2",
+      "sha256": "a80501cea4c6fd7a414ebca689d450e1e2627b638b9c348ff8a14d419b0ec135",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/新疆大盘鸡/新疆大盘鸡.md",
+      "git_blob_sha1": "cf21573a062e8f9ef22a242b3849d9c56520bf20",
+      "sha256": "88ea7d427d5c1c37b042516b155d296e037a9d07505d67b3e7eeed3fff23fe8a",
+      "bytes": 1879
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/无骨鸡爪/无骨鸡爪.jpg",
+      "git_blob_sha1": "1f9d06127cc442a506b3261ec28ec0b782ebf3b0",
+      "sha256": "daf61076d71559d62b352088d5073479c11a6b0116d1160550547550b75de069",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/无骨鸡爪/无骨鸡爪.md",
+      "git_blob_sha1": "28f43b6c80e4b4e2301ae1914fc47234c3cfea38",
+      "sha256": "9b1f652626bdbd5344edf837ab3b3ac8e9f6cf9e1e1c544f4e54f3802738e73b",
+      "bytes": 2601
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/杀猪菜.md",
+      "git_blob_sha1": "50270a1d9be533ac88a86db4991ec66630d50b02",
+      "sha256": "ad04992878c07e50d7b1102eb6afb0ba26f1e78e1e61afbf5da5296237bdf0f9",
+      "bytes": 1398
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/枝竹羊腩煲/枝竹羊腩煲.md",
+      "git_blob_sha1": "19c6c244aa49e255802f9522fade5e52a4bb0937",
+      "sha256": "1db8f0d4d1fe4f8ff655a28f4b3d89687b77409003d38bca7f51fb29acb75c76",
+      "bytes": 2302
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/土豆切片.jpeg",
+      "git_blob_sha1": "32a3ffc981ab02ca6e4f9e496ae38c691bb8f537",
+      "sha256": "9597e19d97fc692b187022eb762052f19a14e872753ec3768d170e330328f65c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/柱候牛腩.jpeg",
+      "git_blob_sha1": "4dde3e13abb37a975094913ed0cfc7b30529623e",
+      "sha256": "8fc9cb28ac27ad1d249faba48ca47fea87fba1b449d942b8defca2beca740a7a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/柱候牛腩.md",
+      "git_blob_sha1": "9dab69039b2a752bb3fca1be34eec11a60d132cb",
+      "sha256": "cd29b49f8aa30eb17820af7e3ba335df33af02913a8efd8f57455ced1f116d24",
+      "bytes": 3626
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/柱候牛腩配米饭.jpeg",
+      "git_blob_sha1": "1cf362302a88981626d96d0c41dc81ae3ed819e6",
+      "sha256": "36a88997669c8d3609aabc98f9c9e702097611b9c60211d2a695710e2d91d780",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/牛腩入锅.jpeg",
+      "git_blob_sha1": "2997f4cd2ae07e27165f0062c1cfa729df358e75",
+      "sha256": "c3aa3fa76a6d94627b691126f339bc65a9f27b9a4256d3bb7543adcc4e47fe30",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/牛腩切块.jpeg",
+      "git_blob_sha1": "bf4e8ab5a06717c81a96356d859d31266b915245",
+      "sha256": "2d6b8f70956aedab4f998a631efc9dfdfeafe3f508f7fd17405b4d42280e567a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/牛腩此时可开始炖煮.jpeg",
+      "git_blob_sha1": "ca4a970c00fa17834ec1b64f063e695aa44e7290",
+      "sha256": "99b62de239875de7c9b81a9e4282708071b942a819ec1c20b44110ff41579e2c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/牛腩焯水.jpeg",
+      "git_blob_sha1": "3e75e170d151aab827952244d9e3b9a5088e906a",
+      "sha256": "fa790498782f8a15cb37e601ce7847eaec825655216061907c59b4e2241fa17f",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/牛腩部位.jpeg",
+      "git_blob_sha1": "f905264262eac682cbc722966991fea0081a6cc1",
+      "sha256": "e06ecb008bda2f0d04e9ad4b03b95a20dcba0d6dc9fc3cc30c046270c073c525",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/碗1.jpeg",
+      "git_blob_sha1": "ce067ad9728a5e2eb1c081e01e3e10c31bad7174",
+      "sha256": "9c1c9e0ec4ec5aa5a19a6f5c58abecd4028c4008d852a463b51f4ca780f89fa7",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/碗2.jpeg",
+      "git_blob_sha1": "917810f153e2c06b7535fabd5e892a638f3d3a04",
+      "sha256": "17bb048156180d4e3d72ec83cb82a37c000a4f7169ca1ee0ef5f44c8fbe0e80c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/碗3.jpeg",
+      "git_blob_sha1": "a396d9d4de4f5fb18bbc617084981096ff91afb0",
+      "sha256": "c6a34726729c549907f879a9d4a6111ecc483636c41f8a2f6bf2803ba14e1842",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/碗4.jpeg",
+      "git_blob_sha1": "9118e595741c2a8b252814ce43929b9d0036a755",
+      "sha256": "2b01f9618aee5da5fd0141ce799ba1e34f8c7387cd2eb756d2c203e9decc92be",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/碗5.jpeg",
+      "git_blob_sha1": "757a455122678322523154e2d61c697f557741a5",
+      "sha256": "4003c616f0f68aeb5943f426cecc3af127ef6ca9b9e08975005acf3e9cbd3024",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/碗6.jpeg",
+      "git_blob_sha1": "ce0d63d329b55e600638f0f911715c231ae27157",
+      "sha256": "f7ea30b6f33526ec6e67df1a47e9625b5d0123a3504f74c6d7ae51ee287bfb6f",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/碗7.jpeg",
+      "git_blob_sha1": "ab27440a1cf4b064d376ddc73080f6c00f393a39",
+      "sha256": "96c70e3be7f89b6343ab027bb34d144daede27aea9430d29d41aeb4fc7ecf3dd",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/柱候牛腩/过滤汤汁.jpeg",
+      "git_blob_sha1": "0589ee5f2c1ca6acc8daba347e26abfdef7c0eb6",
+      "sha256": "64ad14f9657c2b6ae048357d7dd7fa03cc9c72c2feb7e23d1e09b02272d9c5d4",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/梅菜扣肉/1.jpeg",
+      "git_blob_sha1": "4f4856cabfba23dd96db03350abc19d07e9fecf3",
+      "sha256": "ad69191187b81304943c95b85af9789d155ee744c346c193ebd830b4ae50fd72",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/梅菜扣肉/2.jpeg",
+      "git_blob_sha1": "d9d38ee13313b216fd71b5c0bae4c0d2b9bd09dd",
+      "sha256": "fce36f60f5e43dd66fff761baf69808edd8800ef54428b26dcb6deb14006c7bb",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/梅菜扣肉/3.jpeg",
+      "git_blob_sha1": "d2a2ab32ff535b1003dc737438eae3f092e2d53d",
+      "sha256": "d24ab4e803f57f28532c223aca3818135d59308c6f62e0f827c8106985b27405",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/梅菜扣肉/4.jpeg",
+      "git_blob_sha1": "ee73079ba6c11c51ee0dd619020707729b909483",
+      "sha256": "c2fb1f5aa0741368623dc159b3f8e47ceb33c8ec3ec71eca6d03abb046ea30bc",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/梅菜扣肉/梅菜扣肉.md",
+      "git_blob_sha1": "d11884674e4ba5e2cf21c324852387e1035e1207",
+      "sha256": "e0259e404b48d18f472f1355e4894866411df14f1640e27f14e4354fa9a4211e",
+      "bytes": 1645
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/椒盐排条.md",
+      "git_blob_sha1": "c60c247b66d1fb4fe4ae96ea5507edf970becdbd",
+      "sha256": "52e1141f627b38a11f0e0a445c427ce684ff43691c0bd8a3121da4f1e465a8d8",
+      "bytes": 1720
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr1.jpg",
+      "git_blob_sha1": "f62ce001f7e03875d13ad86cc26beb9c1552dba8",
+      "sha256": "d9362a0c63844d692fc6f99b1c4ec45471252912810b07239a26c581e7ea6916",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr10.jpg",
+      "git_blob_sha1": "f54f9a77a6d4f581b2c5ceafc7c91efc827b8dd9",
+      "sha256": "e53121328c3055300bc25b7deb5bfadfc0731c1c3f4ed436c84de330ea5384b1",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr11.jpg",
+      "git_blob_sha1": "35e61c651cc533730fde5728503eecf624f61248",
+      "sha256": "bc430e0c75148a40d5453b177488676df90ead1c4520c7fd3a59ff215476d17e",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr12.jpg",
+      "git_blob_sha1": "e1677c85537677c893e70c85ace8fd8127ee7c1c",
+      "sha256": "321567db44c031b7910f151d41c258815065dc0ddbc585a8e8983a7a10a1c81a",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr2.jpg",
+      "git_blob_sha1": "ce4565fcac10e03fcb5ba3130c828a540cbd6e0d",
+      "sha256": "35149c5ff6eabc328152408504b5d8653b698f0088694b387ea5400bdf92be37",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr3.jpg",
+      "git_blob_sha1": "6b4f880c67981469959ba4c26b290e3d24ba111c",
+      "sha256": "ee3f418579b367bb7a150735a4491df86eda2c4ec3dffc1f33a54798d8394cb1",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr4.jpg",
+      "git_blob_sha1": "502b23cdc5668a1283e40bfb64f6fdf687409296",
+      "sha256": "a71b1559b2041a1162d9b871d8a9d5ae96e8dbd95f2e4cc562d785975fcf446a",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr5.jpg",
+      "git_blob_sha1": "f123c9487d17b92e08f9b54d57bb37d5262945ee",
+      "sha256": "be5a847a843f02a8904612e2374958dc0152c522fd0a4634d5b020be4b51a419",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr6.jpg",
+      "git_blob_sha1": "2ee07e81e0995959918ebfb7d0f4e27a8dd46b4e",
+      "sha256": "2ee0aebc017188f7abc6f45e0e84fc70138b2d4bc35f826c2956889e280bd45f",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr7.jpg",
+      "git_blob_sha1": "cbc853ce1fad545e061ec0063f58c217a4bdfa61",
+      "sha256": "5cf9a540a2abf085d249d31825dd4c69bc66741210784819d38efe2a7ba55029",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr8.jpg",
+      "git_blob_sha1": "329f3bf48e1c2f669c9646435e2b26bce2965f90",
+      "sha256": "0e4b7cbb6f8f0424693285d59683f21cab5c962a75c5b62af4238f994017a1fa",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr9.jpg",
+      "git_blob_sha1": "8387d0e1e7d3f4ed226ac280be2212a3b7e94f1f",
+      "sha256": "95944bfbeb7c9d0e3d0c2213bea61b92b3142b12fc8fa98baadbb1be56c6a24b",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮牛肉/水煮牛肉.md",
+      "git_blob_sha1": "76900ea77a8f961ca0832fb63e5c62b05b999298",
+      "sha256": "05735efcca2e0a54e8e773cf0afe9874f9343edbbb76fe0985a0da313b071be0",
+      "bytes": 1559
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/水煮肉片.md",
+      "git_blob_sha1": "ea93475d22228cac6ff0012e2edfb9304bbd7288",
+      "sha256": "8764a51385047392d1d5c4f8e3144f821bf99c98947884ad71db183c764452ed",
+      "bytes": 3627
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/洋葱炒猪肉.md",
+      "git_blob_sha1": "653bd1a0cf7b590fc9f7c6abddabf5d98c6cc04d",
+      "sha256": "0ffa7ceed4cf98d44f7de61ba351b9d4d7addbb3999adac9cd10cd80b7d394d5",
+      "bytes": 1138
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/清蒸鳜鱼/清蒸鳜鱼.md",
+      "git_blob_sha1": "227ec5aad1e4244ff7ab59626d3be4bc82f25ba8",
+      "sha256": "7c96c4e1c85d571025d05f7cdf8db62b1b20f7d6edbebd8cfdebffbc8cb9b1bd",
+      "bytes": 1624
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/清蒸鳜鱼/清蒸鳜鱼成品图.jpg",
+      "git_blob_sha1": "309ed0756a1e0f52fe8f57e71a2dfd7cf27f9a6d",
+      "sha256": "294104ed97b3920e6102e087a8795f7dac0e3138d5d45a0ce78f8d627eaf9bf7",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/湖南家常红烧肉/湖南家常红烧肉.jpeg",
+      "git_blob_sha1": "150098b38084aae08f796b00bd2d7b860a508170",
+      "sha256": "fc982e4f6ab092a2cf26fe55dcd8282cd054fd9faaae9c7c0a7c3a9329b923fb",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/湖南家常红烧肉/湖南家常红烧肉.md",
+      "git_blob_sha1": "c20f241b7cc7f1ce630e2f13cb9a1e701a40f317",
+      "sha256": "b6cbd70621809457861b1bd8bb86fb16badbee3c19010153d87ba4a9ed6dadbf",
+      "bytes": 1214
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/湘祁米夫鸭/step①：准备米粉.jpg",
+      "git_blob_sha1": "5f5e5e5fb660fb75a13e77d8088a153b25794a4b",
+      "sha256": "add7eeecbb5684bd93583f6bc88f58432dda6cfc626c8ec7a33dfeb5f064c490",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/湘祁米夫鸭/step②：煸炒鸭子.jpg",
+      "git_blob_sha1": "cce4ea9392868693f2888ba5a404b8620e583de4",
+      "sha256": "d8f3c7e723a4fa964fe9736aa2e5d91da4bbf4ab34b34986d016945462646f4e",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/湘祁米夫鸭/step③：米粉裹鸭.jpg",
+      "git_blob_sha1": "a41d86fcf2fdf33481ab2e600164da817cf05203",
+      "sha256": "779925bd91d6261abd545429a7f9c01385d6be68a9f59db88eccee38bea88259",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/湘祁米夫鸭/step④：高压锅蒸煮.jpg",
+      "git_blob_sha1": "b82d8193db58bb482e6e7e1a002a6d03cd1b4fca",
+      "sha256": "aaabf0598f7d99b6db3b0bdc9bcd4312189c6ddedab28cdc58fadf3e795a9c54",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/湘祁米夫鸭/湘祁米夫鸭.jpg",
+      "git_blob_sha1": "98651802b78cb9fdfed7d49b5fa4821b73064e04",
+      "sha256": "69f2a80c00e29b5afac311f30700d8638f3843c11f3bed4e4520979c486454c8",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/湘祁米夫鸭/湘祁米夫鸭.md",
+      "git_blob_sha1": "eacc9593495c950255fee51f0f6f9c06804b36f0",
+      "sha256": "c9b7ea784026e09f4ccc4007e6dc8894d17c6a3dc2677ab3a621b55a56fc4fab",
+      "bytes": 1853
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/烤鸡翅.md",
+      "git_blob_sha1": "99e5d4dfd8128e917443c337de94391521279ba5",
+      "sha256": "d42d19d9a38f556b69254c29a69ad9b9c9deb96eac9ce2ad0da201de4fd64cda",
+      "bytes": 915
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/牛排/牛排.jpg",
+      "git_blob_sha1": "ac59f66231105f277aadd9f6094ad4f11e1b3327",
+      "sha256": "3fa885c837b6b5cdbb13007273106ede2219956d2b939d8eed65431778770cc0",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/牛排/牛排.md",
+      "git_blob_sha1": "173fa326e38e0c5b82a17a074a56b65dae558098",
+      "sha256": "b82b5b653bf3ec8a4da60b06d9b7cc31e8cf775afd94a55cbf50ff5fd54dd78e",
+      "bytes": 6653
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/猪皮冻/猪皮冻.jpg",
+      "git_blob_sha1": "733d003d6596ef34691850ebe694341870f4045e",
+      "sha256": "90a566034dfa25739bc0ba250cb21b305b61b19cef851ceab43b386f78523284",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/猪皮冻/猪皮冻.md",
+      "git_blob_sha1": "2090944d7475533de22d8d1e5e71f38714b21f1b",
+      "sha256": "f56e59835821c9fbcf2f3e08d1cf575699d300888adfe631e21cbd359c015104",
+      "bytes": 1818
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/猪肉烩酸菜.md",
+      "git_blob_sha1": "8890eb1da77a47d4d106dcad6787107bd29e165a",
+      "sha256": "aa5a4e40cc2a948a64fb14923d97411c8014d4f50de03dccf63e949695adb3cd",
+      "bytes": 2131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/甜辣烤全翅.md",
+      "git_blob_sha1": "be00fb728536730c924631064953b5d3433baa9d",
+      "sha256": "f888cdcf86b118f5496392871449b95bd4a3eba1652da4b33411e21afa19e4d3",
+      "bytes": 2085
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/番茄红酱.md",
+      "git_blob_sha1": "3c16a7725fa290c91b9e09e8e7a02d65fc5b6505",
+      "sha256": "f3b8a8a80197c337b781c15da2960e962db249556fb618edaaa4ccd6dd1f0fac",
+      "bytes": 1475
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/瘦肉土豆片/瘦肉土豆片.jpg",
+      "git_blob_sha1": "2fb209ab821aead74fcb96f9d9f86553ec0e0dc3",
+      "sha256": "5b2dd5b4edd172b615f480a0b515c5eedd547110250d79d301404e87cf21356d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/瘦肉土豆片/瘦肉土豆片.md",
+      "git_blob_sha1": "e752314f16e969c0f08a466c8b37798f805131c6",
+      "sha256": "d82d29f659c103a342fb45f3262bf2c6d06add1ea7a3d80d84efdad140bb6242",
+      "bytes": 1238
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/白菜猪肉炖粉条.md",
+      "git_blob_sha1": "75f38036ceab0cf470e856ba8db965cfa95c1339",
+      "sha256": "5eed8fc8004a4c34493327bb36ec4bbbb3cf6c0029b64ded7abe82e19fbd3cd0",
+      "bytes": 1534
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/粉蒸肉.md",
+      "git_blob_sha1": "e3a56cc0963a7e42f8b05cfe5e5319c326b28f60",
+      "sha256": "e8705297a694dd4058838e0e74a534faa73cc82721aecc628fd257b1d2c8afbb",
+      "bytes": 2386
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/糖醋排骨/1.jpeg",
+      "git_blob_sha1": "66ee5e89ab73fd1919528210365f6531874b31bc",
+      "sha256": "797f1edb0e5f5c7cab0f74a9d8a0ae4dad206bdf9bdedb60ffcbd5cff0681db6",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/糖醋排骨/2.jpeg",
+      "git_blob_sha1": "1bf6fafaf69f5954bdbde334428ce8fd20d1e8c3",
+      "sha256": "0ad801cf7911fee7097837069c9f478fea4ca846c513acb7650871359fea013a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/糖醋排骨/糖醋排骨.md",
+      "git_blob_sha1": "889cd8d2a48b4c8fb290d047eb39677eb20b5bb0",
+      "sha256": "f285cffb5025b8b8e4063de273194dca3a8aac789df8f18d11a4361d0cd31c4f",
+      "bytes": 2609
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/糖醋里脊.md",
+      "git_blob_sha1": "d6b4b2ddd2edca840279fb648af57e72ea8cfb77",
+      "sha256": "393576ef0c5ee676f7bc0aea4a86b819de20db2d0f99681df786846fa3b72ca2",
+      "bytes": 1902
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/红烧猪蹄/红烧猪蹄.jpg",
+      "git_blob_sha1": "5340a4d79fae43e4f65ac35fc728d59ca5be0010",
+      "sha256": "d79e5f7f731eeec61155090b5cfdfaff9ceafbcb148630b4b668ed0dd978bd1a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/红烧猪蹄/红烧猪蹄.md",
+      "git_blob_sha1": "aabe0d5d0e6322ce5c4ef6b298a9ebb7c39b0518",
+      "sha256": "58e804ef6e4241eae850a266ddc6fe20a85b9ad3d774852197539049cd577223",
+      "bytes": 1595
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/红烧肉/000.jpg",
+      "git_blob_sha1": "0aec16d53a0c5f67621a329584a2baac9d70a791",
+      "sha256": "fbbb4dabd231c60d3998883ef662d9e78d5b6ce2790603d47658e0ad93c715bf",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/红烧肉/001.jpg",
+      "git_blob_sha1": "6b30d19c978750461495caeb15279c34a37d038d",
+      "sha256": "c796510f4aa0468e3890ad17a070038058f0a1a1c228e0bf500599fc29811cfe",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/红烧肉/南派红烧肉.md",
+      "git_blob_sha1": "01b57588a04374a7b8c79a88e978a8543baae3a9",
+      "sha256": "d594f40db424ffc7fc32f2126e4f8713b07738cbd00b0c5e4bb0a2e03291d0be",
+      "bytes": 2306
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/红烧肉/简易红烧肉.md",
+      "git_blob_sha1": "bdeab26e0105b15dc4fd807e69081d7635210cee",
+      "sha256": "c7753629e11b36fdb71fcb439b4fc33971acfea31ba858630b5c4e9d2e583188",
+      "bytes": 2396
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/羊排焖面/羊排焖面.jpg",
+      "git_blob_sha1": "494a2d07f1d14cb69b1031ae49880b37fc517b50",
+      "sha256": "9bc66ba8b40448d3d31c1b0c4877da03b2695a3cecf51d3786aa5eb4b3242c0b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/羊排焖面/羊排焖面.md",
+      "git_blob_sha1": "e9eb4188821afc5773a7f108de4cb651a74a2826",
+      "sha256": "6e4cf6db30d3fced7e7b66669d27910d5ec06ae7631613a679bdb5ac4d1dc4ef",
+      "bytes": 1672
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/老妈蹄花/result1.jpg",
+      "git_blob_sha1": "215c3881af90dc158fe674e4a297a7ffc7a28de8",
+      "sha256": "3893dd5b26c9538fe8fa720a6a1f806ce8a0d743d232c44997b881d591c7585a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/老妈蹄花/result2.jpg",
+      "git_blob_sha1": "01e61248bc519fc1ab5c216d305ec54f486c492d",
+      "sha256": "9e222617e032a0a9cdc73ae4d58d412d9a102540e8442b8589f660c7ea7e9b6d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/老妈蹄花/result3.jpg",
+      "git_blob_sha1": "fac0ad467e59633551dfad9eee2a5e71a507d082",
+      "sha256": "dbf210769897d2035a15d968e8b50d0488b67a5e242c6df33c5c17e7ae2883b4",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/老妈蹄花/老妈蹄花.md",
+      "git_blob_sha1": "0f3e08779910e4a3e6eb19ee97ada5be9bfba8f5",
+      "sha256": "72252f7ce440e85a189ebd398b21bbda60b8057632edd91054b03d2a46b4e87f",
+      "bytes": 1442
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/老式锅包肉/老式锅包肉.md",
+      "git_blob_sha1": "0cea883b0928f2ed3bf5053be917acf43f571603",
+      "sha256": "6ec90ba1e94ecccdeb913294a499d875f99cca950f293e749a5572f2b628e668",
+      "bytes": 3402
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/肉饼炖蛋.md",
+      "git_blob_sha1": "779ab8f6b12da69e39698ca35d0f432686a923d3",
+      "sha256": "15fc7e844fa434244dc487655d9733d2988c947974e2f7af51bda09f5ea41e65",
+      "bytes": 813
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/芥末罗氏虾/芥末罗氏虾.md",
+      "git_blob_sha1": "871640fe04c38d12aa52edcf625a7555bebf4b54",
+      "sha256": "8f2604a642f86ce56fdb5850da7ba46c8720473523aeaa7025ceace288f888e4",
+      "bytes": 1720
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/芥末罗氏虾/芥末罗氏虾成品.jpg",
+      "git_blob_sha1": "1c6e71a596c4fd13a70794f76395f45654fc7960",
+      "sha256": "b72fa7e8844f8b108b739d2c8d759551fac1e36ce94d1efd090f128ef2a6756a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/茭白炒肉/1.jpeg",
+      "git_blob_sha1": "8a30441fa1d1d61660821877e5ebb31c168ac83d",
+      "sha256": "a0bffd9837d689585cd9157aa6073f941f55adb41a80f7ec7b1e3a9e114e71ae",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/茭白炒肉/2.jpeg",
+      "git_blob_sha1": "e0358523237bea9f9237ccc6f6cdc0d07bb0fbb0",
+      "sha256": "7fd511873173cd573af964d5a48435490196924bbeae542b4b171c70f324d921",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/茭白炒肉/茭白炒肉.md",
+      "git_blob_sha1": "70ce9e3ade5f25cbd8fd91dd71ab8d3ca14ed801",
+      "sha256": "d8c007065645fb5cb10bf5ce8e8a747a0b47b254acc3589a3a21e4286adedf2b",
+      "bytes": 987
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/荔枝肉/1.jpeg",
+      "git_blob_sha1": "35ae6e730caa7b3d7e1dff151071f013fd4c6996",
+      "sha256": "9a914be10feeffbd3c331bf4ab6e2c2c9db35b5596101b3b7d9fd259bce08547",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/荔枝肉/2.jpeg",
+      "git_blob_sha1": "e6492757002a53920785352d09547612922ecd7b",
+      "sha256": "42eac9801d9add1c23b452dacec99439bb52c073f22833ac14800ea675134619",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/荔枝肉/3.jpeg",
+      "git_blob_sha1": "bf8b863dd68c28a7843b84496d2dee5547bc0664",
+      "sha256": "32f218b8d926b582b72da984132010679e04910ce5891b7a8d13fcb27cf25bc4",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/荔枝肉/4.jpeg",
+      "git_blob_sha1": "d5bfe4ba07a88b6764f2a0d15faa9779964a7e65",
+      "sha256": "a5592b1ebd034d0673ff6d3165020063260eb476d58459cf20d5a1f9a34b9d17",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/荔枝肉/5.jpeg",
+      "git_blob_sha1": "5703372d329685996bf0a4562cf1e713a1d18391",
+      "sha256": "f30b06c083b6a5b124916e12b773f1d4b6248f4fa54f2db5c8f23dbe3d75b0e5",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/荔枝肉/6.jpeg",
+      "git_blob_sha1": "be1fc7c7c64f70dbc92eb803a5ec863a1c977fd9",
+      "sha256": "cbb06ae394b07dca5511b806ab8ce7bc2f5d3e5ccc9438a223ad35433f3d366a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/荔枝肉/7.jpeg",
+      "git_blob_sha1": "0f2d0df08f88ee095e740ac79e33e8512ae3c22b",
+      "sha256": "5286812ea0713163eda6d78d25be7842a61edb862f66f5de1eab9e805dcd6708",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/荔枝肉/荔枝肉.md",
+      "git_blob_sha1": "c2b2a1386b550b8fe3ed2d46f93d20d40fea2b5c",
+      "sha256": "73984900dd71a8de48e973c55f2fc56d731c595650b6000547b2df821bc14d28",
+      "bytes": 2017
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/荷兰豆炒腊肠/1.png",
+      "git_blob_sha1": "af6fe2c2df98075b6ef26d02ce74178699858910",
+      "sha256": "acfed431aee981491219ebd4842b92f8a9c0fd69b2fb7d95789df68711d56a41",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/荷兰豆炒腊肠/2.png",
+      "git_blob_sha1": "961cbdfc5e10f003987eb2a58d0da355c66a9c5c",
+      "sha256": "e283f095476411587f63562dc50c018b9efd2f40189412da187c14d0f81cc536",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/荷兰豆炒腊肠/荷兰豆炒腊肠.md",
+      "git_blob_sha1": "a41a976ab515f7fcf0872c666c5b7da52b3020d8",
+      "sha256": "47547d20ccb78addfbb41b94f9b17a5b3001fcd20af1fef4611970321d84e13d",
+      "bytes": 1415
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/萝卜炖羊排.md",
+      "git_blob_sha1": "f77f72e2b1882d74f0074581d5040585726658d4",
+      "sha256": "92dc13b086a918eab88b96372782db0e9a4184f520250547c59b8bacf7801195",
+      "bytes": 1731
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/蒜苔炒肉末.md",
+      "git_blob_sha1": "0e5d2fd7e647ecb23873967b5db80b5e6761ff59",
+      "sha256": "fb284465a80b0f68cee0ab7d4756f3337a4c26f8f12db886a96e902dd217d60c",
+      "bytes": 1194
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/虎皮肘子.md",
+      "git_blob_sha1": "0d1ce45d3c825ac1c18390a8a2b2e095db64eabc",
+      "sha256": "06c09226dcef7ba34bed1095a47d7494679cc0898dc42370d5dcc554119ac2b1",
+      "bytes": 4663
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/蚂蚁上树.md",
+      "git_blob_sha1": "5623bb2af18c9a786ab0d1416c0241dcd033f361",
+      "sha256": "0b19ce1cc904591685f7c37df284961a9824f20df06ae4fbebe6f225bf46d57e",
+      "bytes": 1499
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/血浆鸭/血浆鸭(微辣).jpg",
+      "git_blob_sha1": "02d00b731ab34687268ea1842b96dc8d30cd3fbb",
+      "sha256": "cc055a2670e1bf7f76f97f67096fe9ae4223004205a612d67b1503402dbec1fd",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/血浆鸭/血浆鸭(特辣).jpg",
+      "git_blob_sha1": "76642017d75bfe2f99ecab60d8d6cbb0973f39bb",
+      "sha256": "4fb38fd6de340acbf0e57742602d289a0f4fa5fbfed4a5f0bbf5d439a2fd2627",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/血浆鸭/血浆鸭.md",
+      "git_blob_sha1": "9650d0db99643e109e7d54652989f2d6ef793a7b",
+      "sha256": "9ffdfef1fc05e91b07aed7f244094d81894339442c2d382e0b4bc477f5acaad5",
+      "bytes": 2166
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/西红柿土豆炖牛肉/abaaba_1.png",
+      "git_blob_sha1": "d4f07b32202a7931e2bb91b2fbc755e7f0d01b29",
+      "sha256": "00a6a8935a28ccf661224c63890ef9bcf3d0c7d4ba26f11697ccf0e59a8cc637",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/西红柿土豆炖牛肉/西红柿土豆炖牛肉.md",
+      "git_blob_sha1": "a7ba3b9512a61196c949b39c75cc66428081f2e0",
+      "sha256": "96b176030e63e0ef56ca03adc28287b3bf74a8e76656da8e5fe42158d411d726",
+      "bytes": 2740
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/西红柿牛腩/西红柿牛腩.md",
+      "git_blob_sha1": "9847c1e7a9fa001391412c3523ad98ce6e9c4cdb",
+      "sha256": "f28bc12eb2200004c26ad43e4e9e8cb406f0be50c92cc3f43d750cd11ccc2c12",
+      "bytes": 1912
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/豆豉鲮鱼油麦菜/豆豉鲮鱼油麦菜.md",
+      "git_blob_sha1": "1fce45238a917e5dd1c673c2687d70b319e3a66b",
+      "sha256": "dc7278fd8dff92ccae404e24fed587bf991b521ef7f99607e441f9df5e9ae179",
+      "bytes": 1195
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/豆豉鲮鱼油麦菜/豆豉鲮鱼油麦菜成品.jpg",
+      "git_blob_sha1": "b34600675c27d56c6be2f5c9b7ab36b17ebb9f07",
+      "sha256": "5774161d6107806e26b4e8560a934540f50943f304cf13ebdfbce64f382278d5",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/豉汁蒸白鱔/豉汁蒸白鱔.jpeg",
+      "git_blob_sha1": "20361028fe0856aa31555a3954f66173bc5a9d83",
+      "sha256": "66ad5b5494349cf0715756a43c33c058260302f2dd09d2b30da632629f2b3b23",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/豉汁蒸白鱔/豉汁蒸白鱔食谱.md",
+      "git_blob_sha1": "e811010ca0987051b51b2a4707553d046f0655f6",
+      "sha256": "16e6cb52562272b563253d280f22c9538b9279188b5bf42bd07522be826eb854",
+      "bytes": 2434
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/贵州辣子鸡/贵州辣子鸡.jpg",
+      "git_blob_sha1": "eae6a0932a3f9bee1daa64db9d859df8b6cb6c06",
+      "sha256": "7bf5a2beeaa5576827ad56263af17029079504aab59faa98b297bc49b8d23a08",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/贵州辣子鸡/贵州辣子鸡.md",
+      "git_blob_sha1": "3b98564f702305e15178bcda00f235ee89a45b9c",
+      "sha256": "37afee6f5b1aa5205021170265998b9f103d6ca424e2951d92b3f548dcf55637",
+      "bytes": 1885
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/辣椒炒肉.md",
+      "git_blob_sha1": "0bb565e5430df2bb516fceaf3dda3cf20ad24eec",
+      "sha256": "03d95ccc72ef31b60fd6d21a2ca397fca833cb31c2e080c1b5b65f7fb48c9263",
+      "bytes": 1783
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/酱排骨/1.jpeg",
+      "git_blob_sha1": "c4135ab7f157b207f9b6e7f64760ae7792a506f7",
+      "sha256": "cc635b01bb565a268a0d74374fdbef308c0a71609c8c2dfedce2558d23432751",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/酱排骨/2.jpeg",
+      "git_blob_sha1": "12c8dd26ba4db4288180368520af0c6564d49b61",
+      "sha256": "588cb6d5a21c76d77546e1137bdf72c02a7d68c6294bc0a309764c6543aab59c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/酱排骨/酱排骨.md",
+      "git_blob_sha1": "e65acad55690e7c029c08d03a7c674ec79bed441",
+      "sha256": "ac534b247d5381dc99933d3315c776c383b46d42e60320c9f8ea71fc0d392025",
+      "bytes": 1201
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/酱牛肉/酱牛肉.jpg",
+      "git_blob_sha1": "eb09fe3f42a41f85c520dba06a40e0644a22f1b0",
+      "sha256": "b022b71ac2a2e13b172d49b177c9c28c464c566a64db8127574970bed592d0b2",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/酱牛肉/酱牛肉.md",
+      "git_blob_sha1": "2d9d69bbf09597eca207b3a2c52a3909ae42a6fd",
+      "sha256": "14bf1dd70eec2c435d081ab07f7427b91b982338eeb10c5952d055affde0b0b9",
+      "bytes": 1507
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/醉排骨/1.jpeg",
+      "git_blob_sha1": "07a0d245b7589f6185f6a9fe3cb04f012a28b2b4",
+      "sha256": "a2a6a0ef4db08d9b00517605fec573196e40dc1f474e780435245b41c51d46b0",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/醉排骨/醉排骨.md",
+      "git_blob_sha1": "ce9e2b3e1c5b379e37d86c646913e04153fb78f8",
+      "sha256": "939c2b94ce4baf4b88339c4e7c26eb9aaead8ba78773da2460c5cbfcb075dbe9",
+      "bytes": 1381
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/青椒土豆炒肉/青椒土豆炒肉.jpg",
+      "git_blob_sha1": "06116245823a45e67820ff404062d11c64c6ac30",
+      "sha256": "1eb817ecb92b6658ff261d8540b5dab6e0e13a45b5fe657cd6ae04a796b257a2",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/青椒土豆炒肉/青椒土豆炒肉.md",
+      "git_blob_sha1": "0b3ce8ccde0cba302b0260a92469a7ae2b00d7c3",
+      "sha256": "0f79ba4f792efc3e8af3661e9d04dd60ede1909b1b1fc2041d6c08175e440c61",
+      "bytes": 1526
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/香干肉丝.md",
+      "git_blob_sha1": "26c298a2c81ee8ba9a86f41c1a85998c8486e477",
+      "sha256": "fe22ff4a7ca263825e86895e58929e5bb69b2af95c7c4710de568fda6dcc1287",
+      "bytes": 1520
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/香干芹菜炒肉/香干芹菜炒肉.jpg",
+      "git_blob_sha1": "5163d539f00c7b74e791f452c701e28378059954",
+      "sha256": "86c79cfcc14629c5bad87fe1275cf5bc4b0970899345af08b31520e8a7a1862c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/香干芹菜炒肉/香干芹菜炒肉.md",
+      "git_blob_sha1": "a421a9501bddd842220b784aff8715f4630bdc75",
+      "sha256": "5a9a5504595df217fcd58dee4a1885ea9a21cc659faa6ed51478e49c22fa9745",
+      "bytes": 1857
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/香煎五花肉/香煎五花肉.jpg",
+      "git_blob_sha1": "e4cbab5bab06a121edcbfdd8e163a5e3b0760426",
+      "sha256": "e6ceadaeb3fe897d1828247112cc02ca0f8de259598de6e1d8f7f7f44479accf",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/香煎五花肉/香煎五花肉.md",
+      "git_blob_sha1": "8431ec1662cf515310fe0b2fd90bcaad886d18cf",
+      "sha256": "3e8869458ce734842e1aa776c5d90069684ba6793e54d6b2b4d74ad88c818440",
+      "bytes": 1143
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/香菇滑鸡/香菇滑鸡.jpg",
+      "git_blob_sha1": "f9756cb60a01b661736ac5a3618d4904f8bf9602",
+      "sha256": "934bbcd6c64fd0cd2aeb9af45637b29aa2cfa5faab76b6a0b25657a800594349",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/香菇滑鸡/香菇滑鸡.md",
+      "git_blob_sha1": "34f7a41754c2684e179ffc05434233ceb8ab0919",
+      "sha256": "1ed58e490f34058c8cabad4222c2e62524b83e3b93f277dfdde0eea352cccee6",
+      "bytes": 1552
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/香辣鸡爪煲/result1.jpg",
+      "git_blob_sha1": "458ce3eaafa5ebc07f72a44748c46324e792ea3c",
+      "sha256": "a6b5aee0ed5f0331e88d862104e44f82f13e535574f0553b22707f5c691eea88",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/香辣鸡爪煲/result2.jpg",
+      "git_blob_sha1": "58760282f1ce0964d1e71e3844bb91cc7bdfc7c7",
+      "sha256": "3a772eb62db3722bf96c803bcfe790251629886fe8a992b6e857477a16300a5b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/香辣鸡爪煲/香辣鸡爪煲.md",
+      "git_blob_sha1": "55925abd2cec079214986bc71762f2b32187d00c",
+      "sha256": "5b43bd56f246c6f35c8ab958d28defafc6bcf02d8ac7172da737ea47b5694b90",
+      "bytes": 1260
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/鱼香肉丝.md",
+      "git_blob_sha1": "d47b7e34b204b356a32931c0debbe13b2f5e3747",
+      "sha256": "54b29e2a247227fe53a87ebe0b3c1ac5a8c08e9b150761733b9bb3b604e90319",
+      "bytes": 1474
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz1.jpg",
+      "git_blob_sha1": "d6faf86d3352646664c0be395c32718aacea786c",
+      "sha256": "d067f54f3cbff43b98daa69d3cfd4a4dc7d9f5c0b5631a436955f5b6259f24c7",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz2.jpg",
+      "git_blob_sha1": "ffcc5567cc1221907105cc76ddf6172c8ee92c98",
+      "sha256": "33f50e6d577d0422d3f613c5113efeb74d49715a97e43047651ec111cde2c207",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz3.jpg",
+      "git_blob_sha1": "782cdcb759d1e4b189a88eeb7ab1404342c428b0",
+      "sha256": "113663ce73f0056da6a875c73d20e9c2a18012e143b48b6f0b03b7cdd3207a64",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz4.jpg",
+      "git_blob_sha1": "1ff51c0fcde130e0874ffd8685327873e1297d2a",
+      "sha256": "2ceda77ddee9dad28ae3aba72deb3d39525f5747a0835e20331d9fc8d4623804",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz5.jpg",
+      "git_blob_sha1": "afa48e16ed57d75e387dc8047a8982af07bb3e3e",
+      "sha256": "4766748f04ae641a4d721c7ad3639f37c4bf7721487e3272a63cdb5886b14365",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz6.jpg",
+      "git_blob_sha1": "b7c3dc433c9f0cf49ebc6bc6192bdbc97051bc05",
+      "sha256": "ac5907d5323041ddc9e0734e4f7369ce06683285d258504660b120c00f32f3ed",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz7.jpg",
+      "git_blob_sha1": "c703b0a5e4db2ba72f4ec30ebc607caee6084055",
+      "sha256": "92cb2a7b28940aa1f1c6970a054a18e5346382df6d21120d37fe4e7c3a19bf88",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/鱼香茄子/鱼香茄子.md",
+      "git_blob_sha1": "eb6614215c0b2eb951c4e5c5356d5e9d1b942aa6",
+      "sha256": "6e6341ed7230ceddd0de9c2f2fc569cb5ad88356b9103074c69cfaa6be24b9ba",
+      "bytes": 1638
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/麻婆豆腐/1.jpeg",
+      "git_blob_sha1": "83d76ff2470e6e1f809757e873e30897d845643d",
+      "sha256": "4d7a075a7355bb06856ce8ae1f4ea5ea3462b9c62bc9d75641881c081187316b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/麻婆豆腐/麻婆豆腐.md",
+      "git_blob_sha1": "12e36188b766918f982359a5fe8230c014d71fe1",
+      "sha256": "24d3a67441e34761a9d7e142e31cf8b79b00dd541f85a3a7415b3cb1b12baaed",
+      "bytes": 1835
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/麻辣香锅.md",
+      "git_blob_sha1": "2cf8fc91cb74e7c0ed69167b133881761d76ec5a",
+      "sha256": "12d98b3b534f98136224121c787e9e09d32b0a96224bc600264acc0377b77cbf",
+      "bytes": 1646
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/黄焖鸡.md",
+      "git_blob_sha1": "bba035a962e87ede53c5e7305ec1fe0ce4b784d3",
+      "sha256": "3c08c52803d25e5d479dd2afaa089a44168e50e47690524922f8ae7406c0ec20",
+      "bytes": 1717
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/黄瓜炒肉.md",
+      "git_blob_sha1": "43437c5b380b63a50fc2795b9869dc40d97c5169",
+      "sha256": "e452d2e03e0bf48292dde9e368967faaba8344ab1fdb85e8e857976f160ae324",
+      "bytes": 1135
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/黑椒牛柳/黑椒牛柳.jpg",
+      "git_blob_sha1": "42fb76959686ca34da24d889baf838b31c6dd782",
+      "sha256": "431738d87cd0910e787062d30a44df6577a94d4938fd97f67e8bbf3f791bc681",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/黑椒牛柳/黑椒牛柳.md",
+      "git_blob_sha1": "aac34f6a5b1f7bad1f4380da537fe7421c0140b2",
+      "sha256": "80a8eadb63646eed9db83c50a488d59c2c66a5f77605473c628311b6da45bba1",
+      "bytes": 2121
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/黔式腊肠娃娃菜/黔式腊肠娃娃菜.jpg",
+      "git_blob_sha1": "e26237dca6e2a2ab252cf6bb8b81438d9bec11fd",
+      "sha256": "a945bbb361405d889e7dc669e4ebc7314b5ab21255eb3b9b7d25ba418927222e",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/meat_dish/黔式腊肠娃娃菜/黔式腊肠娃娃菜.md",
+      "git_blob_sha1": "cb08c8ad414c2b673d84807806730dae47b64e5f",
+      "sha256": "39a60648f39c3b783556c9f5649eda536223baa6306fe7cb02ab9d2db9d6df24",
+      "bytes": 835
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/凉皮.md",
+      "git_blob_sha1": "1c2d46d53dcbeaeb7ca3205eea7b4c86b1496a29",
+      "sha256": "eb0434aaf18375d822969f355058d54115ecdb74b5a1df8c1a29dfa8405233d5",
+      "bytes": 2165
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/半成品意面.md",
+      "git_blob_sha1": "fe636c305bd4cc6d2b280865f4dfdbce166cd8ae",
+      "sha256": "411604545de3c2afcf68c9c8257f2945b3dd3ed9034b5a511fa807e35a9ead78",
+      "bytes": 1329
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/懒人蛋挞/懒人蛋挞.md",
+      "git_blob_sha1": "ca0c3d3fb5778beca8d91ec7e94156640365f35d",
+      "sha256": "81638344880045462553d4ef15ef484c662fe26bd8e41e7807ec008c9b9606fc",
+      "bytes": 1330
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/懒人蛋挞/懒人蛋挞.png",
+      "git_blob_sha1": "81a0655fa230f28afd97bbd831627af4c88210df",
+      "sha256": "536e3c07a2c882f0de18500442922a231d0da530f28c5f915f51792ecf251987",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/炸薯条/炸薯条.jpg",
+      "git_blob_sha1": "0b46a15240ff6221212da4aabcbe9da2bfc76323",
+      "sha256": "8ec04a6a092ab7bb45c9012ff0e167d9bc7a7001b690000a57643afbc16b2b36",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/炸薯条/炸薯条.md",
+      "git_blob_sha1": "ac9556987d0f65a149518ff2df95bb01d1dbd9e1",
+      "sha256": "2340d745d9f41b798f7960b3d111fb65d20d93f897a23fe82334e923b0ef3893",
+      "bytes": 2202
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/牛油火锅底料.md",
+      "git_blob_sha1": "81c0efe25e16debb5d6769f571ea7b99f35cbf19",
+      "sha256": "8d543aba2d3247027f0b2020ba9b8a8b51f1f6cf5e593b0223dd9161c7631889",
+      "bytes": 2901
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/空气炸锅羊排/空气炸锅羊排.md",
+      "git_blob_sha1": "3f928b5a5e78b4715608c167b676d7f8ba487c81",
+      "sha256": "c3d44bc26ac7b44ae43c614aa7ed659ec4e9b69b25f31f2cf47209f612241593",
+      "bytes": 1536
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/空气炸锅羊排/羊排.jpg",
+      "git_blob_sha1": "73ca0766c418831c2e7a47243d47049263521670",
+      "sha256": "9e95a928b3b61846bb6fb8bed3647faece73dd7f773b67fc087551d1654dba07",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/空气炸锅鸡翅中/空气炸锅鸡翅中.md",
+      "git_blob_sha1": "3f7121a838d8f6f62d0671554112e03b6bc083cc",
+      "sha256": "eec802bc89d654e0ee9daaf17e9e8e51356d58a349bb0e59b7b44e5bcadd83cb",
+      "bytes": 1213
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/空气炸锅鸡翅中/鸡翅中_0.jpg",
+      "git_blob_sha1": "ea71123076873ad1d9c5b8df4779d9cd4e6e6b2e",
+      "sha256": "60d9754ab6d454e56a98f047d51ed8dc77050eebd873fd67bd7762044ad910ad",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/空气炸锅鸡翅中/鸡翅中_1.jpg",
+      "git_blob_sha1": "579a8df025207ef9bdfc0ba33251bd52600c155c",
+      "sha256": "02a4df5cc55399b1ed99a3aeea02321b157979845242cb7a2ac6ce190b340ca9",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/速冻水饺.md",
+      "git_blob_sha1": "54a00be1c81328fcfc9930e801696824dbc47feb",
+      "sha256": "818053e80fb9865193b083e56656c8cdb60f00bc079d5e8173d69b1dd50a0f71",
+      "bytes": 2252
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/速冻汤圆/速冻汤圆.jpg",
+      "git_blob_sha1": "6887d0697b44ba98be46819e510c42e396cbd846",
+      "sha256": "0b827eda2440d4b4130829d87835f12cf519c1678509a9a994ff13a6e92514c2",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/速冻汤圆/速冻汤圆.md",
+      "git_blob_sha1": "abceb607a4e6b12fbc717548b1a74808ea8994ba",
+      "sha256": "6601d9f4137851e4498ad01a3fef4804d53da2259d94dc2b869723e0fb8ae6fb",
+      "bytes": 849
+    },
+    {
+      "path": "data/C8/cook/dishes/semi-finished/速冻馄饨.md",
+      "git_blob_sha1": "c83d4b38cd46a09835ee1c66a08fb332a962348e",
+      "sha256": "0550d6af8ab4c06003f6f0f8a78d42f6a309f02d8a660701df8fc3a5eb2ffc8c",
+      "bytes": 1733
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/勾芡香菇汤/1.jpeg",
+      "git_blob_sha1": "be7bd6c1809973c915adb7a5d1cbb5eed3c16e44",
+      "sha256": "0b7a67abde63e046a031c9f36d00a1728c35f6d25d88ccad16ff5708434f1fe1",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/勾芡香菇汤/2.jpeg",
+      "git_blob_sha1": "632110846527c85b8c67e9b993834ecea3156583",
+      "sha256": "effb0a356bf95b2017b5bda309b7dd1956dffa66cd18a2f97ed013c941fc86ca",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/勾芡香菇汤/3.jpeg",
+      "git_blob_sha1": "7c1f51ae8769631c5f14830fd220a2ee6fb3bca1",
+      "sha256": "b6ab31964e204dac94139f9e9e469bb051e95a6c4efa5c16584afa9ac234f46d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/勾芡香菇汤/勾芡香菇汤.md",
+      "git_blob_sha1": "ce5773a8df6164b48c5be38e8b493fdd876e4ab7",
+      "sha256": "d4381c97f61ff4956df4773a981dd03642713949d8fd13eee04b2f363cc17816",
+      "bytes": 1101
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/奶油蘑菇汤.md",
+      "git_blob_sha1": "478b48d2895c7b2649e0895e81820ec5ae6ad355",
+      "sha256": "997125118093728f941fa5c294d67410c01cead2045c04a25f255b382ea474a8",
+      "bytes": 1291
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/小米粥.md",
+      "git_blob_sha1": "9a354c4025bccb01bccd07afd45d1aa3f4cc2f23",
+      "sha256": "a952ed3bda9ba3c3bc5126c928bed12690f472e804edfe1f621b11d7afbecbcc",
+      "bytes": 1617
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/排骨苦瓜汤/排骨苦瓜汤.md",
+      "git_blob_sha1": "90deab64792e85c0ddbae5a417475b3d94ced0c2",
+      "sha256": "1afcf05f5c23d06b1c88bba0772a799f26b1da329d90edddbbb7685b703f6d60",
+      "bytes": 1606
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/昂刺鱼豆腐汤/昂刺鱼豆腐汤.md",
+      "git_blob_sha1": "d905016d575c9dc1859d92e7370792fc29148537",
+      "sha256": "79a919a9fca64d6c4906580e7f3dc9815c302360fbd7a20bfbc0a5ee8c2a714e",
+      "bytes": 1355
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/昂刺鱼豆腐汤/昂刺鱼豆腐汤01.jpg",
+      "git_blob_sha1": "c60ddc27d8c283e29afe064f0553a50a360d285c",
+      "sha256": "1749477994ff5702b55111bba8c518a069d4a7e2201d06a1da2eee9df03697d5",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/昂刺鱼豆腐汤/昂刺鱼豆腐汤02.jpg",
+      "git_blob_sha1": "d9809db7f1dd96ace2e51b77308d92fa899b46ea",
+      "sha256": "0a2df1dceee280d37b90983946bba05e2ea07092cadfbacb2913deecc313de27",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/昂刺鱼豆腐汤/沙光鱼豆腐汤.jpg",
+      "git_blob_sha1": "455605bf0881e3b5656d7c2436052c117b3fcd5c",
+      "sha256": "c3c85483d6f6f81f30144c08782d5a251cd9b01365996e96810acb90a167d2c5",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/朱雀汤/朱雀汤.jpg",
+      "git_blob_sha1": "5e453b181a15d014b923b91bd01332b46db2bd81",
+      "sha256": "bfc170beaac6a5f71d054fb95dc289f0d825967756cb89d1cc49ea0c964f66da",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/朱雀汤/朱雀汤.md",
+      "git_blob_sha1": "565c36ddd175db0c6e0a79addae31564d469ebde",
+      "sha256": "07c75b12e82680d8ef30ccb03ee87e82912de1520b977c9f396d1e8207204888",
+      "bytes": 701
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/玉米排骨汤/玉米排骨汤.jpeg",
+      "git_blob_sha1": "807a3b3b07c300fe2878ef1abc2fce6292cdeace",
+      "sha256": "bbb3efd0044264160a6f0e90357084d5dce1dec93b8fb984a59dde6c554623ed",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/玉米排骨汤/玉米排骨汤.md",
+      "git_blob_sha1": "2d6a02431b80a5fb287586b9e9590d934e50133e",
+      "sha256": "a5fbf66f535b3a526d5a3109d8eaf361c74c7a6c060cc4f514e976ed2de6a500",
+      "bytes": 1634
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/生汆丸子汤.md",
+      "git_blob_sha1": "40f25e6b6484b141beb54d8ba818af1886636264",
+      "sha256": "a1faef25b67b09bf01fdc26ed9828273dd5d590206af746448d1445900d4e90c",
+      "bytes": 1721
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/番茄牛肉蛋花汤.md",
+      "git_blob_sha1": "7621ad9af9c7e516c97bb2483c38c0da47cafb51",
+      "sha256": "bc35a936be14e19547afeca5b622d581b6fde40d12e43dd48267312a74d8b7d9",
+      "bytes": 984
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/皮蛋瘦肉粥.md",
+      "git_blob_sha1": "66d774a1394a5a13e107e7d15782e6f6d2366407",
+      "sha256": "63891f1f98f2ecc529e93c87eb3644a3d2756b2358b2c936dba7276dad342519",
+      "bytes": 1779
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/米粥.md",
+      "git_blob_sha1": "1f43ab0440cc98777cc3426dca7220ada267d8c7",
+      "sha256": "10f3fc0f2dc1e76af6df3dc75afa64a20bec38d9b2b7a1a17433f289e662730e",
+      "bytes": 1129
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/紫菜蛋花汤.md",
+      "git_blob_sha1": "c88f93a6e26d86400e18a2cecd7e1492114c6751",
+      "sha256": "929723d967632a8674b3fc8f8570134293cb0d8b6d8fa514c442540d2a794ebe",
+      "bytes": 894
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/罗宋汤.md",
+      "git_blob_sha1": "f26c66c0290c250fc5493f55171e104c74fcf2c0",
+      "sha256": "52ec5ef5ffee51a1e5ef5be5421693fb99b7957b3aac240c34b5e2fa862f106e",
+      "bytes": 1893
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/羊肉汤/羊肉汤.jpg",
+      "git_blob_sha1": "3fbb029ea8bc3fda78294e2df57de4214c6970d8",
+      "sha256": "d8db460796d333206593e69104d367370aeea53300c275758a296c449d798af5",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/羊肉汤/羊肉汤.md",
+      "git_blob_sha1": "ded9a40fda60e2d3c23b54bbb642ed72276ec020",
+      "sha256": "ac2c73136f3fb90b87e966fcd6f19470727923cc24689844b4fb4aff80a4144c",
+      "bytes": 1070
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/腊八粥.md",
+      "git_blob_sha1": "376b250e71f06d694e60cac6cb6b66ac70912894",
+      "sha256": "c3f127465480c130d9ab9cdec45c12348bed26572dcc90aa9dd9be504288ef03",
+      "bytes": 3368
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/菌菇炖乳鸽/菌菇炖乳鸽.jpg",
+      "git_blob_sha1": "e68e4ba7427300113d7e37653ba75fda1e87c2d9",
+      "sha256": "b8b1553998bf13f8a1bf4e244dcc2d10d695179745d746529c0fccc932d8ed6c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/菌菇炖乳鸽/菌菇炖乳鸽.md",
+      "git_blob_sha1": "195188cc8a458307f3ed94c9ddc0f5879d31f5c9",
+      "sha256": "7d6f3c9edf42bb07cf321a58629a16ea2615ee1f031f439a201109b98efda095",
+      "bytes": 837
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/西红柿鸡蛋汤.md",
+      "git_blob_sha1": "5bd3053b9952e2654a967ed5bc5184bad80f773c",
+      "sha256": "71e0243ad5b30bde4f8206efe6409450765b81d0c4610f326beb969328cdfa4a",
+      "bytes": 904
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/金针菇汤.md",
+      "git_blob_sha1": "c7c3a9e944114b048c2ccc412d9d52f0743d8d8b",
+      "sha256": "df0385d9bad4e395237cb6d60bf90ca2b8cc836d3e4452aac79856c07d898691",
+      "bytes": 808
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/银耳莲子粥/银耳莲子粥.md",
+      "git_blob_sha1": "f0b17f0970b372a52400d38e4705e2f75d508121",
+      "sha256": "c699447c91743cc25f821cd14bdbf6e13883d293e2c639483e145ddb438216d4",
+      "bytes": 1013
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/银耳莲子粥/银耳莲子粥.png",
+      "git_blob_sha1": "50ae837721fb4fb8cb95d1f18117a7fd40839e93",
+      "sha256": "0a1c9b360fbe9419dfb4a30a87ed7fd8c8b897d23c5c5eac8d32bae39e0d2a9e",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/陈皮排骨汤.md",
+      "git_blob_sha1": "efe45388b9ec522e7609ff0d1fcf64b33d7ac963",
+      "sha256": "afc3a11d796c55fb994e3af88caeb1768ef423dbc682abe189a46a45e6239035",
+      "bytes": 1240
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/陈皮排骨汤/陈皮排骨汤.jpg",
+      "git_blob_sha1": "71986a074a489646c6cb935b715bf233a1751889",
+      "sha256": "d4c6f1fde4a14e557c3ea1d044168bc644ff496553ef8ad0c5d4fcfc016d41d3",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/soup/陈皮排骨汤/陈皮排骨汤.md",
+      "git_blob_sha1": "f1c65936d32f5b8c4bfcd931ad42018a895d0819",
+      "sha256": "657e3e3c04a319b80b63bd019414a3c86eb59e14802e8755df28b784cfcd378b",
+      "bytes": 1280
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/中式馅饼/中式馅饼.md",
+      "git_blob_sha1": "b6f3152bcb8c89796ee1614dc16fbe7ffdcf9e66",
+      "sha256": "8a62707274d0815de59c6761b3d283af10ca6516a7feaeb2ed95e68fb26c96ce",
+      "bytes": 2026
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/凉粉/lf1.jpg",
+      "git_blob_sha1": "8b11bc71c38ba386e95f1dc9f69450cfce0683b6",
+      "sha256": "792ea70684a27da4dd42f00a0822f83d5326532a8784c7254e555bc91b5de34e",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/凉粉/lf10.jpg",
+      "git_blob_sha1": "d25a5b132b7d04643383fa27f43f05c057032353",
+      "sha256": "d247445b34f8ef46560c367077f3138e94ed086677ad0cc0a36237ee9a75cafb",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/凉粉/lf11.jpg",
+      "git_blob_sha1": "c8603ca8d19fb897c838554b830d453e1d8a3874",
+      "sha256": "4345ab3a0ba70605a918bd7576b679619c0b1cc3c6c39d8295e746d03ee3ebe5",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/凉粉/lf2.jpg",
+      "git_blob_sha1": "07f9a2b7f3c4182ef04336c2766b4924d3b63bca",
+      "sha256": "9bcc52b1fc148a8bbc10748183782c2147a2253670dad09ccb9948e30a7240d6",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/凉粉/lf3.jpg",
+      "git_blob_sha1": "2c082cf365aa723ea1c83b366448f7ac5d9ed8d6",
+      "sha256": "11a54a94a444f4162f1e90e4e7f029039ab660bf837735072daa6fc5dbcf74ce",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/凉粉/lf4.jpg",
+      "git_blob_sha1": "1e95eba8cf3421c9e104eeffac822e30cac585ff",
+      "sha256": "9f2b9a9840bd3896115563b5e3c4914bcee425be1183c051e12e72003266adda",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/凉粉/lf5.jpg",
+      "git_blob_sha1": "0b5b186c3125c848d8d63d4e69a57fe30636fc9c",
+      "sha256": "9db749d3cbe533c727d85564d82c3179677bf6e9bf61252670b2ef8499412344",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/凉粉/lf6.jpg",
+      "git_blob_sha1": "754bb1cbb984662a9fec6d15a2506562103f5ed2",
+      "sha256": "d085f280a7ce21586df510d077f3b49c1c72169fd5998d13b135c32a846ebd93",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/凉粉/lf7.jpg",
+      "git_blob_sha1": "605b2a2c90920f5b6a27b7d7dec9a9fe09d55b84",
+      "sha256": "fad4d32d7c581b13784a90f43cb5707571e7ec83b6c88cdf05bc99e4e990a7bf",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/凉粉/lf8.jpg",
+      "git_blob_sha1": "bcf52c5c9baba36ffc21d6eafc86c42a06e815d0",
+      "sha256": "6d390dafcfbbe4aad51a634aee86b8cca09a1c67e0775c169e86dec9147b320b",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/凉粉/lf9.jpg",
+      "git_blob_sha1": "5f9cc6327ce390b76a8330d31fa2f47952e46514",
+      "sha256": "0b37076314f36094e10195a1f60b442d2fdf2773f272f1668e37a815e9ce6412",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/凉粉/凉粉.md",
+      "git_blob_sha1": "c45e45997d6d93a436e54677210d6f90c83427b7",
+      "sha256": "c964371747a0e4b02ba42296bfcacb5e4de04bb22d37ac4fa7a1f5e1eea1e6a9",
+      "bytes": 1499
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/基础牛奶面包/1-1成品.jpg",
+      "git_blob_sha1": "31ee660b011b38df1914bad807d8fada12054e5e",
+      "sha256": "5d4187c24f6b8e41295879f18958909b6bb1efc84db662404df9a5c63e8e348a",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/基础牛奶面包/2-1设备简介1.jpg",
+      "git_blob_sha1": "06d1ab4e638e22a37d0717e06d16019d1e794f84",
+      "sha256": "a818ebe610d4ab24090345ecad3c313601f1c12c248ba001860c4acdae87ee34",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/基础牛奶面包/2-2设备简介2.jpg",
+      "git_blob_sha1": "02a25e7215123e0e665a056310828c0d9ac9de0b",
+      "sha256": "c6805314f4814275a45f7e723db9c03d61b6cfb22161e0f973dcdb3e5e87415d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/基础牛奶面包/4-1酵头1.jpg",
+      "git_blob_sha1": "43c035e9fbabc8bacfb0595ad6743d0c3f58303c",
+      "sha256": "8bb5ed02548bc7980b0c12b911bae4f3ad2040ca66ae7e4906b1525f66df6ac0",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/基础牛奶面包/4-2酵头2.jpg",
+      "git_blob_sha1": "508ae1d56b780c89544f47238038cc675449cb90",
+      "sha256": "fc847a737fc09284f131ba5f4bd18cfcb4943fde91cec34cd300c5e30432fc78",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/基础牛奶面包/4-3酵头3.jpg",
+      "git_blob_sha1": "b55200b0f17c50f6e5b2618c6fc5e39a20e99cf7",
+      "sha256": "6914fe00c26bd36fb868725a32245d3091c20f34e44933fe8a1a0b16c0f7a3a2",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/基础牛奶面包/4-4此时的面团.jpg",
+      "git_blob_sha1": "0e21bfa69a6ecee3a42c4405e653a961dfdeac6d",
+      "sha256": "5fe48bce379df2e4176570243b197b5935c97686c0df7d5648d4f3ffa0e7d118",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/基础牛奶面包/4-5转移到容器内.jpg",
+      "git_blob_sha1": "01cc9cf6f9b3e91c507c54f39410f1480637f493",
+      "sha256": "462c881ea0f49ed2198636df3c3e6d4f635736068ba4dda06313660e432dd282",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/基础牛奶面包/4-6成品面包.jpg",
+      "git_blob_sha1": "8ac52c401da044f7d04b6494bb584d34ca95907f",
+      "sha256": "5ff2522abe8e45821f10704c3fcf8a06d07176c7c871d9f5919fd9a1253b34a7",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/基础牛奶面包/5-1成品.jpg",
+      "git_blob_sha1": "a1875d0219ac27ca11b55aec7cef191b9a2db565",
+      "sha256": "20a5a4545ea3f52732ac1f796346cb728379fa71396e7416575fe0f2a0dda840",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/基础牛奶面包/基础牛奶面包.md",
+      "git_blob_sha1": "18addf403f2b4601a376df0509ae786b0ae01886",
+      "sha256": "2bd9eba6b944d1f0b9a2b23faef98cf4faa60728b136606828a4cfd1f3c20848",
+      "bytes": 11557
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/微波炉腊肠煲仔饭/微波炉腊肠煲仔饭.md",
+      "git_blob_sha1": "f18b9ccd43d0caa862c1098819e03315d89207e5",
+      "sha256": "236aa699aec4b5ad0520bd88e13e968ff938e3261a522060cba2430f605f75dd",
+      "bytes": 1535
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/微波炉腊肠煲仔饭/微波炉腊肠煲仔饭.png",
+      "git_blob_sha1": "a8fe3fa8d89d2b95c82e8206847224f4dbb25bcd",
+      "sha256": "8a2e31872fe469d4aea80235f65288df49e8c87dc1192ef79692ef889fd3c56b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/意式肉酱面/final.jpg",
+      "git_blob_sha1": "c6451e22715a0dbc21a9639d13700093cad36e98",
+      "sha256": "db1b9bb75e15b0df40e7fccb3c1852cc58baf235d3696a8b95cc6c1998de7140",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/意式肉酱面/sauce.jpg",
+      "git_blob_sha1": "51485271f7ee46141acd5f2cee9a7b1e2a6fd792",
+      "sha256": "e633ec3e714b7630bb95069153f64ebff0c0e5410578bdde3f78ecd72afe9892",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/意式肉酱面/spaghetti.jpg",
+      "git_blob_sha1": "5008e128a490459f745cb5b47292a03422f0361f",
+      "sha256": "220628f1308799bfc4e26fe5c6c7af319263e8b5248a429f60c5b7576a1a0474",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/意式肉酱面/意式肉酱面.md",
+      "git_blob_sha1": "7de10e10ade91ebf653103b58678337f459f25d0",
+      "sha256": "94d13f99a21db94fed8d0130befbdc2622654593f250f4c95eec5ed704d0c311",
+      "bytes": 1592
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/手工水饺.md",
+      "git_blob_sha1": "f48ef4fc0c76d50014545490b1715740c9be1498",
+      "sha256": "1d41a66d9d9ce5f3514469351748ee7e84faebb1af7d59d1676cdc6104dc4d79",
+      "bytes": 2994
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/扬州炒饭/veg.png",
+      "git_blob_sha1": "69fdeb7ca8ec51341d46dc84810e041f3448884a",
+      "sha256": "76147ca985a9447be2fbed46f380076cd26a0b9ad0d21e4fd3344dede4ce46ff",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/扬州炒饭/扬州炒饭.md",
+      "git_blob_sha1": "e9ca0da518650d1b4de24bdb30aaa1665a7fb02d",
+      "sha256": "6cd170971a27ccbc81d29de881cc989c3ba8fc384ba641a12b2e619915e57343",
+      "bytes": 2281
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/披萨饼皮/001.jpeg",
+      "git_blob_sha1": "9340c11a7c3c1c72c2424a7b6bf06bccdb70487e",
+      "sha256": "b5f06a4ee25337dcacbfb3b40b96fccce723095b38768b6d44f16ca84631dc5c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/披萨饼皮/披萨饼皮.md",
+      "git_blob_sha1": "c0862e967cdf03fa83ad82a007af8d41a8666132",
+      "sha256": "e11cb80b8b78e7f2a6542a95b7b8c1166fdc6d799c060d15373b06c738c13d79",
+      "bytes": 2559
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/日式咖喱饭/成品.jpg",
+      "git_blob_sha1": "004f462076088b6f4e89d25156dc2402650afa2e",
+      "sha256": "8be17af298611773761000c204e9832f74a3ca21afac34e30c8ab7dbb4551212",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/日式咖喱饭/日式咖喱饭.md",
+      "git_blob_sha1": "689d559a59613636e920939d4c5a84a236bb5a8f",
+      "sha256": "1b924c4b0453da339ba306f01f074d393c4ce5048591662affea9ae6fe74a4dd",
+      "bytes": 2297
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/日式肥牛丼饭/成品.png",
+      "git_blob_sha1": "8db9695d742827bf4fe62f65260a4ed456a817b1",
+      "sha256": "836e346b8e279ef6158f7f0b2d3adac20bad7362bfe415bdef2f218fbcb5c9fe",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/日式肥牛丼饭/日式肥牛丼饭.md",
+      "git_blob_sha1": "49469db237fb1c71ac20a9a3a4028c083a591bb1",
+      "sha256": "72785faab1e97486395bd0bf097d0277cbf19fb936eec4fdf62fe7c5877067a1",
+      "bytes": 2992
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/汤面.md",
+      "git_blob_sha1": "599bf4f51c9ee79483026bf0e470604dd1d9f34f",
+      "sha256": "e7955987858f447e270a9dfbaed7d1f061889b8ced2c393801c158b00d39050b",
+      "bytes": 1985
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/河南蒸面条/河南蒸面条.md",
+      "git_blob_sha1": "de929a41c79d2cd06d1ca94a054821c92f9dc66d",
+      "sha256": "a187d8e8a9a965db2e515d505c23a0589c2b3ff71158542803124a5bcd33fa5d",
+      "bytes": 2214
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/河南蒸面条/河南蒸面条.png",
+      "git_blob_sha1": "a451e25d1d07963a4f8fd214ff3c1d2a1ff178a0",
+      "sha256": "437bcf23f86256eb5b32df9104e63db645fbb48b1eed1dcee06bc569a19e2af0",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/火腿饭团/火腿饭团.md",
+      "git_blob_sha1": "73df8bb6b73809025d862576f43d067d6cad4e88",
+      "sha256": "16b60e7a7065fcd8f24d4000f205a3b987c6617def2ee53fc3dba732e3600f4d",
+      "bytes": 1211
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/火腿饭团/饭团.png",
+      "git_blob_sha1": "cb67987cdee0d7dbbaa3474b992127e9ab90f6c7",
+      "sha256": "623b3b72c9867c1739c3a3ed3bbe18e22b71cad78510d2c374602efb653057c0",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/炒凉粉/chaoliangfen.jpg",
+      "git_blob_sha1": "5c40f0024f27f1245a0b8ecd11c724e68e35db84",
+      "sha256": "713e325ce4c4f2fdc550c3078f22b28966ca7385338387c94458d463358b6b94",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/炒凉粉/炒凉粉.md",
+      "git_blob_sha1": "7a1f89374b2e707f0e93b79e872f884e2c35f5f1",
+      "sha256": "346afaffb81184e605fa0338de64aea23b198e161714b63101b312dfe3e2fe3b",
+      "bytes": 1235
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/炒凉粉/炒凉粉成品.jpg",
+      "git_blob_sha1": "5c40f0024f27f1245a0b8ecd11c724e68e35db84",
+      "sha256": "713e325ce4c4f2fdc550c3078f22b28966ca7385338387c94458d463358b6b94",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/炒年糕.md",
+      "git_blob_sha1": "9d226ab783c6efba8edc1a55ce2d954c62e7c378",
+      "sha256": "7b62955e1aa6568ae50f663fd089ac240e1ab12cb790545f739a6917cfb63b52",
+      "bytes": 1494
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/炒意大利面/a.jpg",
+      "git_blob_sha1": "8939bc5f1afddd4dbf2373b4faebbc94f890a986",
+      "sha256": "13a0dcf28049785e7c1e1c0c83f7d1c37f95a7e04ef108841d0f5ab85b6429c6",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/炒意大利面/炒意大利面.md",
+      "git_blob_sha1": "15c836f9aedd24efa502f6293c75dedd1001dbdd",
+      "sha256": "5292522e40cbb4bae7c390c76c37484e5bc95696bfcd2c1fd9454505ff84cc29",
+      "bytes": 860
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/炒方便面.md",
+      "git_blob_sha1": "7acdb59470e2d3b47155d0671ecd32015c076a6b",
+      "sha256": "e7da9f62b721323499bf0123051d54dafa3f627e48f0c8c31113a3e97dbd755f",
+      "bytes": 2045
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/炒河粉.md",
+      "git_blob_sha1": "12bd0deadc074da08b8c9224e3161a2282d0533a",
+      "sha256": "06803cf4996a68b30aa5c6d639d20e8975b142254758eebb59eb16ec22ad5d0a",
+      "bytes": 2392
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/炒馍.md",
+      "git_blob_sha1": "6c42a46cf06b051f094f5b72d41f3b443550d6aa",
+      "sha256": "fc222a21e0d4da39e1a53dcdaac17b683c8a019b51f6ecf406ccd3b5813b423f",
+      "bytes": 1444
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/炸酱面.md",
+      "git_blob_sha1": "ea99150a75a6700ff0bc27266f15cd26051bd052",
+      "sha256": "54fc920414c13349ac146e00eb89f6db8cc414be7ab40c511d78a02530d0add4",
+      "bytes": 1378
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/烙饼/成品.jpg",
+      "git_blob_sha1": "6152a82527c511acfa4662b85c5c582d8f6f3772",
+      "sha256": "3732d9f0b62e4c4e900c63d8dcff882f0f59c47a2db65470edffe8d8b43104bd",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/烙饼/烙饼.md",
+      "git_blob_sha1": "42b7327b837f693256d555fe277019a3741c0b3f",
+      "sha256": "5964e5eed5df5be55ab856e6982a94c30c17782af07efe399aa7906070998b6f",
+      "bytes": 1335
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/烧饼/芝麻烧饼.jpg",
+      "git_blob_sha1": "8885f25bf2cd116fba52afbee11d811f367c3d52",
+      "sha256": "383af91a8bc1ba0d7519ec3801851885807428df3ca565814816d5ef82f0870c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/烧饼/芝麻烧饼.md",
+      "git_blob_sha1": "140b3123ed19a50a3d8efb3330f2ec382468c062",
+      "sha256": "1bcf371950c2b0f284dc021d25c49b18cb07dd4521902f1963e81b53fbe0bbe3",
+      "bytes": 998
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/热干面.md",
+      "git_blob_sha1": "928431e52760a7d34030428055f989d436f2df1b",
+      "sha256": "5b1d623319d6b541be8bbb5b468afe7009e7339cba05073981f5dbc9bc916a8a",
+      "bytes": 830
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/煮泡面加蛋.md",
+      "git_blob_sha1": "c0b7c06a4ff8ce47ecbe74f8d1913c86f3ada158",
+      "sha256": "a0ebb12903e642a71e0cef8d2516e2086dc70ad533c3c9859d5caf01ab223462",
+      "bytes": 1129
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/电饭煲三文鱼炊饭/电饭煲三文鱼炊饭.md",
+      "git_blob_sha1": "5546c9789cd07f4db2f5a95e3e2ee0d9bc1c4e72",
+      "sha256": "6948721c88669342570f2e4438977e4ebbdad1f77602d1ef19ea291566f2ff13",
+      "bytes": 665
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/电饭煲三文鱼炊饭/电饭煲三文鱼炊饭.webp",
+      "git_blob_sha1": "30c1d3035658bd8bc65f41a12b9e976ec2a4138a",
+      "sha256": "742ad5e242dd6d8fd3d190906f650d2a25d7ceca6ba4478c15617b0bf4bb68aa",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/空气炸锅照烧鸡饭/空气炸锅照烧鸡饭.jpg",
+      "git_blob_sha1": "bef88c58d285f83d59cc5c240f16c59f4cf7ea52",
+      "sha256": "9d4ea34936a5c2aedc940cb4f2a4034b1a57769d0af3f9c14a185e72d894d31a",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/空气炸锅照烧鸡饭/空气炸锅照烧鸡饭.md",
+      "git_blob_sha1": "94151c6006ebc71b757208322a0ca9402893ad48",
+      "sha256": "dcaf29fc3ccb71f6da7671b44f1011911624927acf34262d3643a91224e617c7",
+      "bytes": 1187
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/米饭/rice_regularPot.jpeg",
+      "git_blob_sha1": "e0f7b62b7714d29b70ffecfb328b71dcb1fe0ae5",
+      "sha256": "a3055cdbf3c8944c6c73fed992609939dca0f475f0b8ee5544ddb294579d9be9",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/米饭/煮锅蒸米饭.md",
+      "git_blob_sha1": "17878dc73f1280231052a10dd25fca0304edf703",
+      "sha256": "c3a4298bf21bab91171a23a28477f728d1b988638a51c9286d47b183d8103e37",
+      "bytes": 681
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/米饭/电饭煲蒸米饭.md",
+      "git_blob_sha1": "75f26d8cbf4f29b736fb670705d74453f19b1975",
+      "sha256": "dc66eb8d50bed60ef8c848f978516a311b77f7fe5af14c9e5cda76ff89fb1294",
+      "bytes": 1333
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/老友猪肉粉/老友猪肉粉.jpg",
+      "git_blob_sha1": "05ba3be231f1874114866cc507d45e0a64c95c8a",
+      "sha256": "a1940b84701aa023c72629261023d7d10707e1800542c9513e7c997f972682d7",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/老友猪肉粉/老友猪肉粉.md",
+      "git_blob_sha1": "75f9e4a11d4fc4f358394a927e3e05498e0109b7",
+      "sha256": "e397d0392f2c567be66bd6bf31e72d53ba28fb03e3d73f6845425b57f668df6d",
+      "bytes": 1242
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/老干妈拌面.md",
+      "git_blob_sha1": "4b34cbedd171d68ec78554afe7cda8efa098ee5e",
+      "sha256": "b3681e102563176e63e18e96aa4d3ae7b5610d11f15e3e7d28431859cf6bf2ce",
+      "bytes": 655
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/肉蛋盖饭.md",
+      "git_blob_sha1": "3ed2951af0ab48355677d3d545e9a86cc5e437ed",
+      "sha256": "3ff0a4bb868acdf3dcba5805a3088cff9684413267318786882eb815ca9720f9",
+      "bytes": 1060
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/茄子肉煎饼/1茄片肉片.jpg",
+      "git_blob_sha1": "583ac9dc932d2723038c30ae61b26f32b1015df3",
+      "sha256": "895fdf8578b1e5338a823d1d0bee072d071ff0e1e85ccc3d3ad4dabd3bf26b35",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/茄子肉煎饼/2米粉250g.jpg",
+      "git_blob_sha1": "646d76b3762780184f2dfaeccca3f35faaf6bc71",
+      "sha256": "9b01abf50d961dfc7b48d200d31c7d899896e050d3dcb4951f764db319e4f9b9",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/茄子肉煎饼/3米粉面粉鸡蛋.jpg",
+      "git_blob_sha1": "0ecd95ff0d84c1b7c2b15b36446b65822bbf06d6",
+      "sha256": "153f9f7e065300aa2f6daad09b0ebc5ed1bee7bc34057110c528cbb1326bac2b",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/茄子肉煎饼/4混合.jpg",
+      "git_blob_sha1": "34f811081633af3a55c6cb60b08d855424160525",
+      "sha256": "888cd71dd28b40ab127ff97a02f14d83f891c170da74bc9b5d1b123da872b066",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/茄子肉煎饼/5起锅烧油.jpg",
+      "git_blob_sha1": "af9b7aa8089f47c370935f51f2836abd1d5cd5f7",
+      "sha256": "2c1c964f7b270fbd844884e0a8e7125ea64ada8bad588f2108b2e29404de6633",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/茄子肉煎饼/6开始煎.jpg",
+      "git_blob_sha1": "d90b1e073d3a89a57d864fbeec3f36bd3cfbfbe8",
+      "sha256": "673ccb2c41022f3a771bb310e5026532cf1314e351b84f01f2099952f3010915",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/茄子肉煎饼/7撒盐准备起锅.jpg",
+      "git_blob_sha1": "3f25a3d9369416fa1024516d0cfa58c6f7410a80",
+      "sha256": "7a45e220826c7ecc6e4ece3119554dd139fb4de8adf2ee59195057445c181dd4",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/茄子肉煎饼/茄子肉煎饼.jpg",
+      "git_blob_sha1": "ce8ec3cd4a1a669c4fce842c6e95b8eb142c78a8",
+      "sha256": "4b667e9146d00b734d4e5a089b25f494dd666a8c10184c1f71b73053eafa6b30",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/茄子肉煎饼/茄子肉煎饼.md",
+      "git_blob_sha1": "42f41b5ea196beb94a5fa76a07776df3fc3a807b",
+      "sha256": "b881d2c687e1e7dcbd0002931da27b769f1f3114d932e15a87e54da7bbb90f6b",
+      "bytes": 1544
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/葱油拌面.md",
+      "git_blob_sha1": "4ed8b20560a6c04ef66f5740495d68740714cf6f",
+      "sha256": "91ff212523d0567d3a01c924b445e1db35806673d20baa9695ffe937709c7173",
+      "bytes": 2119
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/蒸卤面.md",
+      "git_blob_sha1": "0130133be9e66178463e696cb2dee2e60777473d",
+      "sha256": "00224cc9368d6660da024872307343e6bca15237958fa077ca5ba40d83244016",
+      "bytes": 2624
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/蛋包饭.md",
+      "git_blob_sha1": "91367701484cc379faf95c5e52bf93820421ca3d",
+      "sha256": "c3182181f9a56940a3fd4a4b397fab7522bb037e262a1e044bf1a67c99d9da00",
+      "bytes": 1816
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/蛋炒饭.md",
+      "git_blob_sha1": "50285b9c5b199dc4ba3631c7fda4e3fed1d9d821",
+      "sha256": "26f3499f623e01a955f788dfd9841b63cf03a7efb0dfbf79d946c76abf146c4e",
+      "bytes": 2216
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/螺蛳粉.md",
+      "git_blob_sha1": "8c582ae1a69e395246be31f3dda9761967cef0e0",
+      "sha256": "8948a72f8e132eadbe9a8e3a1c738540de3a1277eddce9480717720951a81905",
+      "bytes": 1277
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/西红柿鸡蛋挂面/food.jpg",
+      "git_blob_sha1": "6cef5b8fa688e4813210c82d60adaa2270d86083",
+      "sha256": "9a9ac96599efeab65cf10cdd5c3cbaf5c011b35282412d87a8ca6cd3536820d9",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/西红柿鸡蛋挂面/fryEgg.jpg",
+      "git_blob_sha1": "0a0ca755053da04fcaab93dc5bf333b23b27d593",
+      "sha256": "ed01a3b3f4b580c60a8cce3bbb5838fec08c7db955643f369ab5f2da275fa9e1",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/西红柿鸡蛋挂面/pretreatFood.jpg",
+      "git_blob_sha1": "c0b7724ed99a4fc1bc2c7219b5b327c7792c801e",
+      "sha256": "54513e19e9963c1ddef15fdd23aff657ddf7903ff2c1010ddfcd8a473a658322",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/西红柿鸡蛋挂面/tomato.jpg",
+      "git_blob_sha1": "ad1bcebdaeb280db71b5234b8d09d5ab9a5df1f2",
+      "sha256": "289d4829f6daab5e7c0cc66980e4fc59731e05c476dcb6098dabdf3cc7a44c62",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/西红柿鸡蛋挂面/tomatoNoodle.jpg",
+      "git_blob_sha1": "59ddaf28fe4270bbb187c7c705682a6360d25103",
+      "sha256": "ea3b51f8e3caf917d991c6819f90e6a96144d063a244f9c1828c4b5e8c4cad77",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/西红柿鸡蛋挂面/西红柿鸡蛋挂面.md",
+      "git_blob_sha1": "55be131d0ba41ab860a4dbc4d6262c5f27208789",
+      "sha256": "932d712baed28c509392b0a63cee8764baedeea718d5812ab8bcb5ce7c46112d",
+      "bytes": 3139
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/豆角焖面/豆角焖面.md",
+      "git_blob_sha1": "5dd32e878f9916286c47774057d5a7869de755fc",
+      "sha256": "35c3b24d448afe5f71c92a6c4c56d9a4034e1705493092f0e7d05f6869c38c6c",
+      "bytes": 3024
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/酱拌荞麦面/1.jpeg",
+      "git_blob_sha1": "39e3292d8a4feb1cf2f2466af73e4b383f0a3821",
+      "sha256": "b4f977709ac79dc445f6b3bb2bd06f72434d8dee4cbfeb82743f8cdc5544be04",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/酱拌荞麦面/2.jpeg",
+      "git_blob_sha1": "0fdc8165ad243861760e5865d9acc3770a23a682",
+      "sha256": "1288d975e4efadfab19416a9f41a99ec8e2e878006b62084c7aeed848b74a9b6",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/酱拌荞麦面/酱拌荞麦面.md",
+      "git_blob_sha1": "d436e7527bb8280899b2287ec86f6e99288635d4",
+      "sha256": "e045ce89cac8642c2a422a487605cda750d55e52dca0590e5adad1aef4f96676",
+      "bytes": 813
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/酸辣蕨根粉.md",
+      "git_blob_sha1": "d60ac1734508c60cf9616b750775072cbc95dd68",
+      "sha256": "d67c5fc62aebf906811a2cbf3dd683fb006085089ca7e46169472a16b63fc588",
+      "bytes": 1636
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/醪糟小汤圆.md",
+      "git_blob_sha1": "1914cbc0b3cb688eb09e18fe10e08828c884d806",
+      "sha256": "d074a217ce85d0e1342612032b08409f220b96f6f5043365416845c1730786b2",
+      "bytes": 716
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/韩式拌饭/韩式拌饭.md",
+      "git_blob_sha1": "61dad16df1f94b71e3d7d59fa0191ca7aca322ab",
+      "sha256": "7caed3249d16867ac9b1abe53a5b001ff8b87d3c9c19971d649ba2afd1f42a26",
+      "bytes": 1296
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/韩式拌饭/韩式拌饭.png",
+      "git_blob_sha1": "af23b43a5471c2cf3996052c4d156f69e2d4a92d",
+      "sha256": "738e8181fd436880545f1494cf0bbdaf566caefe21e7ca10751750598fcf7cf0",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/韭菜盒子.md",
+      "git_blob_sha1": "4e86b53e1b2f762f0e577d7f9ff66bad3799a977",
+      "sha256": "8cff7bf54e1da781e1ea73a0d2b95207b5153545026cd97f4a92e50e6cf47897",
+      "bytes": 1001
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/鲣鱼海苔玉米饭/米饭.jpg",
+      "git_blob_sha1": "c3f9395c2051b5ece828a0fec20d5260837e47ef",
+      "sha256": "0ac028406b12fd83e788048f51eb215dcc274a07afd7fb39d9759b41fc850ac9",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/鲣鱼海苔玉米饭/鲣鱼海苔玉米饭.md",
+      "git_blob_sha1": "d7e0aae8a3d563df154187c3a8f1c0bbc39b468f",
+      "sha256": "f2f448cf3f7ca862d49aec8a828bfcdf1ff4a65c11def9f7dd9fd9dbb45426f4",
+      "bytes": 889
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/麻油拌面.md",
+      "git_blob_sha1": "3cec873e6b36e804a565688efa21817333f600fe",
+      "sha256": "6ee71826604b3ae3dbc9711d13876b7e7ad077050fcadad86e7de46e478ba7b9",
+      "bytes": 1206
+    },
+    {
+      "path": "data/C8/cook/dishes/staple/麻辣减脂荞麦面.md",
+      "git_blob_sha1": "0a88169e61414973f7734e26e06bfd4a48640731",
+      "sha256": "b94f7a52efbd673b91c6b7da22f7e2ec674609152e8cf505541ecb82524913ca",
+      "bytes": 1624
+    },
+    {
+      "path": "data/C8/cook/dishes/template/示例菜/示例菜.jpg",
+      "git_blob_sha1": "004f462076088b6f4e89d25156dc2402650afa2e",
+      "sha256": "8be17af298611773761000c204e9832f74a3ca21afac34e30c8ab7dbb4551212",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/template/示例菜/示例菜.md",
+      "git_blob_sha1": "217d2ca7e5fd2d2cacb8377f52eaf64df367a372",
+      "sha256": "13a0ada7b971acf70b31b33ac77b34ad65a86f4bb97bb158e3103c540a499533",
+      "bytes": 4963
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/上汤娃娃菜/上汤娃娃菜.md",
+      "git_blob_sha1": "1722f45a0e02f957f6b45cd7b4a6518a8813b0b1",
+      "sha256": "a6a259fc00bfeab20821980b39e457ab78a9b43152fe92ec81c14c8d1cb78ac5",
+      "bytes": 1259
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/上汤娃娃菜/上汤娃娃菜.png",
+      "git_blob_sha1": "cb17b407e0bb308981d6f3c88062e69d6874e557",
+      "sha256": "6909235a993e285e9f54ac875a485d517d44f7b218f5adaf3548cd84af146953",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌木耳/1.jpg",
+      "git_blob_sha1": "520ce424736a653a0cc7dbcff413b5a850cf43e5",
+      "sha256": "589500bde253d841458fbe234973e8d4d86338cb12f113bffca1279772c5d339",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌木耳/10.jpg",
+      "git_blob_sha1": "4437fb653f449bd31582b0df2e9bc26ec3fab36d",
+      "sha256": "0de3ee89622a31ec9c85d891eeb547aa2997f34c62af603df89e32b2c056ecc0",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌木耳/2.jpg",
+      "git_blob_sha1": "504d2e38998023f64c36a17cf4ea66471f336cf0",
+      "sha256": "8f5e5325ca5000086ff0810df7a06e5c1001c9335940b16429b22f1f519a4b9f",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌木耳/3.jpg",
+      "git_blob_sha1": "cd817d3f23963ef1a5eb5a5095dc7e46908351cc",
+      "sha256": "afa1ae61fed5f1d73f4e35d103073668acc0c68235468f4cd2a68abdac0d6123",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌木耳/4.jpg",
+      "git_blob_sha1": "2bfd93bb51ce4aedb2cfad6ae65f2da6c2b0cce4",
+      "sha256": "356b320f5d59213ed346933940f610e7593cf3ab7ae10251fd7f39c637e6d076",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌木耳/5.jpg",
+      "git_blob_sha1": "a9e4b5105d4465501a00448b0202fb1450e707c9",
+      "sha256": "7a4b426bc0edd1e25e692839fc817ed876070eea73cd5d60d50ae000a36284e5",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌木耳/6.jpg",
+      "git_blob_sha1": "d2b1426ebf2b532c2ab2eb6f415b9952e7838ab5",
+      "sha256": "2b5a0cb75fbbaf1611f279af4f662f9ca132772b757bc4900792f0a3213a13e5",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌木耳/7.jpg",
+      "git_blob_sha1": "1a6e17c067f1610ada52efc2f9a73c7d29959762",
+      "sha256": "588deca79bf6ce529479b34e74d3d0491f2cd3c0915c808f98021e1a407bc143",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌木耳/8.jpg",
+      "git_blob_sha1": "51f29c838dfce2861071c27503aeb3fc1e7fbcdf",
+      "sha256": "8e54945e662e0fdf10357e914000823b5e9f491c64667e62e96f660b418132a3",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌木耳/9.jpg",
+      "git_blob_sha1": "89d6c5135f6a547cd9b491d2427600caa6222dc8",
+      "sha256": "d395dc6bb8256bc0a3476de919c6d1d8110a8f3f93ee0fb3c4252d705f9d575f",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌木耳/凉拌木耳.md",
+      "git_blob_sha1": "62290fde72647896056f7eb3fb60adaadce5cbfb",
+      "sha256": "d3ee63df6278d201ecafc7859b04b134cda805e58d78374338266c49d061d5bf",
+      "bytes": 1487
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌油麦菜.md",
+      "git_blob_sha1": "c5cca168103f89352e24d3e7acc366bd56ebc090",
+      "sha256": "04a41eb5554ef4a3a09c51f50eb67f6f78fc4c0436af4c8c4be86edd4ff69a7f",
+      "bytes": 806
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌莴笋/1.jpeg",
+      "git_blob_sha1": "2298807c27588a15f79efd77e212a2d9d565a554",
+      "sha256": "144d9db8415bb361825450f64d76addce0cae1f26f2fc7a97717d94b98d6eb7d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌莴笋/凉拌莴笋.md",
+      "git_blob_sha1": "5faaa6eba75f8bb76d162f7fb34a36812b0fcccb",
+      "sha256": "3bf5c5be431123c0e6fb4adeeed97979d76da02b8234869ede1da7b2da5eb6f6",
+      "bytes": 961
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌豆腐.md",
+      "git_blob_sha1": "6afe979b2c8b38e1832e97997e26255c36ddc7d9",
+      "sha256": "306199ededb872fe596c5c9636bc414244350d35c64ad487a25cf48e6b00fe53",
+      "bytes": 1773
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌金针菇.md",
+      "git_blob_sha1": "d469d5505a05c47812e4748c05ff5f53c5f3fbdf",
+      "sha256": "42a6b7a2f5f01f2229a7a168a72f1a745585b5ced03bb684c422f89a7fd5247f",
+      "bytes": 1690
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/凉拌黄瓜.md",
+      "git_blob_sha1": "47ff5023c5854e1148eabe62df3d03853190efd4",
+      "sha256": "de111e8845f5079356f436fd5240a487f895b4ef0cd3ebee72e5cc175a7a093d",
+      "bytes": 999
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/包菜炒鸡蛋粉丝/1.jpg",
+      "git_blob_sha1": "d2f924bf72ff2e2d579c8b16af28da5d317da29d",
+      "sha256": "3a3a64277aa22486be128c29f87d3531f5298be43b357ad929a0bdc9ff13aabc",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/包菜炒鸡蛋粉丝/包菜炒鸡蛋粉丝.md",
+      "git_blob_sha1": "7274758570859ad2ac041dbe0210d8524e8780fd",
+      "sha256": "920081482affbc193447501a5f7067ff816634dc3daca53bb46ca26741fab6c2",
+      "bytes": 1075
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/地三鲜.md",
+      "git_blob_sha1": "4f38275dc71843a6a9a173b5e7af5abaee551671",
+      "sha256": "f90ec8402360a1500514c0d6c472fffdd563f69959332e0ae0e248e4ef8f6a45",
+      "bytes": 1171
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/小炒藕丁/小炒藕丁.jpg",
+      "git_blob_sha1": "0e2357c09ded8ff0c44ae421c305c8d9e3fe86b4",
+      "sha256": "3604dacaf665e7bd30682c2b82526d737992862fedc406fa1347d5a0339b172d",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/小炒藕丁/小炒藕丁.md",
+      "git_blob_sha1": "3890090f0d2e6100241f6eaee2a34252f66cf9aa",
+      "sha256": "ea8c498f62e8d39e9ecbf91fceb2927307ffb4bcc4b2e66e7485b6306a681be6",
+      "bytes": 1236
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/干锅花菜/干锅花菜.jpg",
+      "git_blob_sha1": "1588b25d483657c684932ca5f9f8408e1932a621",
+      "sha256": "4d651a1d1c98c6738a742aeafb55f73d626d882d05ff867a5768b5c0cb0e8155",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/干锅花菜/干锅花菜.md",
+      "git_blob_sha1": "bb4493b185f0d7f373fc9c1700038873889cee89",
+      "sha256": "a0bc8c92805da0b85280d01bbdc4c26f607a1cbb7439c0534bd7b3d49122a514",
+      "bytes": 1070
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/手撕包菜/1.jpeg",
+      "git_blob_sha1": "6f8472a5c22beffdc0576fca83a5e6242ff780bc",
+      "sha256": "8ed973ab5c44b8b190443df77975c284d2175d8e9b5c51628c95b38e67659a47",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/手撕包菜/2.jpeg",
+      "git_blob_sha1": "e8e3fe24f14f11bff8b28021fec3ee9b6e8fca15",
+      "sha256": "1fcf72822a7ccecf24597e295d36613611467bfd2e40e4b0c5b95b99c401238c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/手撕包菜/3.jpeg",
+      "git_blob_sha1": "da686aef015db75aea0a4a70513bd19666269e87",
+      "sha256": "1fd1cc7b850df26ab51cd53b25e94c0dd0a3c7931d72dc28153db9043f9bf9ee",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/手撕包菜/4.jpeg",
+      "git_blob_sha1": "b5dd844fe3ff487059b23c4b11e5f1db397b93f2",
+      "sha256": "037236585642f9f2e61d972257ea61d50e5d861003b3a89ac982ed0d39dff1e5",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/手撕包菜/手撕包菜.md",
+      "git_blob_sha1": "1f1c1792f00ef92f1320cfbb21aee1ef5ff4c9df",
+      "sha256": "33bb1333fd90c0c2b3f5f663f0f7aedcee2ccc36267509c86c59bf4f238ce22e",
+      "bytes": 1564
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/拔丝土豆/1.jpeg",
+      "git_blob_sha1": "46f4ea1b8b4727ebd497ad12fd795cb11594d2c5",
+      "sha256": "42aea9397592847e0e79965db20199ac673befd6876765f7b66381929c9b3633",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/拔丝土豆/2.jpeg",
+      "git_blob_sha1": "74c40101b9c071cf20f01fb9e7c2a3da61076e5e",
+      "sha256": "e5272568a2dc0dba08f2e8e8f2c4adef02775ab0f59a310c71fbeb2ba701319c",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/拔丝土豆/3.jpeg",
+      "git_blob_sha1": "1a9fd9944f5517da4178578856a05e85dd67230c",
+      "sha256": "6d43a16c313975a480b9c9729a7c9a9b1d526216133d74d92de7a1c873d422a1",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/拔丝土豆/4.jpeg",
+      "git_blob_sha1": "ed87fd5578653a9085365b9dde67d5b9266d8de4",
+      "sha256": "027493608164e8c9635a4d2801685af0cd4793c57570623b524d18e70dc6419f",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/拔丝土豆/拔丝土豆.md",
+      "git_blob_sha1": "a6ecfb9ff5239a2c8211a64440ff45de2c9db86d",
+      "sha256": "c480d712961bc97269f0bfa7222335d13ab0ad9d6ef612068a4971a7ab8b89ac",
+      "bytes": 1198
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/松仁玉米.md",
+      "git_blob_sha1": "99f359481f3ce63b66c3756d7270e2425c62bb86",
+      "sha256": "8456df0d5f7af85aa38d16356fb6fdecb5eac63573c1862bfa20e7624e3d7370",
+      "bytes": 1099
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/椒盐玉米/椒盐玉米.jpeg",
+      "git_blob_sha1": "b29c532fd88846efc82a963793ae495b517684b2",
+      "sha256": "b06754f0a739280fc651d8704e2f14a8ca843e9fca60832f1f00396c38098330",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/椒盐玉米/椒盐玉米.md",
+      "git_blob_sha1": "15b8d83786e9685e8533df5ed83eb2203d89681f",
+      "sha256": "46bd9fdb8a03b054b4849385a773d79fd55bc0a1d393c461b790d6d131845350",
+      "bytes": 1648
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/榄菜肉末四季豆/榄菜肉末四季豆.JPG",
+      "git_blob_sha1": "8dec8c9eb3166447112841d0a12346f3dce0d5bc",
+      "sha256": "b867a2e710e64b049e6d0ec983821b084f4a6b25e4594bac59a91e61ee0fb3bf",
+      "bytes": 389996
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/榄菜肉末四季豆/榄菜肉末四季豆.md",
+      "git_blob_sha1": "7d0a40a64d99212bf96f1528ab78f62fd02415c6",
+      "sha256": "9ee654fd2f9e140c3065d5e296e9258436766626bc82ff244ba0971eeaf857ec",
+      "bytes": 1293
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/水油焖蔬菜.md",
+      "git_blob_sha1": "c9bb4d3f692cc05dd0f2dff552d043c23f119f32",
+      "sha256": "2b66a0d7a1ae68de4507d627efadfa47e5cf81962b3aa1c3d82a1e862ddb75d9",
+      "bytes": 873
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/油醋爆蛋.md",
+      "git_blob_sha1": "d8157f06f407b7b22b6c35daa663a80fa78b3834",
+      "sha256": "68a9ef40b4a35df0f317acd335829a895cdd6c3e9c61b85e5c0fa96f5dfd86ac",
+      "bytes": 974
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/洋葱炒鸡蛋/1.jpeg",
+      "git_blob_sha1": "88f8784159907af864989928c1ccb29e59937ead",
+      "sha256": "9f9ff1c9c03b38678204b69b561b2c1b5a93afa64c0063daaf7988084dfdaf58",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/洋葱炒鸡蛋/洋葱炒鸡蛋.md",
+      "git_blob_sha1": "3c961feb2eb8d8b91e035c2fc1be25f1c3014ac7",
+      "sha256": "7a4946b4516e90315340f9e03ccf85edbf4c58da44b5a0cb8f3295577d30bedb",
+      "bytes": 580
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/清炒花菜.md",
+      "git_blob_sha1": "ae7cdb435d1b9a57446b12147d94696f1f1c67df",
+      "sha256": "950889a48c1a2e68168cc227fdfd21eff81023a16c4c74f0b5c3b81f82fd7d47",
+      "bytes": 1502
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/清蒸南瓜.md",
+      "git_blob_sha1": "3b580d9cdf055c846c0cbc03dba95153af476be7",
+      "sha256": "419a4c305e2b5ff4cbd4a38d49506b73e12c763dfd0868b27b5254d05a8584d4",
+      "bytes": 1264
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/炒滑蛋/炒滑蛋.jpg",
+      "git_blob_sha1": "70b390b5a719a17204ba8a69d2bfb4a47871a7aa",
+      "sha256": "9b6517f105b35bcfbf38d4490973914a45552d4444f3948f715ed4b048f3f276",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/炒滑蛋/炒滑蛋.md",
+      "git_blob_sha1": "cd493bce29574862e073af05569fb5c84ac55fe4",
+      "sha256": "dfaad78dc011aa2c334488ac6a229da574b740a0bf841765dfd8aaa66bfe59c3",
+      "bytes": 781
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/炒茄子.md",
+      "git_blob_sha1": "d26390cedc633cf23e813c9d0d245946ca5fd4f0",
+      "sha256": "95d12756f59c334b95b59fe1a1a4d846c400a70652b752058a65f2e5105635ff",
+      "bytes": 1872
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/炒青菜.md",
+      "git_blob_sha1": "a69720569e49a90fa6d8220d210c33aceb4b4954",
+      "sha256": "93b9a27dad442afc33c092171ffb07ce8afd7daa2aadb1e5afd5c6ef461e4481",
+      "bytes": 895
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/烤茄子/烤茄子.jpg",
+      "git_blob_sha1": "f026db8c388298b4ffd0dd7f0ac5f785bf448fff",
+      "sha256": "485ba3d11405750d1b7f53dd5cc33f421ba0469272590856642c9d1caff6d34f",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/烤茄子/烤茄子.md",
+      "git_blob_sha1": "2fb28a854baed43e54fb3992c136d4efb0339773",
+      "sha256": "d34419d142fb2581964e030c641b379afa9f3e7f91602d5d0dd162ff2f2763fd",
+      "bytes": 1598
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/白灼菜心/白灼菜心.jpg",
+      "git_blob_sha1": "a29b6c9ffde39909d610a7822fbeb02821bfe05a",
+      "sha256": "3c8f148502349353b847a372f466a8b3e66d7c53dfb39cafe3a0959376393d5f",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/白灼菜心/白灼菜心.md",
+      "git_blob_sha1": "e25cb398d5b8bd0b4a85b423e7763ec50dfde0ba",
+      "sha256": "fdd52835ee1490b7dae76ad4aa65ff16ce44728f25c93f7d675928644d3558b7",
+      "bytes": 2101
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/糖拌西红柿/火山飘雪.jpg",
+      "git_blob_sha1": "c189b5493250da1e97a5ef9fca19410f94e2d33f",
+      "sha256": "c20e67e4e73a059533b6e2d1cf0060a9932395233770b1209c52c682f2897e51",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/糖拌西红柿/糖拌西红柿.md",
+      "git_blob_sha1": "416f5522967b8d3265677e520d6570f1f8278def",
+      "sha256": "fdc3927e4691bcf426dcd75cbb0b8156c85551051996df7f1e64e7b029a231da",
+      "bytes": 1076
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/素炒豆角.md",
+      "git_blob_sha1": "4dce00db55a9356dad0fa18d69bb8b77816e4315",
+      "sha256": "287cf6174aaff2f13b779213d12fb1853f303302372178908e6244e298954440",
+      "bytes": 877
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/红烧冬瓜/1.jpeg",
+      "git_blob_sha1": "af9564a6cf928cb8e50ac6b49998419030a831cf",
+      "sha256": "26147d5873ca422b4843499dd3835ec6f443593dc2b7e5139869f592e17da41e",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/红烧冬瓜/2.jpeg",
+      "git_blob_sha1": "8d4499d36d2abd54cf126c6b320f941f6075b3b8",
+      "sha256": "49f7d5128fc481726eaf70fd2863e3715ae419d252f6d63eb0740a8e193f2dc1",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/红烧冬瓜/红烧冬瓜.md",
+      "git_blob_sha1": "80a09dd4b6dcd1b2c610deef33534d4d922d2364",
+      "sha256": "97d5cd5edff3b2daf321818b1a683dc6877a7e9381674afe311f8bae5a65bffc",
+      "bytes": 1136
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/红烧茄子.md",
+      "git_blob_sha1": "954b231ebda8cf8f1ccd0bc5701239e9f68e7f49",
+      "sha256": "4c2f76ddc6ecf327a2ea9737a4d1405052d49863bf9cc6d4a72621e1ae8bd0c5",
+      "bytes": 1945
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/脆皮豆腐.md",
+      "git_blob_sha1": "f4774642ec445502fa7fd3f2b7bac5be7df3f460",
+      "sha256": "7d13c2cc729af9725bb65dbb07f3220d38e174b4ddb98b23b144b41fda6a6a5b",
+      "bytes": 1069
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/芹菜拌茶树菇/芹菜拌茶树菇.jpg",
+      "git_blob_sha1": "c75f7c9b61b3796b203ad98cc2925fd0c8267cdb",
+      "sha256": "40b914395c0c4f810fef51a221b259a0189a8bc0a270ed505c1db7e3778941f0",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/芹菜拌茶树菇/芹菜拌茶树菇.md",
+      "git_blob_sha1": "1b74aedfd2614122a516e3f57aaa7da9951c10db",
+      "sha256": "944bee94876a60341e71dbab76557eb8d46f20b4a17aa56aa5901fa091c13327",
+      "bytes": 1650
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/芹菜拌茶树菇/闽星茶树菇.jpg",
+      "git_blob_sha1": "b9e865f1e571a9cecccc1f80934a6f87056c0d2c",
+      "sha256": "c27984f7edefd9749b285957b9c166f62fa3b43217fcff7d944081df9b8b770e",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/茄子炖土豆.md",
+      "git_blob_sha1": "04d5b7cbac457b09431b35a4b3ed7755a9581333",
+      "sha256": "3ff26ae8b803bf1c931b67c96296bc4382d5b8cbcbde85928c68b47f0c8c0e2a",
+      "bytes": 1616
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/莴笋叶煎饼/1.jpeg",
+      "git_blob_sha1": "e2437c045f90b0d5fa6b3df6dd0cc4850d28deee",
+      "sha256": "9df8488f02c5794f27d2596da48d406c2f23869dfc528720fdcf5af035243393",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/莴笋叶煎饼/2.jpeg",
+      "git_blob_sha1": "23b7dd7efb2d5f77e80b4ed5f84a4a905292dfb5",
+      "sha256": "1cf267b6a432a4a460092a82b1e4619ad340f572778e13df5f8961358ac6fd82",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/莴笋叶煎饼/3.jpeg",
+      "git_blob_sha1": "9ca64d86e67e848771152331756c6496c2e85ef6",
+      "sha256": "b44ad840b9eeee30f45d4ec24db92569c60373b6acee8f99d5f8186e697ada63",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/莴笋叶煎饼/莴笋叶煎饼.md",
+      "git_blob_sha1": "9d32a57569bd937de6dc47bb86f126cb44906800",
+      "sha256": "7c219f3da3bf5522f93f637565d3590042feb32780a42df57363ade1903206e6",
+      "bytes": 776
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/菠菜炒鸡蛋/菠菜炒鸡蛋.jpg",
+      "git_blob_sha1": "23206ec27a17551659c204d971249f431ad436a7",
+      "sha256": "bdc4bac25707d10f32bff6787e0ee63c9975a0059926a731fe504ac31498dd06",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/菠菜炒鸡蛋/菠菜炒鸡蛋.md",
+      "git_blob_sha1": "e990cb95315614fdd4bd5d397e0d6caa6c9895c3",
+      "sha256": "846ecc4fddc13cedd47a4afe0782a993320cf4ef0b8b60cf7555bc79576d1879",
+      "bytes": 804
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/葱煎豆腐.md",
+      "git_blob_sha1": "fc611648c48925a91acb65976edd9303409c5264",
+      "sha256": "ea216ab0b0820c07fe50a29e8135652e4c4c35953c31ba3811fc802cf0ef613e",
+      "bytes": 1123
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/蒜蓉空心菜/1.JPG",
+      "git_blob_sha1": "2eaf5aba100b3e21f9733d917136a8c23b532c37",
+      "sha256": "0718560f3d726c99fe136c4b313062f9a741207ea56df0379dd07bb613db38f2",
+      "bytes": 291549
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/蒜蓉空心菜/蒜蓉空心菜.md",
+      "git_blob_sha1": "be7a30b042e9825347c4f7e2b8e7bc1fcb0bcb6e",
+      "sha256": "b5a8ead92d63b139887fd7ccf30d3fb826b9d46f5efe67828c96b04a4917d43d",
+      "bytes": 1645
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/蒜蓉西兰花.md",
+      "git_blob_sha1": "57a9a357967c2840dd2c8a3873d94301dc3bad7e",
+      "sha256": "0187dc89faafd91459b7671ad9d414f052ae966184172df4abd343b42010ad05",
+      "bytes": 1138
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/蒲烧茄子.md",
+      "git_blob_sha1": "f3df4bcee927180d421214bfbe2d90bbc8b52a5c",
+      "sha256": "9e0846576bbe707d00fcbe62ca5663d97ea6c8a7cea85c54a1cfa2ce9bd96ab1",
+      "bytes": 1540
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/虎皮青椒/虎皮青椒.jpg",
+      "git_blob_sha1": "23590298168381169357f2cb22756c1bb77902a5",
+      "sha256": "1ba49de6ba2c6114d6a4840a7942d7458740f5d86c644de0ebde85bb1edc408f",
+      "bytes": 132
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/虎皮青椒/虎皮青椒.md",
+      "git_blob_sha1": "f1409d20b797418ad7672ddf160996feff24fa3f",
+      "sha256": "e2b633add697c1f0a8226f23f67e896a872935dfcaf3cbf53a94bfdba0717d57",
+      "bytes": 1063
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/蚝油三鲜菇/1.jpeg",
+      "git_blob_sha1": "877e69553b9417feebd70ef797b3dc1b270e90c1",
+      "sha256": "17ed03912ce6ccfe2c580f7017790dba55aa75c0704f26037c24018b888cc636",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/蚝油三鲜菇/2.jpeg",
+      "git_blob_sha1": "327d8dce3e6b483c980a2d8f91bea8366dcf3a9f",
+      "sha256": "1e2c397492f6e726b65bbba1fbbdd583d7c1831b4843004d621768c230adae5f",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/蚝油三鲜菇/蚝油三鲜菇.md",
+      "git_blob_sha1": "8f2afbf0932a7d7c450a08d3302a2494653e6163",
+      "sha256": "012164e44c0c95022ce4bd05e3153a0534a529bb282ebab25b6343dbd4a0538d",
+      "bytes": 1382
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/蚝油生菜.md",
+      "git_blob_sha1": "60875783ef550b12c3518a6b93b1162f46e7471c",
+      "sha256": "7cd162d59384552ca19133ad2b64ce11f765215316af9a2f91de2b306118f19c",
+      "bytes": 1082
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/西红柿炒鸡蛋.md",
+      "git_blob_sha1": "546ea6ce09ec61ba70fa0e63537d46f89c3d66be",
+      "sha256": "7377f25244e12deb460e05d3cb38d83bcb5d51f3529f4da4f018754431a8fa3d",
+      "bytes": 1922
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/西红柿豆腐汤羹/1.jpeg",
+      "git_blob_sha1": "c46e021bbeb75d20b6044975d5e40c1d7417859e",
+      "sha256": "37b3d7224000ae2d67332c61c2103ee01ed210277df889ee3d765ff8531213a6",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/西红柿豆腐汤羹/西红柿豆腐汤羹.md",
+      "git_blob_sha1": "d60101cbba9489665795ad6a7c9c4bb09eb15a2d",
+      "sha256": "c6b9bf37a26a9823ff8ae0b120813aa3193f1feac7c798c98e8bf2f7f4e65b42",
+      "bytes": 794
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/西葫芦炒鸡蛋/西葫芦炒鸡蛋.jpeg",
+      "git_blob_sha1": "a687705696a294ccb6940624fc8b2ae4fb029b4e",
+      "sha256": "97190f24c49be866e109efe77b17550f2f5da157ed2c7e8595a2fce0c824cc63",
+      "bytes": 130
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/西葫芦炒鸡蛋/西葫芦炒鸡蛋.md",
+      "git_blob_sha1": "d76951bc59e64f2a1635e8a91d1950014503001a",
+      "sha256": "f3b6a53b00e34e4b8f9120461a88f041fb1dcef6629e1803e50cd1679e1a62b7",
+      "bytes": 984
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/话梅煮毛豆/1.jpeg",
+      "git_blob_sha1": "02b32d8f26a50a32096087903bdd53c0451e9178",
+      "sha256": "0e67e090057e4ed327ccf1a3266680118ec8695e191a7a74e7171bfcb4417084",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/话梅煮毛豆/话梅煮毛豆.md",
+      "git_blob_sha1": "0e133f7924b82ebbbb27f1194d1c540c37f9e534",
+      "sha256": "d98c6430006e8b287466cae0a6b52db840a962a79e8b50216847f8f2947efcad",
+      "bytes": 418
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/酸辣土豆丝.md",
+      "git_blob_sha1": "72cf6c9da13289562bc00bb3877cac0c89e5551b",
+      "sha256": "7aceccf64c39e01f129988616e31d9d6445e3264b918e04c67f4ca02439fa79a",
+      "bytes": 1082
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/金针菇日本豆腐煲.md",
+      "git_blob_sha1": "2715884d0f410cded365822d9cd807f9ec58cd61",
+      "sha256": "9e078a0cfdcf81bb75cd43ecd26b1592f1f049afffde320722f76ed104f0aabf",
+      "bytes": 842
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/陕北熬豆角.md",
+      "git_blob_sha1": "8748e67649876212d23536c3a35cd82f1dcca363",
+      "sha256": "40ccca662a62ede0a2e6584fd2270c56b17ca3958de8f63fd9e7278221cf2bcc",
+      "bytes": 1501
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/雷椒皮蛋.md",
+      "git_blob_sha1": "784c764ad9c6acad16d7485490632806c562d10c",
+      "sha256": "957d946e57743405d98bb02636ce74f26693c6cbb3d63b69c5e5e83cb514cc67",
+      "bytes": 1592
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/鸡蛋火腿炒黄瓜.md",
+      "git_blob_sha1": "164a9c567929841b7ed859bad2def5b5e907ee8b",
+      "sha256": "ca0f1f1b5a4d35c3ec0346288858958987bd356e7d3ae05dc7745de61ada4bf6",
+      "bytes": 1102
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/鸡蛋羹/微波炉鸡蛋羹.jpg",
+      "git_blob_sha1": "5ddc69167f973fc40054ddfdcba832c596bd08ac",
+      "sha256": "7f4dff96a9482804e3c5b23d71171a15783d1ed68c242d72bb330a32acc123ff",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/鸡蛋羹/微波炉鸡蛋羹.md",
+      "git_blob_sha1": "ee62c6e52b271bbec9b9374526e40bebd9a00e0b",
+      "sha256": "8047ecca25f28f12aed58741b72deeb79afef4917363dba5d46e106b60da5686",
+      "bytes": 1790
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/鸡蛋羹/蒸箱鸡蛋羹.md",
+      "git_blob_sha1": "fb4bcec90a57c438cca03eeb3fbdaf3543405fd7",
+      "sha256": "dd67a423a263a3e28e9fbc947b83fd5f4af24fdc8a4c23d0f907d62b5d0370dc",
+      "bytes": 1207
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/鸡蛋羹/鸡蛋羹.jpg",
+      "git_blob_sha1": "b230d648c445db5f0f850a68ef55d59cc186506d",
+      "sha256": "6022f2a608e8423e8d2ff274ba1bc43a5c1541bc03b079bc66fc0aff1d350fa9",
+      "bytes": 131
+    },
+    {
+      "path": "data/C8/cook/dishes/vegetable_dish/鸡蛋羹/鸡蛋羹.md",
+      "git_blob_sha1": "baea28ab24f959096d3215b3f410fc95db262e82",
+      "sha256": "316e9e8afae21fe8768cd6498bbbcdf832e3b369284ea610525050b9931987de",
+      "bytes": 2098
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+.venv/
+.env
+.env.*
+!.env.example
+.cache/
+__pycache__/
+*.py[cod]
+code/C8/vector_index/
+.DS_Store
