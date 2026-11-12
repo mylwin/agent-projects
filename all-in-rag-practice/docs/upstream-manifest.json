@@ -3966,5 +3966,1312 @@
       "sha256": "316e9e8afae21fe8768cd6498bbbcdf832e3b369284ea610525050b9931987de",
       "bytes": 2098
     }
-  ]
+  ],
+  "lfs_source_repository": "https://github.com/Anduin2017/HowToCook",
+  "lfs_objects": {
+    "data/C8/cook/dishes/aquatic/小龙虾/成品.jpg": {
+      "oid": "f925932ded89df54e77c3148c70e772e8902a498a3bb0208a7404d7fcdc4a4a1",
+      "size": 562566
+    },
+    "data/C8/cook/dishes/aquatic/干煎阿根廷红虾/干煎阿根廷红虾.jpg": {
+      "oid": "11f5b7bdcd5941a2a56de1e011298d5ee4acb1ba7c3789ef653ab6fe994865ff",
+      "size": 92655
+    },
+    "data/C8/cook/dishes/aquatic/油焖大虾/油焖大虾.jpg": {
+      "oid": "fcab1b3841f8e0c7ef5940c613d5dc32fb63d8ebfb33ba8c341789e587cae7a0",
+      "size": 158684
+    },
+    "data/C8/cook/dishes/aquatic/混合烤鱼/烤鱼.jpg": {
+      "oid": "8a5de1202b8d802706addcbac7459a7f373f66fdabd948686e0e4661d6836856",
+      "size": 187076
+    },
+    "data/C8/cook/dishes/aquatic/清蒸鲈鱼/摆盘.jpg": {
+      "oid": "2574533c049d4f12ba4f982ec77dc7699c1db974c213a5d5d5c09c2d0535c13a",
+      "size": 340422
+    },
+    "data/C8/cook/dishes/aquatic/清蒸鲈鱼/改刀.jpg": {
+      "oid": "512c9ad772cdd6f01ca678bd2d5b95302cd67b214cd5a77eaeb68415395a2dc5",
+      "size": 359597
+    },
+    "data/C8/cook/dishes/aquatic/清蒸鲈鱼/清蒸鲈鱼.jpg": {
+      "oid": "aed686cdab101e7d3178b885b0187f8bb72c1c093ca638034c40ba68fc98ecc7",
+      "size": 263862
+    },
+    "data/C8/cook/dishes/aquatic/白灼虾/白灼虾.webp": {
+      "oid": "95333f6dc71486bbd921a95fab2304fe47a6c1c94d93ca099730ff98b1006776",
+      "size": 164196
+    },
+    "data/C8/cook/dishes/aquatic/糖醋鲤鱼/成品.jpg": {
+      "oid": "f27e7bd12a4467c047813eafac25eb704b010f375bf388b518c2196f5e55cca0",
+      "size": 196602
+    },
+    "data/C8/cook/dishes/aquatic/糖醋鲤鱼/腌制.jpg": {
+      "oid": "738cfdf74dd7f3540f40787f890500a7c2b01e6c6af12163599ba35140c94192",
+      "size": 177914
+    },
+    "data/C8/cook/dishes/aquatic/芥末黄油罗氏虾/芥末黄油罗氏虾.jpg": {
+      "oid": "816f7d7bd0c54cee52e8f1ddffebbca96e5f56b9c9e2234520132afc128627a1",
+      "size": 333658
+    },
+    "data/C8/cook/dishes/aquatic/葱油桂鱼/10.jpg": {
+      "oid": "9f93cc9ee9bf97317a47072c93af5ba902b0bdde2037740600a33353bcb076fd",
+      "size": 274902
+    },
+    "data/C8/cook/dishes/aquatic/葱油桂鱼/葱油桂鱼.jpg": {
+      "oid": "e31d4df915d3718d4075b35a65eec97e9d92b0150388c9dc6f24c6dd802c1257",
+      "size": 467681
+    },
+    "data/C8/cook/dishes/aquatic/葱油桂鱼/葱油鲈鱼.jpg": {
+      "oid": "0c19b1374345a4892af215e526b687e62ee5c75fad536ade857413d022ef387f",
+      "size": 689071
+    },
+    "data/C8/cook/dishes/aquatic/葱烧海参/海参.jpeg": {
+      "oid": "52d4c8976ac7b3830cd7a42a46e9945108edb156208b5634d3b62663d4a60ec6",
+      "size": 182359
+    },
+    "data/C8/cook/dishes/aquatic/葱烧海参/葱烧海参.jpeg": {
+      "oid": "8256763229fc0970307d4edb7e9027cbc4366a9140f327414f35f4ce4fdb5c0d",
+      "size": 206611
+    },
+    "data/C8/cook/dishes/aquatic/葱烧海参/葱白.jpeg": {
+      "oid": "e07620a44f1c674930260924c0543e8e5c3a50a18a0e0f45546178fd4784ecda",
+      "size": 219213
+    },
+    "data/C8/cook/dishes/aquatic/葱烧海参/酱汁.jpeg": {
+      "oid": "104a89c8700bcaffae40fe2c159237a8ffd2174c10254d42f4107e9d907da648",
+      "size": 86402
+    },
+    "data/C8/cook/dishes/aquatic/蒜蓉虾/1.jpeg": {
+      "oid": "4a2c2bd7303179454e8df1bb082b236d7d3d3b8b316e78090f1e40b1d5fd0393",
+      "size": 184204
+    },
+    "data/C8/cook/dishes/aquatic/蒜蓉虾/2.jpeg": {
+      "oid": "fad64ea2c5e5d484ccd9f144831ac8ced3bf1428830a2b63cb4e974e107c828d",
+      "size": 154644
+    },
+    "data/C8/cook/dishes/aquatic/蒜香黄油虾/1.jpg": {
+      "oid": "b586a85222af25349f456faab6f9fa56f4fea9d33c7056f0b23de19324972beb",
+      "size": 893586
+    },
+    "data/C8/cook/dishes/aquatic/蛏抱蛋/1.jpeg": {
+      "oid": "19ee70651712e392a1650628306b3f7a80d100c8b8d06e2c99e8576faee4a634",
+      "size": 155301
+    },
+    "data/C8/cook/dishes/aquatic/蛏抱蛋/2.jpeg": {
+      "oid": "570a523b2242606fb521bd0fd57cc28d6dfba8b7e06d2a754ce4e65eda673325",
+      "size": 160679
+    },
+    "data/C8/cook/dishes/aquatic/蛏抱蛋/3.jpeg": {
+      "oid": "21d01034bc0c7029bae724690bb5f03c6506a4ed372a6a16f5aeb7d494df3df5",
+      "size": 183338
+    },
+    "data/C8/cook/dishes/aquatic/香煎翘嘴鱼/香煎翘嘴鱼.jpeg": {
+      "oid": "721a6ad9b94524c16febebe147e923a10a8359700b270d48fd792fb78cb64c24",
+      "size": 50316
+    },
+    "data/C8/cook/dishes/aquatic/鲤鱼炖白菜/鲤鱼炖白菜.jpeg": {
+      "oid": "97f47e86075c50d9211d9ed27dd12ba91a623e661da6e13e25e38b33856fddc2",
+      "size": 238094
+    },
+    "data/C8/cook/dishes/aquatic/鳊鱼炖豆腐/鳊鱼炖豆腐.jpg": {
+      "oid": "ece70cc98f12c33dd9e66fb0ffedd1e7b94ff9dccc3501addd027174ed2a885d",
+      "size": 455162
+    },
+    "data/C8/cook/dishes/aquatic/黄油煎虾/黄油煎虾.jpg": {
+      "oid": "3215cc4bd2a584da624aea7661b2ef98fe9fddb535027d2437309be9d2841c75",
+      "size": 811157
+    },
+    "data/C8/cook/dishes/breakfast/苏格兰蛋/egg1.png": {
+      "oid": "a27348092913ddefff869702dfb52baf8884ff03d0b03ff45630b2b69fb174d1",
+      "size": 243472
+    },
+    "data/C8/cook/dishes/breakfast/苏格兰蛋/egg2.png": {
+      "oid": "471a5f232b22f958bca6e863c66f4ba400abf1fc9e3adb7f9b197df11c406a74",
+      "size": 755549
+    },
+    "data/C8/cook/dishes/breakfast/苏格兰蛋/egg3.png": {
+      "oid": "335516ab7b455cbe5571cde6e164f7a2fce4673195b19515ecc2c73a2e09ea47",
+      "size": 859558
+    },
+    "data/C8/cook/dishes/condiment/油泼辣子/口水鸡+油泼辣子.jpg": {
+      "oid": "fc1b51a258dedd63599ac30e8ff0f861e603f0d8bdc4da9e5cc4cc07d2f63565",
+      "size": 328386
+    },
+    "data/C8/cook/dishes/condiment/油泼辣子/油泼辣子.jpg": {
+      "oid": "cb408f21b672f58ddadf7f57b0998c8617538fcf95fe13a0b947f9847089ed61",
+      "size": 397052
+    },
+    "data/C8/cook/dishes/condiment/草莓酱/做好的草莓酱.png": {
+      "oid": "730116bef3da5646cd3683549103d8159314dc9ec9c024882179dddf32c70606",
+      "size": 337949
+    },
+    "data/C8/cook/dishes/condiment/草莓酱/洗好的草莓.jpeg": {
+      "oid": "59db4e4dfcb6f86d829128efc3d22fef0f2e224abe916b09a8603483ad49d08f",
+      "size": 99676
+    },
+    "data/C8/cook/dishes/condiment/草莓酱/混合好的草莓.jpeg": {
+      "oid": "b513eede3b66140538ab0bcd787578a2f45c716db80c930a0ec15684c794c80f",
+      "size": 68587
+    },
+    "data/C8/cook/dishes/condiment/草莓酱/熬煮的草莓.jpeg": {
+      "oid": "e9497ff6ca7b83eac4373e5417f89a37dc6633d81ed3922d0d89f082f34043a4",
+      "size": 43124
+    },
+    "data/C8/cook/dishes/condiment/蔗糖糖浆/bottle.jpg": {
+      "oid": "b5cc433c2ab1edf1bc0cd30eaa2424b0c471798d2051f4bb30e2daa6d550fc89",
+      "size": 54634
+    },
+    "data/C8/cook/dishes/dessert/反沙芋头/反沙芋头成品.jpg": {
+      "oid": "a386b599cd01dced634707f600cadc91526efc1f16f942fe6d078f3eba9d9972",
+      "size": 339621
+    },
+    "data/C8/cook/dishes/dessert/咖啡椰奶冻/咖啡椰奶冻.png": {
+      "oid": "21e9e4fad057c5aa80df03fedff29f5dc2b88017568375883d41613f21427645",
+      "size": 497427
+    },
+    "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08606.jpg": {
+      "oid": "22333d526a638bbea544d849db76ba1d1b28bd43f0a00d7dda6f954e124da7a4",
+      "size": 557110
+    },
+    "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08608.jpg": {
+      "oid": "cda36e9a21b1bdba22efeed754aea51aa8f9948b7daf4f36fbc71f7b3f1d05a3",
+      "size": 585890
+    },
+    "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08612.jpg": {
+      "oid": "563842e1d13112cb6c0454b21b365881190ff1787e3434938478a7a5adb8908e",
+      "size": 528341
+    },
+    "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08618.jpg": {
+      "oid": "a1960739575bede57d093cbe6e3115225827775b9e44ed1d9251f4aa0a838265",
+      "size": 462716
+    },
+    "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08621.jpg": {
+      "oid": "93c0c882e5af8a7d4b277a6bde546a0e9b2758654683cc5b18509e3fc66f3164",
+      "size": 531964
+    },
+    "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08627.jpg": {
+      "oid": "faee74d2de4c0c8b54e0b740740163312ffe3aa6dbca083bd45ac73e9d993bc0",
+      "size": 546271
+    },
+    "data/C8/cook/dishes/dessert/戚风蛋糕/DSC08716.jpg": {
+      "oid": "5ebcac791864242c24396608b959f92d6ce2f3e9291cebbda7a35a51fbaa8c82",
+      "size": 996109
+    },
+    "data/C8/cook/dishes/dessert/戚风蛋糕/IMG_0269.jpg": {
+      "oid": "649955d2391bda62b53cc001f2ac513c62a2bf6a1d56eb38670c6be9ad0b24b6",
+      "size": 163597
+    },
+    "data/C8/cook/dishes/dessert/戚风蛋糕/IMG_1516.jpg": {
+      "oid": "48becd18a37327684e00fe8448fda00be31201793a0686d19ab1c4d7c0b3089f",
+      "size": 375856
+    },
+    "data/C8/cook/dishes/dessert/提拉米苏/提拉米苏成品.jpg": {
+      "oid": "f52ad99a57d6e9a364e36ae2193b0d8a0f3244e84254b35083232d5874e069a0",
+      "size": 469348
+    },
+    "data/C8/cook/dishes/dessert/无厨师机蜂蜜面包/无厨师机蜂蜜面包.jpg": {
+      "oid": "7d08b1b805bceb9ece6c3adb2f6721171dfc1b1547a2b0a3b39aa876c0983ae3",
+      "size": 234668
+    },
+    "data/C8/cook/dishes/dessert/炸鲜奶/炸鲜奶.jpg": {
+      "oid": "37114c83b20be2f92fb1c68d90c591e8c9583d8ea895984ef001bf1d37690feb",
+      "size": 167715
+    },
+    "data/C8/cook/dishes/dessert/烤蛋挞/烤蛋挞.png": {
+      "oid": "d5106e9c4a7660ffa9ee36d6ec57c1aa824e1f70ac45d60cccf63e5fe0290874",
+      "size": 300259
+    },
+    "data/C8/cook/dishes/dessert/玛格丽特饼干/玛格丽特饼干.jpg": {
+      "oid": "860b4ddff46ef963776338f67911eb80fd3f86f22e8c922c452ad123325cd07b",
+      "size": 798541
+    },
+    "data/C8/cook/dishes/dessert/芋泥雪媚娘/芋泥雪媚娘成品.jpg": {
+      "oid": "2858e1af2f3676e05508022cf0a4fa258826df3b21db56e9299efd8747894da5",
+      "size": 293906
+    },
+    "data/C8/cook/dishes/dessert/英式司康/英式司康.png": {
+      "oid": "99ebbc8b9ace433b0f2821a40203a09b2de396e4378378c0643e78a15ecd7ea0",
+      "size": 758411
+    },
+    "data/C8/cook/dishes/dessert/酸奶意式奶冻/酸奶意式奶冻.png": {
+      "oid": "679a966f7409cd39662d4905bfe33901f52e13e8431ff9eb66696a5f316468a3",
+      "size": 630728
+    },
+    "data/C8/cook/dishes/dessert/雪花酥/雪花酥成品.jpg": {
+      "oid": "eb9440cf532ca03584d3b54facc511c7bbaccc4be06dc8ec2c91bd2ffcd7dbf1",
+      "size": 844716
+    },
+    "data/C8/cook/dishes/dessert/龟苓膏/龟苓膏成品.jpg": {
+      "oid": "6512d541a8cda03b8294602aa3e642552926fa6d05c28030345170facff252a8",
+      "size": 11754
+    },
+    "data/C8/cook/dishes/drink/冰粉/石凉粉(冰粉)成品1.jpg": {
+      "oid": "9caf2438128303b0d8f969b390814507bc1873fb090071562323caf96a0a6c37",
+      "size": 94427
+    },
+    "data/C8/cook/dishes/drink/冰粉/石凉粉(冰粉)成品2.jpg": {
+      "oid": "cc5293d83c036652b505b509282b3a53fe2081c191a52be38be6e5df3b76591d",
+      "size": 761836
+    },
+    "data/C8/cook/dishes/drink/奇异果菠菜特调/kiwi-example.jpg": {
+      "oid": "5de91d65ad3fd78eeec884161be09d7d1874f868800677afff7f63ab23fc4311",
+      "size": 600591
+    },
+    "data/C8/cook/dishes/drink/柠檬水/柠檬水.jpg": {
+      "oid": "12dd16d866a01e8a94280f0276534716ebcd5055205223e944491bef3db2b0f1",
+      "size": 317111
+    },
+    "data/C8/cook/dishes/drink/泰国手标红茶/泰国手标红茶.jpg": {
+      "oid": "313daa522a150313b0adb87e0cbc867c3ce1c610391f131e6cc8cc929d584f66",
+      "size": 74470
+    },
+    "data/C8/cook/dishes/drink/海边落日/海边落日.jpg": {
+      "oid": "7b86eb8a26fb569ffe0ba565119e8318cf1e63b26d63c0eb682d289301f19147",
+      "size": 100230
+    },
+    "data/C8/cook/dishes/drink/百香果橙子特调/soda-version.jpg": {
+      "oid": "d65a1c4f9b0016298a5d4b661a19eebb2a74b4b49d01dd311a782496a9144cf2",
+      "size": 105993
+    },
+    "data/C8/cook/dishes/drink/百香果橙子特调/tea-version.jpg": {
+      "oid": "c9d04d453fa419fcf87b17fc37e77fb1405677770c46ef4c8004ef30d22833f1",
+      "size": 384028
+    },
+    "data/C8/cook/dishes/drink/砂糖椰子冰沙/砂糖椰子冰沙-1.jpg": {
+      "oid": "301ba66260dde0e0a911c22c09c97686c352f41ccfd96dec8bb9c49da601bcee",
+      "size": 307428
+    },
+    "data/C8/cook/dishes/drink/耙耙柑茶/citrus-tea.jpg": {
+      "oid": "69c20ab5d48b83e7106110c7a632c08fd4559c7cb2cf9f3125140448fa83987b",
+      "size": 426359
+    },
+    "data/C8/cook/dishes/drink/菠萝咖啡特调/菠萝咖啡特调.png": {
+      "oid": "5ee44b9ed04db873e1575965fc357261be291c6f1853ed3ea93f5ab2aa584740",
+      "size": 479657
+    },
+    "data/C8/cook/dishes/drink/酒酿醪糟/酒酿米糕.jpeg": {
+      "oid": "2856ed0fdeea707fe6bd0ed1ee3cc74c1632a94f5b196b9a7ca1f0747f8c3c4b",
+      "size": 234830
+    },
+    "data/C8/cook/dishes/drink/酒酿醪糟/酒酿醪糟.jpeg": {
+      "oid": "27367109197b4bc1772f449af6d04c2fa455f66be54dd8a057464fb5c624771d",
+      "size": 249128
+    },
+    "data/C8/cook/dishes/drink/酸梅汤/imges/sour_plum_soup.jpg": {
+      "oid": "f4ca85d7c167c5725d7d779f73dfaaaaedc4e22b91611b81889ff1933370e1be",
+      "size": 416498
+    },
+    "data/C8/cook/dishes/drink/金汤力/gin-tonic.jpg": {
+      "oid": "b34e3f9fc02ecd45d7902bc27daedf7a28c0ed8d48233ffc9c2a3bdb03a14c47",
+      "size": 258312
+    },
+    "data/C8/cook/dishes/drink/金菲士/gin-fizz.jpg": {
+      "oid": "4ad967b4a482143651fb96789f246130677c7fcc129f50b324518ca2b3d27ad5",
+      "size": 250324
+    },
+    "data/C8/cook/dishes/meat_dish/农家一碗香/农家一碗香成品.jpg": {
+      "oid": "d7c20610243b1eb253fc25bafd7f71749ea5aa3c3a809641e08f3bb0537ae847",
+      "size": 28597
+    },
+    "data/C8/cook/dishes/meat_dish/冬瓜酿肉/冬瓜形状.jpg": {
+      "oid": "6eacfaba62c173359e3224d7ff13ba013b2ce3637af8bdeee446be21a40b5f16",
+      "size": 193484
+    },
+    "data/C8/cook/dishes/meat_dish/冬瓜酿肉/冬瓜酿肉成品.jpg": {
+      "oid": "98998c94843ec9361ca74802d8d49cfe9f167710fa99658f3e54e5fe7c9da6a9",
+      "size": 235266
+    },
+    "data/C8/cook/dishes/meat_dish/冬瓜酿肉/卷肉.jpg": {
+      "oid": "9eb79228c801bf0c41aab8efbd825ee9c6569bdc4f35f22402bf4bdc974380b2",
+      "size": 142445
+    },
+    "data/C8/cook/dishes/meat_dish/冬瓜酿肉/打鸡蛋.jpg": {
+      "oid": "c9a57eb6dc46e473f0316d20705b467ce7196c66839f2c8e216bf7f7ded204ad",
+      "size": 191148
+    },
+    "data/C8/cook/dishes/meat_dish/冬瓜酿肉/摆盘.jpg": {
+      "oid": "ad41e74797bde4043ee5fb5db1f16ac26864b9a47cfcb9ae0898f787155e5ef3",
+      "size": 169394
+    },
+    "data/C8/cook/dishes/meat_dish/冬瓜酿肉/腌制好的冬瓜.jpg": {
+      "oid": "b07539cbed9799a47b030ba8aefa6dd4a393e1e9f986e7444d9ab75b72375f74",
+      "size": 112631
+    },
+    "data/C8/cook/dishes/meat_dish/凉拌鸡丝/凉拌鸡丝.jpg": {
+      "oid": "c7e8cd17b4aca9ec6fd475d5ba614c6f44713ea3e50423bd119e920debf17bff",
+      "size": 222198
+    },
+    "data/C8/cook/dishes/meat_dish/凉拌鸡丝/凉拌鸡丝_撕.jpg": {
+      "oid": "3d817f4cd1469d850392f89f9844535930fb7a07da03d3b69a38780cfa587c5a",
+      "size": 215039
+    },
+    "data/C8/cook/dishes/meat_dish/凉拌鸡丝/凉拌鸡丝_焯水.jpg": {
+      "oid": "d0ecb73e8dd374afe1182ceb60ba563499d18bfd9167a7d585d3fd44057c5675",
+      "size": 191551
+    },
+    "data/C8/cook/dishes/meat_dish/卤菜/卤水.jpeg": {
+      "oid": "1c6bb2c84276bd3f9c889360d7cbbcbe8bf74ac94372b69dfc415d44c05bc5b2",
+      "size": 771752
+    },
+    "data/C8/cook/dishes/meat_dish/卤菜/卤牛肉.jpeg": {
+      "oid": "307470297cb0530ad2e55e597da2c027f4256f25ea69c7b34f985e225852d980",
+      "size": 571100
+    },
+    "data/C8/cook/dishes/meat_dish/卤菜/牛肉面.jpeg": {
+      "oid": "8fca6d255f545c87957a4b7be503af35a3123f3656849f3eac18047603a25cf7",
+      "size": 721513
+    },
+    "data/C8/cook/dishes/meat_dish/口水鸡/口水鸡.jpg": {
+      "oid": "020d49a9cc65c30953f7ea1f8ad6f278349be99cc83a7edc76275fbcb4eef130",
+      "size": 228793
+    },
+    "data/C8/cook/dishes/meat_dish/台式卤肉饭/1.jpg": {
+      "oid": "3686f533a387a4c41611c6f67a5603cd45a211e0a65ee1dba76e9b492c25f1f0",
+      "size": 30221
+    },
+    "data/C8/cook/dishes/meat_dish/咖喱肥牛/咖喱肥牛.jpg": {
+      "oid": "831781cf825117cb5c93e1641e39bd9ad7e8e186a2d11f35f419a406f3b1422e",
+      "size": 306536
+    },
+    "data/C8/cook/dishes/meat_dish/啤酒鸭/啤酒鸭.jpg": {
+      "oid": "c2696cfa7ce4efb1c045ed2b731eed670f4feca83a015bb309035d0701962f06",
+      "size": 513313
+    },
+    "data/C8/cook/dishes/meat_dish/回锅肉/1.jpeg": {
+      "oid": "e1c83481ffa82bf0d22631984d1c75df5b4aadbace98933337cd6a938f3c0f69",
+      "size": 156595
+    },
+    "data/C8/cook/dishes/meat_dish/回锅肉/2.jpeg": {
+      "oid": "448c9b45675459262ac7f67cf93f207bcf922b4b284a38d2c6ea227fef417cf7",
+      "size": 172039
+    },
+    "data/C8/cook/dishes/meat_dish/土豆炖排骨/排骨1.jpg": {
+      "oid": "1b5e629ff56fb13f0795bc843fb786c943782cb64812fbd803bc3bfc4ac7f5ff",
+      "size": 111677
+    },
+    "data/C8/cook/dishes/meat_dish/土豆炖排骨/排骨2.jpg": {
+      "oid": "79b8de0a0a08f5ceb32b93a4523fe4407f1e0e9cb40c3f9ce903f913c3b7896a",
+      "size": 107934
+    },
+    "data/C8/cook/dishes/meat_dish/奶酪培根通心粉/onepot.png": {
+      "oid": "afa27596d08feffb45f2c93c92c37f5e116b8fcddb0416d5e106868611dae2f2",
+      "size": 189250
+    },
+    "data/C8/cook/dishes/meat_dish/奶酪培根通心粉/oven.jpg": {
+      "oid": "e17a7accfc97ccd3a5b58fa2d8d38583d0d4835e40b03b141714cf1f6f1e6232",
+      "size": 42358
+    },
+    "data/C8/cook/dishes/meat_dish/姜炒鸡/姜炒鸡.jpg": {
+      "oid": "100bcfa2cf789ede4042b555889dbd20de1a748c2f55d8ec033b10a6ce57119d",
+      "size": 70533
+    },
+    "data/C8/cook/dishes/meat_dish/宫保鸡丁/宫保鸡丁.jpg": {
+      "oid": "190140df874799a6ad894b20fe66c168f752491648621827b5cf6c3f7bc9d4d5",
+      "size": 273993
+    },
+    "data/C8/cook/dishes/meat_dish/小炒鸡肝/成品.jpg": {
+      "oid": "bf70ef2b18c3656e35d477cbe1c822828ce6aef6a437b33faa9c502027552153",
+      "size": 879941
+    },
+    "data/C8/cook/dishes/meat_dish/小炒黄牛肉/小炒黄牛肉.jpg": {
+      "oid": "da984fa253aab4c819341c3fa6da2f49ac303b8b5f1e12a56c3c02c07da15925",
+      "size": 257180
+    },
+    "data/C8/cook/dishes/meat_dish/尖叫牛蛙/尖叫牛蛙.jpg": {
+      "oid": "1a58999998f3ba769f7ed696b8a41bbcfc34d0b131181301cc9148edfe85e96e",
+      "size": 47888
+    },
+    "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/倒入番茄蓉.png": {
+      "oid": "fbdbc391c9fd912de49b4d86cf0c8bf8476b48f7db2b357b6136c488b7c95cd9",
+      "size": 288928
+    },
+    "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/巴基斯坦牛肉咖喱.png": {
+      "oid": "7fadd63cbf025ae3203dcfa080af288c14be04041908110381d94aaa86ef5373",
+      "size": 222895
+    },
+    "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/油.png": {
+      "oid": "8f144d6f42924ad3db89e7b232d3b40a169f3958662b62cdd773921180535ba2",
+      "size": 337608
+    },
+    "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/牛肉.png": {
+      "oid": "2af6933f6b227b53c4d4137f981d3b00c1fed581b2748dc70850e95913795fc6",
+      "size": 210428
+    },
+    "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/番茄蓉.png": {
+      "oid": "568746a99c13a3378edcc3aed47175fcfe62f49fa463dcf034448b425392fab6",
+      "size": 133202
+    },
+    "data/C8/cook/dishes/meat_dish/巴基斯坦牛肉咖喱/红.png": {
+      "oid": "bf339b2f4fc5283e08650e6b79d82e7836367eb5a4f8dd0270c1c1908778c48e",
+      "size": 548188
+    },
+    "data/C8/cook/dishes/meat_dish/干煸仔鸡/干煸仔鸡成品.jpg": {
+      "oid": "70bf5cffba89198124688d0065273ebe6e24023cb047662145c98d0bc53ff144",
+      "size": 803109
+    },
+    "data/C8/cook/dishes/meat_dish/广式萝卜牛腩/广式萝卜牛腩.webp": {
+      "oid": "5f81095211422c6fff1088cca236cc1330671ba4a2d5b91a2170bfb6801e3729",
+      "size": 35284
+    },
+    "data/C8/cook/dishes/meat_dish/徽派红烧肉/1.jpeg": {
+      "oid": "bd6e9ed84fab1e84241dcc994c555a700119ee936e9c39f424387dcce26f1011",
+      "size": 125686
+    },
+    "data/C8/cook/dishes/meat_dish/徽派红烧肉/2.jpeg": {
+      "oid": "aa35b7062fc2fe44ec18471caf479a822ed0b6f6b30b9c6913cfeeb0f4312a19",
+      "size": 154580
+    },
+    "data/C8/cook/dishes/meat_dish/新疆大盘鸡/大盘鸡.jpeg": {
+      "oid": "a709121ec499b3f09fc24e7b7b5c21b35724657e88ac458780332d097bf33767",
+      "size": 190378
+    },
+    "data/C8/cook/dishes/meat_dish/新疆大盘鸡/大盘鸡皮带面.jpeg": {
+      "oid": "1007f138f0293365394e64a1ee746a066fd58acc1bb1ee4f0f2549054ea31e49",
+      "size": 215170
+    },
+    "data/C8/cook/dishes/meat_dish/无骨鸡爪/无骨鸡爪.jpg": {
+      "oid": "3a2cf3160bfd77b9a5763f735e79e46fd6882d5fdb901c4627026fac6c3bff2a",
+      "size": 86781
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/土豆切片.jpeg": {
+      "oid": "cab6a7a02236b08c28de93672dd78591112a21acffc9bf1c61e61d36dfe10f70",
+      "size": 598684
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/柱候牛腩.jpeg": {
+      "oid": "34868b064fc4fbba237ab8807c5c3ea0b15d9bd3f38dfb79e434621746635030",
+      "size": 819389
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/柱候牛腩配米饭.jpeg": {
+      "oid": "1d21e2cdde42c3e7db148f0cede8683608ac6791d7ba90dba67c1abd7894eced",
+      "size": 867447
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/牛腩入锅.jpeg": {
+      "oid": "ef479f4239cc6b02e9374f29cd65c08d97b86c0e2d2d6c43dff47be6f48beeaf",
+      "size": 727213
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/牛腩切块.jpeg": {
+      "oid": "c06cc7a57e0946b6ed09fe6f095291d7820ef39f9e78b095d7a4ca5286aba88f",
+      "size": 946279
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/牛腩此时可开始炖煮.jpeg": {
+      "oid": "1f3c34fb8ffc30af9a146241ce772a3fc790c94709187d1550d26a7d57d2fd25",
+      "size": 774375
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/牛腩焯水.jpeg": {
+      "oid": "ede6fdc3bb3bffafacf7ae9745f4ba8c21ffc5f53b1f6e1cdbc1db8535bd94d1",
+      "size": 841970
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/牛腩部位.jpeg": {
+      "oid": "d85f167bcd4388fe4fb68f093900b5c997165fb689c1bb4bf2d3f46e3f0913b5",
+      "size": 792433
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/碗1.jpeg": {
+      "oid": "7344200f5936dba5d59fbde1f9a81c7dd59c1bacbf5dcc8e1dfd449b2a4ed91e",
+      "size": 541801
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/碗2.jpeg": {
+      "oid": "a8440335c5027e6a8b2ae59c589d3fb82a1cd689abc4dc03190cdeebfc6c9340",
+      "size": 667246
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/碗3.jpeg": {
+      "oid": "18afc2def4740088e80b2d24bb53ee4373ba1a143a72a3e526620b05029bc1a9",
+      "size": 734562
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/碗4.jpeg": {
+      "oid": "8e8a399a8d88aae3e07c16fe068446da46310d9e300ddbd72ee323d629731bdd",
+      "size": 664006
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/碗5.jpeg": {
+      "oid": "faafdc050329ac205f30ba3717327bfe458f62ccc11ff6adac3b6dd65094e4ac",
+      "size": 727384
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/碗6.jpeg": {
+      "oid": "eb49de8b622f0ab7b409bbb1969561d750aa70aa3b2bc10cadac686f02a02d5a",
+      "size": 640764
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/碗7.jpeg": {
+      "oid": "e1a977e389e61c91ead75263b304974c769f4073d540d8c70d69b5288e9d8eb5",
+      "size": 937419
+    },
+    "data/C8/cook/dishes/meat_dish/柱候牛腩/过滤汤汁.jpeg": {
+      "oid": "ff5dade207f50ad2988533bbca47eeafa00e4f959507783087fcf02c48808cf0",
+      "size": 346329
+    },
+    "data/C8/cook/dishes/meat_dish/梅菜扣肉/1.jpeg": {
+      "oid": "0084309fc0a95ef3ff98d7a88467929cbae4f87e30ab7aa7863884a1dd8c5298",
+      "size": 112389
+    },
+    "data/C8/cook/dishes/meat_dish/梅菜扣肉/2.jpeg": {
+      "oid": "f4d4cea0a0d3d062aeae8dec9ffe7ea67642a0470addfb3f8ba08ecab29e64d9",
+      "size": 169442
+    },
+    "data/C8/cook/dishes/meat_dish/梅菜扣肉/3.jpeg": {
+      "oid": "b85ed9b6f9114b40ee073ad1d7f32bb7d635b52a27c1efeefa807788b50d3b2e",
+      "size": 104466
+    },
+    "data/C8/cook/dishes/meat_dish/梅菜扣肉/4.jpeg": {
+      "oid": "e3ad59f93389da164a0fdbb8f78925643ac2660e82f72bed81a09eacabf410dc",
+      "size": 150169
+    },
+    "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr1.jpg": {
+      "oid": "e6a397011449c367d082321c21dd8ff0e0d935dc8c80dcd92f1e18a6896cc015",
+      "size": 66372
+    },
+    "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr10.jpg": {
+      "oid": "5cbbed8164bf1dfc795af754f9f5be2ba4d7d60f4b4beb4df70c76d28768dd66",
+      "size": 82222
+    },
+    "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr11.jpg": {
+      "oid": "43c3ac806b2afaf322f9eaceec9198c3cb210ef01ba5e3d1e878b837421b646b",
+      "size": 41846
+    },
+    "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr12.jpg": {
+      "oid": "aa7009c182ff60822ca7765ac9cfad97cfd4f5bd9b670e4ce9ec0de0246a02b8",
+      "size": 47311
+    },
+    "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr2.jpg": {
+      "oid": "411dfd993ce84ff7feed2f5dae89cea931b14e990c7d3b81e46975d7057e8329",
+      "size": 72110
+    },
+    "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr3.jpg": {
+      "oid": "c066dc181ea818f12c5b15c6736ccc427556f8dced6c74d27fb1b0970b509939",
+      "size": 80597
+    },
+    "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr4.jpg": {
+      "oid": "39fcb3764286c4801bd12ba4269f427b47bb8d203a209588ff91f51da4002e60",
+      "size": 70001
+    },
+    "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr5.jpg": {
+      "oid": "82fef0cfe83ad2fd8bf29c9af5f92f8cf77d780da63653b482c69080f0e7d29b",
+      "size": 64949
+    },
+    "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr6.jpg": {
+      "oid": "c01e040dfe2e52738976b4914ce5e7446b89dd3dd085fa684a93cb491fc491d2",
+      "size": 99883
+    },
+    "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr7.jpg": {
+      "oid": "27fca738c99c779a131db82ed9312f6874f57cfcb3e9f111c46d980099c16522",
+      "size": 58302
+    },
+    "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr8.jpg": {
+      "oid": "cef983f92955dd4f450953b648f29aa7606acc976f28bb52f5995dde9eea0946",
+      "size": 75042
+    },
+    "data/C8/cook/dishes/meat_dish/水煮牛肉/sznr9.jpg": {
+      "oid": "3aa9bb1546d44236d71c7c3abd9458e5c797dc21266a846d02b4363a2ea01b65",
+      "size": 89704
+    },
+    "data/C8/cook/dishes/meat_dish/清蒸鳜鱼/清蒸鳜鱼成品图.jpg": {
+      "oid": "cdf7dc591a39cec31aa9d63c174c12d4f6a8aa9857a7c5fb56291b60b5de878d",
+      "size": 241354
+    },
+    "data/C8/cook/dishes/meat_dish/湖南家常红烧肉/湖南家常红烧肉.jpeg": {
+      "oid": "45909a0725c1a87a73d523e280c54ec05ffafb9dce2a2b0708d4e371cafe1ba8",
+      "size": 536072
+    },
+    "data/C8/cook/dishes/meat_dish/湘祁米夫鸭/step①：准备米粉.jpg": {
+      "oid": "513b3c124035395f72c3559d0d00a65147bd6a69be7db5d18fb308a711a52453",
+      "size": 293632
+    },
+    "data/C8/cook/dishes/meat_dish/湘祁米夫鸭/step②：煸炒鸭子.jpg": {
+      "oid": "950fb26c8434b02bf6b7161d298adc697a74d9746194b48a3acc9a3360b6b63e",
+      "size": 198874
+    },
+    "data/C8/cook/dishes/meat_dish/湘祁米夫鸭/step③：米粉裹鸭.jpg": {
+      "oid": "b13589247004aac650b70b2a9574183863eaa2731f931547d70b76ed2852e183",
+      "size": 284673
+    },
+    "data/C8/cook/dishes/meat_dish/湘祁米夫鸭/step④：高压锅蒸煮.jpg": {
+      "oid": "14af960589443729924daf22f022b82b375264025243cd653d37489ff0ef5c0f",
+      "size": 210826
+    },
+    "data/C8/cook/dishes/meat_dish/湘祁米夫鸭/湘祁米夫鸭.jpg": {
+      "oid": "b0c65928f9958776d91747bceb1c5a7169b6973e1d76edacf5fdd1ffad0854a8",
+      "size": 455420
+    },
+    "data/C8/cook/dishes/meat_dish/牛排/牛排.jpg": {
+      "oid": "14fff3f6abd2e95f28d8dee24727516e997208adb44affa2b9b1d30e9ee8fc32",
+      "size": 127330
+    },
+    "data/C8/cook/dishes/meat_dish/猪皮冻/猪皮冻.jpg": {
+      "oid": "b96888969caf02dba9eb5dba0d8a8d7211b529aadbb6b9d731cda50bd21c7776",
+      "size": 25083
+    },
+    "data/C8/cook/dishes/meat_dish/瘦肉土豆片/瘦肉土豆片.jpg": {
+      "oid": "da63bbe24e8dbd48c4885102a0fac62825ba5beb66404935920e3c12b28326b9",
+      "size": 254333
+    },
+    "data/C8/cook/dishes/meat_dish/糖醋排骨/1.jpeg": {
+      "oid": "0843779d34a3147dfb2cb3ea8a108dee74dfd64a2b1c6f4e70173b1041f581ab",
+      "size": 88411
+    },
+    "data/C8/cook/dishes/meat_dish/糖醋排骨/2.jpeg": {
+      "oid": "5dcb3b61dfa257da166037feccc2deef673cb788e9ca2e41b68fb5d146dd5c0f",
+      "size": 202934
+    },
+    "data/C8/cook/dishes/meat_dish/红烧猪蹄/红烧猪蹄.jpg": {
+      "oid": "930dc1711d81fe6fde7eafe85e6ec65f8a5bb47e1aafa6595bbc78f0e77e4b5c",
+      "size": 261696
+    },
+    "data/C8/cook/dishes/meat_dish/红烧肉/000.jpg": {
+      "oid": "4a931db08a57c50e6b5718d357cda7e4bed78fc599fc8d99220f3a26c6c135a8",
+      "size": 366456
+    },
+    "data/C8/cook/dishes/meat_dish/红烧肉/001.jpg": {
+      "oid": "0f027789e9796f6a0413883ee5ff63b1995e9a3b3a3ec4e4771e0504b53adeea",
+      "size": 272650
+    },
+    "data/C8/cook/dishes/meat_dish/羊排焖面/羊排焖面.jpg": {
+      "oid": "5d5b6a4e37d5ba54623c406c470e42086bb211b1d049f3cf4074a96162c331c1",
+      "size": 550609
+    },
+    "data/C8/cook/dishes/meat_dish/老妈蹄花/result1.jpg": {
+      "oid": "49302b6cd77697e1061e7dd6dc5a9dba4e2ea3551c0d2ce27aa413628798a81f",
+      "size": 601320
+    },
+    "data/C8/cook/dishes/meat_dish/老妈蹄花/result2.jpg": {
+      "oid": "d1027277f806d2e2b483a7bd71d1e8db5055dc5d06ad8d6b035a43855e9c0333",
+      "size": 950451
+    },
+    "data/C8/cook/dishes/meat_dish/老妈蹄花/result3.jpg": {
+      "oid": "ebf3b29cc7e217f90d9d107d5b8cda37f447f4fcb5decf38305588138f958053",
+      "size": 612599
+    },
+    "data/C8/cook/dishes/meat_dish/芥末罗氏虾/芥末罗氏虾成品.jpg": {
+      "oid": "3a837145efd525dd1b9af6dcdb78759ef70b064ad82a36e0821a02ac94b13fe2",
+      "size": 436219
+    },
+    "data/C8/cook/dishes/meat_dish/茭白炒肉/1.jpeg": {
+      "oid": "9879cdd27a10433c7f7ebb519dc938b7b06b936b9ecf8eb2b9fa713c800969f9",
+      "size": 167692
+    },
+    "data/C8/cook/dishes/meat_dish/茭白炒肉/2.jpeg": {
+      "oid": "ec7e19057e45048f7c3158b795f93c42ae8e2d922dc0da22f95865cd69e8a139",
+      "size": 153234
+    },
+    "data/C8/cook/dishes/meat_dish/荔枝肉/1.jpeg": {
+      "oid": "d72a37a69f9d1faf6b1acd7c4cfbf19cad0c8ed4da59367ca6c4feef513c5737",
+      "size": 175852
+    },
+    "data/C8/cook/dishes/meat_dish/荔枝肉/2.jpeg": {
+      "oid": "dee79059efdff92ad75aae894dbee9b509dffbfa3832854b5d4bd92684c07c6c",
+      "size": 137791
+    },
+    "data/C8/cook/dishes/meat_dish/荔枝肉/3.jpeg": {
+      "oid": "93c0f369919f5c3f6ba73b730cb09ebe16f658a399033f7a54fe9beb9ca30029",
+      "size": 184261
+    },
+    "data/C8/cook/dishes/meat_dish/荔枝肉/4.jpeg": {
+      "oid": "44e8417d678358f92a4fa151df653ef07b43e3d30023478da08231a5c466f817",
+      "size": 175823
+    },
+    "data/C8/cook/dishes/meat_dish/荔枝肉/5.jpeg": {
+      "oid": "851aa648571fa6118357d6e5ee67feb506e21b7af6a59b5b80a4eaa107708f73",
+      "size": 146027
+    },
+    "data/C8/cook/dishes/meat_dish/荔枝肉/6.jpeg": {
+      "oid": "6605f422c3c89789f2a930fa76ca6d0a61dc9d1522f213ed2840d7e0632f1f99",
+      "size": 192385
+    },
+    "data/C8/cook/dishes/meat_dish/荔枝肉/7.jpeg": {
+      "oid": "da5f72c8a7e58c2264e737a6e32879ca93103b6ca2c9f48270fd345033fb3586",
+      "size": 181448
+    },
+    "data/C8/cook/dishes/meat_dish/荷兰豆炒腊肠/1.png": {
+      "oid": "0b8091a3fbba4e25330fccefd896a5b5a7feffbe60f18d0bebb7e91a5da5be00",
+      "size": 233062
+    },
+    "data/C8/cook/dishes/meat_dish/荷兰豆炒腊肠/2.png": {
+      "oid": "8699a7dbe78ebac0709e38c095381f3a604b13fc3ce6bbc71a4eef97019c2d2c",
+      "size": 246925
+    },
+    "data/C8/cook/dishes/meat_dish/血浆鸭/血浆鸭(微辣).jpg": {
+      "oid": "ca83bd9a682db12c20260f4d0e158237f45144c182d50c1f11d37388070eeed0",
+      "size": 236142
+    },
+    "data/C8/cook/dishes/meat_dish/血浆鸭/血浆鸭(特辣).jpg": {
+      "oid": "78c19e37130ee424cdaf18cdc9284a6a5a1c7c3fdb122044c58b84eba4d052be",
+      "size": 403802
+    },
+    "data/C8/cook/dishes/meat_dish/西红柿土豆炖牛肉/abaaba_1.png": {
+      "oid": "df5bd3d5d2d5708c53ccb5d111b1647fbccc644859717e738ccbf2e188ae2ebe",
+      "size": 678484
+    },
+    "data/C8/cook/dishes/meat_dish/豆豉鲮鱼油麦菜/豆豉鲮鱼油麦菜成品.jpg": {
+      "oid": "3391847f2aa1b6ed390ab0ee53ca2f85ed6ef64cf46faaf2ba4f70c607fed910",
+      "size": 482681
+    },
+    "data/C8/cook/dishes/meat_dish/豉汁蒸白鱔/豉汁蒸白鱔.jpeg": {
+      "oid": "bb6248f7dcb2afd7290353238076851894806ea374c710545d923b665b877777",
+      "size": 63117
+    },
+    "data/C8/cook/dishes/meat_dish/贵州辣子鸡/贵州辣子鸡.jpg": {
+      "oid": "b8e19f3f206fd2f1f8d99b032d9cfd951171012ffb78a787f49d3c1b2443d06b",
+      "size": 192203
+    },
+    "data/C8/cook/dishes/meat_dish/酱排骨/1.jpeg": {
+      "oid": "ed5945aab58373295bd593d2ccd20a3bd8f5a8b5dbdc36a8aa890e7955a8258b",
+      "size": 155288
+    },
+    "data/C8/cook/dishes/meat_dish/酱排骨/2.jpeg": {
+      "oid": "6195531e46d5e6c76e6f601267c999bbe1b24354a46960f736b9d5f476546ebb",
+      "size": 130831
+    },
+    "data/C8/cook/dishes/meat_dish/酱牛肉/酱牛肉.jpg": {
+      "oid": "569dce1406a1f2d994e7d9aea4917bba4a2e988f75cde14c236f7d8ebfaa26e9",
+      "size": 138909
+    },
+    "data/C8/cook/dishes/meat_dish/醉排骨/1.jpeg": {
+      "oid": "afe62da18a7c0600544b8f060dbe9b81afa15e879033f197b3203398124f037c",
+      "size": 203763
+    },
+    "data/C8/cook/dishes/meat_dish/青椒土豆炒肉/青椒土豆炒肉.jpg": {
+      "oid": "ca72217c05b13cd4b2c59a57ca4bd4be9ae4d6e9538ed46ceba72f09b0e2d9e3",
+      "size": 851311
+    },
+    "data/C8/cook/dishes/meat_dish/香干芹菜炒肉/香干芹菜炒肉.jpg": {
+      "oid": "a122c3a49d2dc5dacce10711262a233180ac3a2ded76e2cee0860b23c0fd632d",
+      "size": 643709
+    },
+    "data/C8/cook/dishes/meat_dish/香煎五花肉/香煎五花肉.jpg": {
+      "oid": "278471f5f14ade38b95de697f772b810d398c3badbb0c70303bb1248e0f9c564",
+      "size": 191816
+    },
+    "data/C8/cook/dishes/meat_dish/香菇滑鸡/香菇滑鸡.jpg": {
+      "oid": "4aadf9ec374925ec34ecb5eb8d9504cd4158a4d2441a6aaffefa6069588f72bc",
+      "size": 942353
+    },
+    "data/C8/cook/dishes/meat_dish/香辣鸡爪煲/result1.jpg": {
+      "oid": "d17f782e6b200db8a3097685223a72e768da3dade3c8f2342e9dd9a18594b289",
+      "size": 569564
+    },
+    "data/C8/cook/dishes/meat_dish/香辣鸡爪煲/result2.jpg": {
+      "oid": "02ad71b6e40f05a703a7d2ebcd6189738246c742c440fb0d01f37e6741d406f0",
+      "size": 903208
+    },
+    "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz1.jpg": {
+      "oid": "fe0a89d568510ab2740c7b48416610c05238c0f19c35e3ff30483e7751b124b3",
+      "size": 252183
+    },
+    "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz2.jpg": {
+      "oid": "9700691bd0ed3e3cf03cacbe5ae25ed0e0b163401b9261f0f3c78dd944aa901b",
+      "size": 97239
+    },
+    "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz3.jpg": {
+      "oid": "d6d708414df8f6df582b03586796bac0fd1d601a760e5beee2dd8a6a44f2dfc5",
+      "size": 148496
+    },
+    "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz4.jpg": {
+      "oid": "eb5fc1b83e420b441206a7d9b3eb0869412c12d937fe95f6e9c22988ba01088e",
+      "size": 119691
+    },
+    "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz5.jpg": {
+      "oid": "eb29c75d0125c8f38c4a327b70f17c8434bd33be35ce5f1183fda2ec70617d65",
+      "size": 120291
+    },
+    "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz6.jpg": {
+      "oid": "266dfcf79f86514ac97d7885a9504ea1839a07df478d2b49f102ce5f3c8a2d2f",
+      "size": 168925
+    },
+    "data/C8/cook/dishes/meat_dish/鱼香茄子/yxqz7.jpg": {
+      "oid": "39032de47f0918e64e4334ede9c450d86aa7284a3b918d0d30bea5a17f2b69e9",
+      "size": 169683
+    },
+    "data/C8/cook/dishes/meat_dish/麻婆豆腐/1.jpeg": {
+      "oid": "fea5a8356b2bd0309ba51d50369d06fb493675dc309d6d85aad2d0bc191b418e",
+      "size": 177651
+    },
+    "data/C8/cook/dishes/meat_dish/黑椒牛柳/黑椒牛柳.jpg": {
+      "oid": "74ca83027454c83aa390d13401ff4c366b551bb063a84cc1104570c1a32f8fce",
+      "size": 89269
+    },
+    "data/C8/cook/dishes/meat_dish/黔式腊肠娃娃菜/黔式腊肠娃娃菜.jpg": {
+      "oid": "d6cd2bc0e00cbce19a31c978a32c2e8326a23f47837fc4f10a370ea49e5b3ba0",
+      "size": 327261
+    },
+    "data/C8/cook/dishes/semi-finished/懒人蛋挞/懒人蛋挞.png": {
+      "oid": "89544396fa70bcd76d6489c9d343e59d31ec0ec3405e840e23b14f774344f1a8",
+      "size": 659940
+    },
+    "data/C8/cook/dishes/semi-finished/炸薯条/炸薯条.jpg": {
+      "oid": "1f307f51d716674a1f22027277f8f66282233a431af3456582e9fcc978ee6f9b",
+      "size": 391271
+    },
+    "data/C8/cook/dishes/semi-finished/空气炸锅羊排/羊排.jpg": {
+      "oid": "3d934589b30ef560f645accc5ecaca383713f00cf23b702bc52695e4424cdfca",
+      "size": 568327
+    },
+    "data/C8/cook/dishes/semi-finished/空气炸锅鸡翅中/鸡翅中_0.jpg": {
+      "oid": "dfb07d57f5ae71e8e8120064fe43da126ad053c7eba3f0b035be00ea1ef99d0e",
+      "size": 545083
+    },
+    "data/C8/cook/dishes/semi-finished/空气炸锅鸡翅中/鸡翅中_1.jpg": {
+      "oid": "003fd38c64f6dbab93dcc21e6ce7a679222e4763d917175953c0a4c1e5da7867",
+      "size": 551315
+    },
+    "data/C8/cook/dishes/semi-finished/速冻汤圆/速冻汤圆.jpg": {
+      "oid": "c873955d6f4782cdde126f1ab0b96d0870dce35a72ef9b7f71c0078634b221c0",
+      "size": 490819
+    },
+    "data/C8/cook/dishes/soup/勾芡香菇汤/1.jpeg": {
+      "oid": "64c6aa506d788f66034dd3322eba1af825cec9505956be1f6b41f2595083caa9",
+      "size": 111653
+    },
+    "data/C8/cook/dishes/soup/勾芡香菇汤/2.jpeg": {
+      "oid": "66e16cecb8cf8a329c36f78b7edcdcdcf8f5ab7f8c8c7fe1ba13ba3c06af9987",
+      "size": 93096
+    },
+    "data/C8/cook/dishes/soup/勾芡香菇汤/3.jpeg": {
+      "oid": "244a9b12ed25f461cfc6661032538e50e8c76c8b6b9a50b12d72fcefb161dd8d",
+      "size": 156342
+    },
+    "data/C8/cook/dishes/soup/昂刺鱼豆腐汤/昂刺鱼豆腐汤01.jpg": {
+      "oid": "0005e2cf5436c419e86098fbd44da20bf914eb998a0e3229cf33b622b624d2bc",
+      "size": 282973
+    },
+    "data/C8/cook/dishes/soup/昂刺鱼豆腐汤/昂刺鱼豆腐汤02.jpg": {
+      "oid": "b862b61f45b5b74e6f98740fb12a7d6e42c8b83c8d0c59d2bce479404247b472",
+      "size": 258482
+    },
+    "data/C8/cook/dishes/soup/昂刺鱼豆腐汤/沙光鱼豆腐汤.jpg": {
+      "oid": "c4fbd591613dcd80ca74bff2176b0b8a173bef7cd44f309b147dc18c04fe523c",
+      "size": 176307
+    },
+    "data/C8/cook/dishes/soup/朱雀汤/朱雀汤.jpg": {
+      "oid": "90606125701e0de752a20c9c9428d6988a3c5ba52be306b541978ae23fb408b3",
+      "size": 319626
+    },
+    "data/C8/cook/dishes/soup/玉米排骨汤/玉米排骨汤.jpeg": {
+      "oid": "f24f389efebb87c0b2809a8b134f199405f3d87a75dbeb0a83caf07a5c2563f3",
+      "size": 316330
+    },
+    "data/C8/cook/dishes/soup/羊肉汤/羊肉汤.jpg": {
+      "oid": "d313dfe5e7348082e71ff515e2fa95859bb459f1338e74caf6ea3fa708aaaa71",
+      "size": 180904
+    },
+    "data/C8/cook/dishes/soup/菌菇炖乳鸽/菌菇炖乳鸽.jpg": {
+      "oid": "607a984755c2837a8f03d67327f5f280cf8038f3178466f71e1e06f20d677674",
+      "size": 170623
+    },
+    "data/C8/cook/dishes/soup/银耳莲子粥/银耳莲子粥.png": {
+      "oid": "1ec7cfe938f4c2d588e82b7428704d768cdc9410ecb31814c40ed5c8edcf7ebc",
+      "size": 50218
+    },
+    "data/C8/cook/dishes/soup/陈皮排骨汤/陈皮排骨汤.jpg": {
+      "oid": "63a81eca9c15e9ed8ef8e01f6792f545959778e7dd2a40660557a96bab07d077",
+      "size": 257484
+    },
+    "data/C8/cook/dishes/staple/凉粉/lf1.jpg": {
+      "oid": "61893b5370ae37caaf92f3174023cc787ca113e8b2aa6724d90862d48c82f2c2",
+      "size": 129562
+    },
+    "data/C8/cook/dishes/staple/凉粉/lf10.jpg": {
+      "oid": "eeb55ae76874ad3639b9f3894fe51dd8b82896869ec3e67457f320182cd190d0",
+      "size": 87453
+    },
+    "data/C8/cook/dishes/staple/凉粉/lf11.jpg": {
+      "oid": "01ea2efbe5ca36dd8de751c44a070dcc7f044e7db3a0074270e28219a0ca2de4",
+      "size": 73272
+    },
+    "data/C8/cook/dishes/staple/凉粉/lf2.jpg": {
+      "oid": "67ac0debe0e318b67e13d6c00e70c9ba2299f5b041c89d19952e3e9324d1212c",
+      "size": 69094
+    },
+    "data/C8/cook/dishes/staple/凉粉/lf3.jpg": {
+      "oid": "c2b699e6a40c742aadf8bbb9f354fd7c7ab62f35c6713551afef95130c2e8a18",
+      "size": 73385
+    },
+    "data/C8/cook/dishes/staple/凉粉/lf4.jpg": {
+      "oid": "a1f39b0767548b13cb7dc8982168f1007de952971f1eeefc917376983ea29aac",
+      "size": 57536
+    },
+    "data/C8/cook/dishes/staple/凉粉/lf5.jpg": {
+      "oid": "47a212b467fc394bce99d5fa5b6005ef081f71027b2a1ab3b94eaa1b96553ac4",
+      "size": 65076
+    },
+    "data/C8/cook/dishes/staple/凉粉/lf6.jpg": {
+      "oid": "5debe910fe1164534d19f47565fdadc54d539578a908ba42ef6ab18896f9f189",
+      "size": 64287
+    },
+    "data/C8/cook/dishes/staple/凉粉/lf7.jpg": {
+      "oid": "dc5d3da9d1ff64b45c49cba4b41603bf980b4049f9f83be0ec9d639ba91044cd",
+      "size": 49289
+    },
+    "data/C8/cook/dishes/staple/凉粉/lf8.jpg": {
+      "oid": "6b3dafbcad1296908e55e806af1c507f8521441a618b6c53523bb1044c3915a9",
+      "size": 60950
+    },
+    "data/C8/cook/dishes/staple/凉粉/lf9.jpg": {
+      "oid": "6af61bda9c1d60cfadd36e0aa1b8ffc0e2c860d4524182300360e07ccba004b5",
+      "size": 89763
+    },
+    "data/C8/cook/dishes/staple/基础牛奶面包/1-1成品.jpg": {
+      "oid": "f4688133a489ecfcf8151e85c5bde949e5a81025a4ea72d3fe78fdeb3983e7fd",
+      "size": 41865
+    },
+    "data/C8/cook/dishes/staple/基础牛奶面包/2-1设备简介1.jpg": {
+      "oid": "ad2286261c0539859053a0b418c611441aeeb9650718b07be994916483cc15b4",
+      "size": 372430
+    },
+    "data/C8/cook/dishes/staple/基础牛奶面包/2-2设备简介2.jpg": {
+      "oid": "fd6c0a2d566317b225d08bf477b8176dd08539999c95e449ce646456846cc9fb",
+      "size": 338124
+    },
+    "data/C8/cook/dishes/staple/基础牛奶面包/4-1酵头1.jpg": {
+      "oid": "16234b6b0950130a5c11748d601f5bbbc9bc4cd379038c1be7bb95a7802437b2",
+      "size": 25710
+    },
+    "data/C8/cook/dishes/staple/基础牛奶面包/4-2酵头2.jpg": {
+      "oid": "acf5a9003d6db7bd4c0d730f32917de0e00bd287d4b2ed42e00e3eba81483eba",
+      "size": 81943
+    },
+    "data/C8/cook/dishes/staple/基础牛奶面包/4-3酵头3.jpg": {
+      "oid": "34f1f2117451edea9f3379c65f1e10c89b1d2aa02fcc2787b2d09fc7be421c88",
+      "size": 40494
+    },
+    "data/C8/cook/dishes/staple/基础牛奶面包/4-4此时的面团.jpg": {
+      "oid": "f28e7c4ba67b43e829af75036803dbc3d50eef7247357b2db55d44c84ff365b1",
+      "size": 40123
+    },
+    "data/C8/cook/dishes/staple/基础牛奶面包/4-5转移到容器内.jpg": {
+      "oid": "ad4126cb21f3093205985667bd1da83125505a40716cd5eebffa81e38f9efdcd",
+      "size": 31905
+    },
+    "data/C8/cook/dishes/staple/基础牛奶面包/4-6成品面包.jpg": {
+      "oid": "45531359bb77762d2df3540d5c51e0aa83b3d0f2fa9947b03ddbaa2e8180ef10",
+      "size": 42794
+    },
+    "data/C8/cook/dishes/staple/基础牛奶面包/5-1成品.jpg": {
+      "oid": "fe52d48e058bd5803c56bcb6499c26e78a7b3d25dcd74ee2144a6602e3d8f4f7",
+      "size": 33865
+    },
+    "data/C8/cook/dishes/staple/微波炉腊肠煲仔饭/微波炉腊肠煲仔饭.png": {
+      "oid": "bf6a4b313a3eb6935bddd6e0c6af4c762e91139d4314beffa9365d729ea7ee4d",
+      "size": 524335
+    },
+    "data/C8/cook/dishes/staple/意式肉酱面/final.jpg": {
+      "oid": "c4308dbfe8c650eaa64adfd1453267fa0fbef2576950f70413dc5cf049797bba",
+      "size": 168916
+    },
+    "data/C8/cook/dishes/staple/意式肉酱面/sauce.jpg": {
+      "oid": "1fd980ce8583f0e29743981d598f40bc4cfca7178ed79d9d4934aefbd1711968",
+      "size": 102009
+    },
+    "data/C8/cook/dishes/staple/意式肉酱面/spaghetti.jpg": {
+      "oid": "0beec4d401e3cc317cacba32b324f84eddbfae4f58baf741411f420b95b15a12",
+      "size": 169125
+    },
+    "data/C8/cook/dishes/staple/扬州炒饭/veg.png": {
+      "oid": "07298958f870952d90a73c331a97fbf62d6917b5d9b8f5332196b0071ab58d33",
+      "size": 567767
+    },
+    "data/C8/cook/dishes/staple/披萨饼皮/001.jpeg": {
+      "oid": "ddf220a8f27d244060686f06833a9b08d843bb96ad5a8ea51e6bb76b26320623",
+      "size": 298265
+    },
+    "data/C8/cook/dishes/staple/日式咖喱饭/成品.jpg": {
+      "oid": "d5d98099674c671c010ded82351ad55ab896a989826cec48bc4ed4c55020393e",
+      "size": 152896
+    },
+    "data/C8/cook/dishes/staple/日式肥牛丼饭/成品.png": {
+      "oid": "dbfbec148ac10e7864524df3cd78e775ca7f17d2452e09781be3c375b217fc2e",
+      "size": 768884
+    },
+    "data/C8/cook/dishes/staple/河南蒸面条/河南蒸面条.png": {
+      "oid": "d0638228136e6496fdbb18cb7e54a2832132ae74f0d0eba7005900009b029283",
+      "size": 876711
+    },
+    "data/C8/cook/dishes/staple/火腿饭团/饭团.png": {
+      "oid": "ef35bd4e25a072054cbea8a2497d9ccbf2dd2c6f693c2c603c79906f0e0a39fd",
+      "size": 672534
+    },
+    "data/C8/cook/dishes/staple/炒凉粉/chaoliangfen.jpg": {
+      "oid": "4852c438189a41be847389d8e327b4e0abd270e7a1ea2c777fedd78788c13b10",
+      "size": 567744
+    },
+    "data/C8/cook/dishes/staple/炒凉粉/炒凉粉成品.jpg": {
+      "oid": "4852c438189a41be847389d8e327b4e0abd270e7a1ea2c777fedd78788c13b10",
+      "size": 567744
+    },
+    "data/C8/cook/dishes/staple/炒意大利面/a.jpg": {
+      "oid": "ead34b3329208a7e058badc4cb271ba63f9f7e21a0660f00b753d096f9cd3728",
+      "size": 197054
+    },
+    "data/C8/cook/dishes/staple/烙饼/成品.jpg": {
+      "oid": "9be1b87ddc634a8c8df47e1f3725a5a25e5426875943c11b4285dc484c4b4f3a",
+      "size": 144872
+    },
+    "data/C8/cook/dishes/staple/烧饼/芝麻烧饼.jpg": {
+      "oid": "895d1be5cd871c5041d87ec45a442e4513665af69f7f44c1c57eb383b1b03f5f",
+      "size": 105129
+    },
+    "data/C8/cook/dishes/staple/电饭煲三文鱼炊饭/电饭煲三文鱼炊饭.webp": {
+      "oid": "9915bc185429d27e252c8847b89742088e556579490feb72da0eb17d7ea861b9",
+      "size": 81664
+    },
+    "data/C8/cook/dishes/staple/空气炸锅照烧鸡饭/空气炸锅照烧鸡饭.jpg": {
+      "oid": "5d76a62d253e145506d66bcb9f86f67c362839466146379d06b77568e5fa323e",
+      "size": 451342
+    },
+    "data/C8/cook/dishes/staple/米饭/rice_regularPot.jpeg": {
+      "oid": "00047100735aeec050c1ada5420e49fc00712e244f522ea04a045fbdb8a9ada1",
+      "size": 138421
+    },
+    "data/C8/cook/dishes/staple/老友猪肉粉/老友猪肉粉.jpg": {
+      "oid": "65993209bb99dcb7f10ba75c124433cda5617545400f7d4398e0e5750f4c9cbe",
+      "size": 482340
+    },
+    "data/C8/cook/dishes/staple/茄子肉煎饼/1茄片肉片.jpg": {
+      "oid": "06e6cf3d717452739c56fef0853d940bf3fc208d86f385a50bb17f81e5025e26",
+      "size": 600178
+    },
+    "data/C8/cook/dishes/staple/茄子肉煎饼/2米粉250g.jpg": {
+      "oid": "342783f2ff0f04c8af99b17dcfd1dc40c2cdeb4b74a821a34ec554db6b23d100",
+      "size": 537767
+    },
+    "data/C8/cook/dishes/staple/茄子肉煎饼/3米粉面粉鸡蛋.jpg": {
+      "oid": "7ab28b3242958743e04b70e9acea13c13916d0e7347cd12daa3e4fef49817f24",
+      "size": 725103
+    },
+    "data/C8/cook/dishes/staple/茄子肉煎饼/4混合.jpg": {
+      "oid": "47871a0e4bd03efa5c68f4cb7364f0a72f10095ba4a8db6b679d47fe2348edd7",
+      "size": 577383
+    },
+    "data/C8/cook/dishes/staple/茄子肉煎饼/5起锅烧油.jpg": {
+      "oid": "e234eda17cc4fcca67e09e5633020f68f7d137b3bc48570a9a9024f511ad0564",
+      "size": 776917
+    },
+    "data/C8/cook/dishes/staple/茄子肉煎饼/6开始煎.jpg": {
+      "oid": "13e2daff216e2e9b94d8fc6b4c84c70832c831f7fe6d5242a021b2e0e0e4fdcc",
+      "size": 778712
+    },
+    "data/C8/cook/dishes/staple/茄子肉煎饼/7撒盐准备起锅.jpg": {
+      "oid": "35604453c43d1574f8e40fda32e0580f3fffcf10cdb88275081f55a264e97a3e",
+      "size": 842831
+    },
+    "data/C8/cook/dishes/staple/茄子肉煎饼/茄子肉煎饼.jpg": {
+      "oid": "203b2885c4a8d6dd4d730c1b1688bc4b3d00abec9dc2cfc58ca5c57534451d68",
+      "size": 848999
+    },
+    "data/C8/cook/dishes/staple/西红柿鸡蛋挂面/food.jpg": {
+      "oid": "8bcb1cee7a8eca1582b55ef0a758a347e0204d844e90a2dd9e77c2d44c1b43f4",
+      "size": 139657
+    },
+    "data/C8/cook/dishes/staple/西红柿鸡蛋挂面/fryEgg.jpg": {
+      "oid": "1beadffd0179aea6bc1271d24980cdfc688a785bdf86f2e1a67e9b2ccc460586",
+      "size": 26908
+    },
+    "data/C8/cook/dishes/staple/西红柿鸡蛋挂面/pretreatFood.jpg": {
+      "oid": "8227fa95c101f817007409f9357fa7adfe507a513df2426025399756a493b165",
+      "size": 189603
+    },
+    "data/C8/cook/dishes/staple/西红柿鸡蛋挂面/tomato.jpg": {
+      "oid": "ddd37080a214ce4af9526a22ad4fd82726ff5fac610093e639876a8142475717",
+      "size": 151487
+    },
+    "data/C8/cook/dishes/staple/西红柿鸡蛋挂面/tomatoNoodle.jpg": {
+      "oid": "d69ab5423a6bac61311f93f6b28648ef11935e376d20fa4dda98d0a6ef1854af",
+      "size": 138030
+    },
+    "data/C8/cook/dishes/staple/酱拌荞麦面/1.jpeg": {
+      "oid": "fa57a2b64265cb28abaedb4e7fa2a96838d00725f24aea294f1d3efd1e250b17",
+      "size": 190513
+    },
+    "data/C8/cook/dishes/staple/酱拌荞麦面/2.jpeg": {
+      "oid": "c0af0c775d12c9ffaeca16bd5e4c1b0ed9abf37e91f337a6f52c22422cde2fad",
+      "size": 198901
+    },
+    "data/C8/cook/dishes/staple/韩式拌饭/韩式拌饭.png": {
+      "oid": "37f962c58c7c8165ae99abbbe8850a5e92d6e4d12da86de4ad5d66d4b0fdf454",
+      "size": 241981
+    },
+    "data/C8/cook/dishes/staple/鲣鱼海苔玉米饭/米饭.jpg": {
+      "oid": "6e5a586a8d7ba5f2a2c7b793b16f917426bcbd7a55289bb7bf82e009f93fb08b",
+      "size": 419183
+    },
+    "data/C8/cook/dishes/template/示例菜/示例菜.jpg": {
+      "oid": "d5d98099674c671c010ded82351ad55ab896a989826cec48bc4ed4c55020393e",
+      "size": 152896
+    },
+    "data/C8/cook/dishes/vegetable_dish/上汤娃娃菜/上汤娃娃菜.png": {
+      "oid": "8395e4f7497206589f16ce6b051e9af2b545cc7ce7bf9a94ee4f160075835b1c",
+      "size": 130842
+    },
+    "data/C8/cook/dishes/vegetable_dish/凉拌木耳/1.jpg": {
+      "oid": "00e409375303807716393a7bd834348abb75efe9f59249be8e9853af5c48b190",
+      "size": 205351
+    },
+    "data/C8/cook/dishes/vegetable_dish/凉拌木耳/10.jpg": {
+      "oid": "e03a194a6110042022f54e29c4def4a65f3531742ba8959ba64e550a7f7e3f6b",
+      "size": 360952
+    },
+    "data/C8/cook/dishes/vegetable_dish/凉拌木耳/2.jpg": {
+      "oid": "f8a1565a6a69c09173a645ad12d7f6fd7a0e64fdb5965f65eb44438b96ffd11d",
+      "size": 306422
+    },
+    "data/C8/cook/dishes/vegetable_dish/凉拌木耳/3.jpg": {
+      "oid": "558c51056edaf2c4a4896a55c21102c5c489e34444ef7a8f4177a6781cd5b5ce",
+      "size": 285668
+    },
+    "data/C8/cook/dishes/vegetable_dish/凉拌木耳/4.jpg": {
+      "oid": "f923ee021ae30dbff2f19a2eee87f462109a5eff4529e6537068311a6a42e74d",
+      "size": 162922
+    },
+    "data/C8/cook/dishes/vegetable_dish/凉拌木耳/5.jpg": {
+      "oid": "717b54d6849dcb6c06c1cac1a2a70e3ac4c5de2bf10f22ca8c70f0f4a925ae8e",
+      "size": 227149
+    },
+    "data/C8/cook/dishes/vegetable_dish/凉拌木耳/6.jpg": {
+      "oid": "5b1f77fa43e31a5469a2c8901563e101464ca8970366f4983097cdef18863d78",
+      "size": 128349
+    },
+    "data/C8/cook/dishes/vegetable_dish/凉拌木耳/7.jpg": {
+      "oid": "91392b3f685b97e0fdc715f38076d73b0d06247ec8c5cff21ffeaf598839d243",
+      "size": 171107
+    },
+    "data/C8/cook/dishes/vegetable_dish/凉拌木耳/8.jpg": {
+      "oid": "c03bd4942f327e3c6c5aa3af6b6f1e125ed3f4245628eb82b55b70af2c688779",
+      "size": 294458
+    },
+    "data/C8/cook/dishes/vegetable_dish/凉拌木耳/9.jpg": {
+      "oid": "3555c972dd6744cffe749ec0ce845a8b84cf98a6b9df0e861dc8c58ed63f338a",
+      "size": 295821
+    },
+    "data/C8/cook/dishes/vegetable_dish/凉拌莴笋/1.jpeg": {
+      "oid": "b0a4566cbfb2d6ea8eb73a0996dab208cceb733d3a17b41912c4adf0790524d7",
+      "size": 146717
+    },
+    "data/C8/cook/dishes/vegetable_dish/包菜炒鸡蛋粉丝/1.jpg": {
+      "oid": "f08d14fedaea7dfbb05553be50b7bc6da776e1b31c0fd573850ce68cdaa7b3fc",
+      "size": 569608
+    },
+    "data/C8/cook/dishes/vegetable_dish/小炒藕丁/小炒藕丁.jpg": {
+      "oid": "55b904affb22c52eaaafb50493222bc45f50ffb9221384e373cd7d5336cd9fc1",
+      "size": 142291
+    },
+    "data/C8/cook/dishes/vegetable_dish/干锅花菜/干锅花菜.jpg": {
+      "oid": "9c597133db31a865c86a0b7eaed15f79de3c0c722a08f8160fb8d6aa08e51b0c",
+      "size": 593802
+    },
+    "data/C8/cook/dishes/vegetable_dish/手撕包菜/1.jpeg": {
+      "oid": "ed0c29ea65a7ac4cc6a17a778bb5098d980405146f68c73c1b32fb0d310f5eea",
+      "size": 127488
+    },
+    "data/C8/cook/dishes/vegetable_dish/手撕包菜/2.jpeg": {
+      "oid": "424caab717e05e6a823f61551a9f6976bafb2a0c2ccf47d2cb792617d284abaf",
+      "size": 151293
+    },
+    "data/C8/cook/dishes/vegetable_dish/手撕包菜/3.jpeg": {
+      "oid": "8f15dcd8504fcbeeb95f1930c0b0ff226a9f7576a846af0af600e4d741ffa3e9",
+      "size": 111973
+    },
+    "data/C8/cook/dishes/vegetable_dish/手撕包菜/4.jpeg": {
+      "oid": "37f7c1c9880153b3a4d5733c55203814c8fabcc93bc82acdfccbb450dd3bbd1b",
+      "size": 138914
+    },
+    "data/C8/cook/dishes/vegetable_dish/拔丝土豆/1.jpeg": {
+      "oid": "bbea5212f5cf5ecfe5ae51b0dea7efbdb18c2e3c2e0600828d3e4c7e397de751",
+      "size": 220129
+    },
+    "data/C8/cook/dishes/vegetable_dish/拔丝土豆/2.jpeg": {
+      "oid": "7ee16eb43af07cd6da37c54b4294f73e4e7acf4b313dd2e626e570d20a612092",
+      "size": 187193
+    },
+    "data/C8/cook/dishes/vegetable_dish/拔丝土豆/3.jpeg": {
+      "oid": "273ed1826853e2b10165c33c6b6e5ec33d62fc3ba46dd9f163434b4e23cf7b80",
+      "size": 356894
+    },
+    "data/C8/cook/dishes/vegetable_dish/拔丝土豆/4.jpeg": {
+      "oid": "1788ab5b8dbc3b33af2fea04004761c87a784ef17977f4801c6681b6f7922e9e",
+      "size": 174170
+    },
+    "data/C8/cook/dishes/vegetable_dish/椒盐玉米/椒盐玉米.jpeg": {
+      "oid": "f771ec3fe8e2f1970ff8db9114f7065e12e8a6cde91839e8d3c339ed010add2d",
+      "size": 173857
+    },
+    "data/C8/cook/dishes/vegetable_dish/洋葱炒鸡蛋/1.jpeg": {
+      "oid": "83b6951ab77218784ee6ba898b01beca3997cdabc08b749dd5e818fd9c004c22",
+      "size": 144620
+    },
+    "data/C8/cook/dishes/vegetable_dish/炒滑蛋/炒滑蛋.jpg": {
+      "oid": "eccfab321e696eeb125a545a06a29727f2608897f464a55ea8b89431a89b5ca4",
+      "size": 121836
+    },
+    "data/C8/cook/dishes/vegetable_dish/烤茄子/烤茄子.jpg": {
+      "oid": "bbcd0f7e77233ea8965f977d18b266999db5ba96d1ecb230d16767eba51128c2",
+      "size": 812441
+    },
+    "data/C8/cook/dishes/vegetable_dish/白灼菜心/白灼菜心.jpg": {
+      "oid": "0804b87406411d2e0e80ee184cc4a4441119659da8aed12f6e8e7e8eb9d29975",
+      "size": 36300
+    },
+    "data/C8/cook/dishes/vegetable_dish/糖拌西红柿/火山飘雪.jpg": {
+      "oid": "2b44e97983bb12bfeff14ebc7ca9c4f0fe945f8bf1d88c134d4ea1ca1b2f8b68",
+      "size": 55379
+    },
+    "data/C8/cook/dishes/vegetable_dish/红烧冬瓜/1.jpeg": {
+      "oid": "c8e572ae96824daa8ad99f9eba684266304dc4d61a75cf35da61b384f6821b57",
+      "size": 86396
+    },
+    "data/C8/cook/dishes/vegetable_dish/红烧冬瓜/2.jpeg": {
+      "oid": "94a93b388d330a5db25aadefa6547c92199e47fa16f48f58c0e6a44bca02e494",
+      "size": 104810
+    },
+    "data/C8/cook/dishes/vegetable_dish/芹菜拌茶树菇/芹菜拌茶树菇.jpg": {
+      "oid": "fa799bb252bae7476c1670a6b8be58247b305e8466776cb43abbf7252cabc5e1",
+      "size": 553839
+    },
+    "data/C8/cook/dishes/vegetable_dish/芹菜拌茶树菇/闽星茶树菇.jpg": {
+      "oid": "b8a383a37a316eadb128398a233610cfde68b744d35b6fa177021f05d7d8726f",
+      "size": 143519
+    },
+    "data/C8/cook/dishes/vegetable_dish/莴笋叶煎饼/1.jpeg": {
+      "oid": "911b1aa6deb8f8a4d840fa23f648c064a2365b3d6e578c328f8310db4043cbb5",
+      "size": 234352
+    },
+    "data/C8/cook/dishes/vegetable_dish/莴笋叶煎饼/2.jpeg": {
+      "oid": "48f8e719b85d347a47fa433293822c94bbffcfaf57a22372dbca74ebb1ece6e3",
+      "size": 281002
+    },
+    "data/C8/cook/dishes/vegetable_dish/莴笋叶煎饼/3.jpeg": {
+      "oid": "4e1477bcb437812d0d8ed3ebe44961f88275f9f2eca4b4e38fb12652f5195f86",
+      "size": 217623
+    },
+    "data/C8/cook/dishes/vegetable_dish/菠菜炒鸡蛋/菠菜炒鸡蛋.jpg": {
+      "oid": "3639de4c3efd641ab6f1c1a9ccaf99ec3072243f4c068606f7c7e18046ff36d7",
+      "size": 355731
+    },
+    "data/C8/cook/dishes/vegetable_dish/虎皮青椒/虎皮青椒.jpg": {
+      "oid": "095119290d7f953b46452ead44c738cb9c5707d7727a009599e1d916e4287be0",
+      "size": 1022689
+    },
+    "data/C8/cook/dishes/vegetable_dish/蚝油三鲜菇/1.jpeg": {
+      "oid": "d73160bd045a46fc1b5ddf11952d003d8da6139190d0e0497708e8097a7e47cf",
+      "size": 148582
+    },
+    "data/C8/cook/dishes/vegetable_dish/蚝油三鲜菇/2.jpeg": {
+      "oid": "99b4ff67e643167cedf9fa102c14b938ebe80ffa0fa5ebbd7e621b0878bb566f",
+      "size": 154747
+    },
+    "data/C8/cook/dishes/vegetable_dish/西红柿豆腐汤羹/1.jpeg": {
+      "oid": "9657a000763f67d20ce7ddf8f80c5d5cdc947f2a9782c25cbd07a72427110e2f",
+      "size": 105667
+    },
+    "data/C8/cook/dishes/vegetable_dish/西葫芦炒鸡蛋/西葫芦炒鸡蛋.jpeg": {
+      "oid": "ad77e0934f5592d64e357d138f58679c4e92cf5aa907baaa52620c6759b81492",
+      "size": 46138
+    },
+    "data/C8/cook/dishes/vegetable_dish/话梅煮毛豆/1.jpeg": {
+      "oid": "95e3bfffa094e22530e6bb4f29d312391156bc49b71a144fc0271382ab87d09a",
+      "size": 154361
+    },
+    "data/C8/cook/dishes/vegetable_dish/鸡蛋羹/微波炉鸡蛋羹.jpg": {
+      "oid": "9474c75f2b71732259273656f2ac6d7e0689e045edc94d5b3c9d8621d057c2fe",
+      "size": 326920
+    },
+    "data/C8/cook/dishes/vegetable_dish/鸡蛋羹/鸡蛋羹.jpg": {
+      "oid": "f1a5035f6c0ce2339fca040cb298a4f312017b67be86728828e57320c7a174fd",
+      "size": 218388
+    }
+  }
 }

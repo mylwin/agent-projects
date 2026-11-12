@@ -19,6 +19,7 @@ def check_imported_files():
 
     manifest = json.loads((PROJECT_ROOT / "docs/upstream-manifest.json").read_text())
     modified = set(manifest.get("local_modifications", []))
+    images = manifest.get("lfs_objects", {})
     require(modified <= {entry["path"] for entry in manifest["files"]}, "本地适配清单包含未知文件")
     for entry in manifest["files"]:
         path = PROJECT_ROOT / entry["path"]
@@ -26,7 +27,13 @@ def check_imported_files():
         if entry["path"] in modified:
             continue
         digest = hashlib.sha256(path.read_bytes()).hexdigest()
-        require(digest == entry["sha256"], f"文件已偏离上游快照：{entry['path']}")
+        expected = {entry["sha256"]}
+        if entry["path"] in images:
+            image = images[entry["path"]]
+            expected.add(image["oid"])
+            if digest == image["oid"]:
+                require(path.stat().st_size == image["size"], f"图片大小不一致：{entry['path']}")
+        require(digest in expected, f"文件已偏离上游快照或原始图片：{entry['path']}")
     return len(manifest["files"]) - len(modified), len(modified)
 
 
@@ -111,7 +118,7 @@ def main():
         except ValueError as error:
             parser.error(str(error))
     count, modified = check_imported_files()
-    print(f"上游原样文件校验通过：{count} 个；本地适配文件：{modified} 个（检查存在性）")
+    print(f"上游文件校验通过：{count} 个（支持 LFS 原图）；本地适配文件：{modified} 个（检查存在性）")
     data, chunks = check_data(config)
     if args.index:
         (PROJECT_ROOT / ".cache").mkdir(exist_ok=True)

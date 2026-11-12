@@ -32,6 +32,11 @@ LLM_MODEL=你的模型名称
 首次启动会下载 `BAAI/bge-small-zh-v1.5` 并构建索引。
 仅更换生成模型时，可复用已有向量索引。
 
+菜谱原图已按原路径补齐。上游 All-in-RAG 中的部分图片是 LFS 指针，
+本项目从菜谱来源 HowToCook 的公开 LFS 对象库获取原图，并逐张校验原始 SHA-256。
+如需恢复缺失图片，可运行 `uv run --locked python scripts/restore_images.py`，
+已校验的图片会自动跳过。
+
 也可从任意目录执行 `bash /本项目绝对路径/scripts/run.sh`。
 
 ## 验证

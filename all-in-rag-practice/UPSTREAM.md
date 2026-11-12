@@ -11,9 +11,26 @@
 - 校验清单：[docs/upstream-manifest.json](docs/upstream-manifest.json)
 
 初次导入共 659 个文件，其中 323 个菜谱 Markdown，导入时均与上游 Git blob
-逐字节校验一致。通用模型适配修改了下述 3 个源文件，其余 656 个文件保持原样。
-326 个资源文件在上游为 Git LFS 文本指针，本地按原样保留；
-这些文件不是可显示的图片，当前 RAG 只读取 Markdown，不需要下载对应图片实体。
+逐字节校验一致。通用模型适配修改了下述 3 个源文件。
+其中 326 个图片文件在上游为 Git LFS 文本指针，本地已恢复为原始图片；
+其余 330 个文件保持上游原样。
+
+## 图片恢复
+
+核查 All-in-RAG 的固定提交未发现 `.gitattributes`，这批图片的 324 个唯一对象
+在该仓库的 LFS 下载接口均返回 `Object does not exist on the server`。
+菜谱来源 HowToCook 的公开 LFS 对象库能提供对应原图，因此从该来源恢复图片。
+
+- 来源：https://github.com/Anduin2017/HowToCook
+- 方法：按原始指针的对象标识请求 LFS `download`，不以当前同名图片替代。
+- 范围：326 个文件、324 个唯一对象，原始总大小约 95.89 MiB。
+- 校验：每个图片实体的 SHA-256 与原始指针的 `oid` 一致，字节数与 `size` 一致。
+- 路径：原文件夹和文件名保持不变，Markdown 的相对图片引用无需修改。
+- 恢复脚本：`scripts/restore_images.py`，支持重复运行并跳过已匹配的图片。
+
+清单中的 `files` 保留初始导入哈希；`lfs_objects` 单独记录恢复原图的哈希与大小。
+校验脚本同时接受原始指针及其匹配原图。原图存储为普通图片文件，
+本项目不要求安装 Git LFS；无需密钥即可重新获取这些公开对象。
 
 ## 署名与许可
 
