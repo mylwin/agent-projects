@@ -38,6 +38,13 @@ LLM_MODEL=你的模型名称
 已校验的图片会自动跳过。
 
 也可从任意目录执行 `bash /本项目绝对路径/scripts/run.sh`。
+直接通过编辑器或 Python 执行 `code/C8/main.py` 也支持任意工作目录：
+
+```bash
+/本项目绝对路径/.venv/bin/python /本项目绝对路径/code/C8/main.py
+```
+
+默认数据、索引、`.env` 和模型缓存均按项目位置查找。
 
 ## 验证
 
@@ -54,6 +61,18 @@ uv run --locked python scripts/check.py --index
 # 已配置密钥时，验证三类完整问答，会产生 API 调用费用
 uv run --locked python scripts/check.py --api
 ```
+
+## 静态检查
+
+```bash
+uv run --locked ruff check .
+uv run --locked ruff format --check .
+uv run --locked pyright
+```
+
+Ruff 负责代码风格与常见错误，Pyright 检查 SDK 参数和可空类型。
+开发工具随 `uv sync --locked` 安装。编辑器请选择本项目 `.venv/bin/python`；
+项目中的 Pyright 配置包含教程模块和启动脚本的导入路径。
 
 ## 目录
 

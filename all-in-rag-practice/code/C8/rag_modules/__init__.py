@@ -1,13 +1,13 @@
 from .data_preparation import DataPreparationModule
+from .generation_integration import GenerationIntegrationModule
 from .index_construction import IndexConstructionModule
 from .retrieval_optimization import RetrievalOptimizationModule
-from .generation_integration import GenerationIntegrationModule
 
 __all__ = [
-    'DataPreparationModule',
-    'IndexConstructionModule', 
-    'RetrievalOptimizationModule',
-    'GenerationIntegrationModule'
+    "DataPreparationModule",
+    "GenerationIntegrationModule",
+    "IndexConstructionModule",
+    "RetrievalOptimizationModule",
 ]
 
 __version__ = "1.0.0"

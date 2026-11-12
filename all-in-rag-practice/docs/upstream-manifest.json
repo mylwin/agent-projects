@@ -5,7 +5,11 @@
   "local_modifications": [
     "code/C8/config.py",
     "code/C8/main.py",
-    "code/C8/rag_modules/generation_integration.py"
+    "code/C8/rag_modules/__init__.py",
+    "code/C8/rag_modules/data_preparation.py",
+    "code/C8/rag_modules/generation_integration.py",
+    "code/C8/rag_modules/index_construction.py",
+    "code/C8/rag_modules/retrieval_optimization.py"
   ],
   "paths": [
     "code/C8",

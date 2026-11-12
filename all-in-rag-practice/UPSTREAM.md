@@ -11,9 +11,9 @@
 - 校验清单：[docs/upstream-manifest.json](docs/upstream-manifest.json)
 
 初次导入共 659 个文件，其中 323 个菜谱 Markdown，导入时均与上游 Git blob
-逐字节校验一致。通用模型适配修改了下述 3 个源文件。
+逐字节校验一致。通用模型适配及静态检查修复涉及下述 7 个源文件。
 其中 326 个图片文件在上游为 Git LFS 文本指针，本地已恢复为原始图片；
-其余 330 个文件保持上游原样。
+其余 326 个文件保持上游原样。
 
 ## 图片恢复
 
@@ -48,16 +48,20 @@
 本地新增 uv 项目配置、依赖锁文件、环境变量示例、启动与验证脚本、
 通用模型接口集成测试及中文说明。启动适配器将数据、索引及模型缓存路径固定到项目内。
 
-通用模型适配修改以下上游文件：
+本地适配与静态检查修复修改以下上游文件：
 
-- `code/C8/config.py`：增加通用模型配置加载、别名兼容与校验。
+- `code/C8/config.py`：增加通用模型配置加载、别名兼容与校验，按项目位置定位资源。
 - `code/C8/main.py`：使用通用配置初始化生成模块。
 - `code/C8/rag_modules/generation_integration.py`：将 MoonshotChat 替换为 ChatOpenAI，
-  显式使用 Chat Completions，支持普通与流式回答。
+  显式使用 Chat Completions，修正 SDK 参数别名和密钥类型，支持普通与流式回答。
+- `code/C8/rag_modules/data_preparation.py`：保留本地注释和格式调整，明确读取异常类型。
+- `code/C8/rag_modules/index_construction.py`：明确嵌入模型的初始化检查与异常日志。
+- `code/C8/rag_modules/retrieval_optimization.py`：整理导入、类型注解和代码格式。
+- `code/C8/rag_modules/__init__.py`：统一导入与导出列表顺序。
 
 新增 `langchain-openai` 依赖。生成模型通过 `LLM_BASE_URL`、`LLM_API_KEY`、
 `LLM_MODEL` 配置，也支持 `OPENAI_*` 别名；嵌入模型仍由 `EMBEDDING_MODEL` 配置。
-校验清单保留初次导入的哈希，并在 `local_modifications` 中记录以上 3 个文件。
+校验清单保留初次导入的哈希，并在 `local_modifications` 中记录以上 7 个文件。
 验证脚本对原样文件比对哈希，对本地适配文件检查存在性；适配改动由 Git 记录。
 
 ## 后续同步

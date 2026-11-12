@@ -19,7 +19,25 @@ dependencies = [
     "rank_bm25==0.2.2",
     "openai>=1.86.0,<2.0.0",
     "python-dotenv>=1.0.0",
+    "pydantic>=2.7.4,<3",
 ]
 
 [tool.uv]
 package = false
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.414",
+    "ruff>=0.17.4",
+]
+
+[tool.ruff]
+target-version = "py312"
+
+[tool.pyright]
+include = ["code/C8", "scripts", "tests"]
+extraPaths = ["code/C8", "scripts"]
+venvPath = "."
+venv = ".venv"
+pythonVersion = "3.12"
+typeCheckingMode = "standard"
