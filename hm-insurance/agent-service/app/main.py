@@ -13,6 +13,7 @@ if __package__ in (None, "") and str(SERVICE_ROOT) not in sys.path:
 
 from app.core.config import settings
 from app.core.logging import get_logger, setup_logging
+from app.modules.product.router import router as product_router
 
 # 初始化日志系统
 setup_logging(settings.logging.level)
@@ -40,6 +41,9 @@ app = FastAPI(
     debug=settings.app.debug,
     lifespan=lifespan,
 )
+
+# 绑定路由
+app.include_router(router=product_router)
 
 
 @app.get("/health", summary="服务健康检查接口")
