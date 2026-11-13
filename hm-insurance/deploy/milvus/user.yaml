@@ -1,0 +1,11 @@
+credential:
+  dashscope_apikey:
+    apikey: YOUR_DASHSCOPE_API_KEY
+
+function:
+  rerank:
+    model:
+      providers:
+        ali:
+          credential: dashscope_apikey
+          # url: https://dashscope.aliyuncs.com/api/v1/services/rerank/text-rerank/text-rerank
