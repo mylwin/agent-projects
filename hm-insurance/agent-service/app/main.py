@@ -2,8 +2,10 @@ import sys
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI
+from app.core.exceptions import ApplicationError
+from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
+from fastapi.responses import JSONResponse
 
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 
@@ -13,6 +15,7 @@ if __package__ in (None, "") and str(SERVICE_ROOT) not in sys.path:
 
 from app.core.config import settings
 from app.core.logging import get_logger, setup_logging
+from app.modules.chat_thread.router import router as chat_thread_router
 from app.modules.product.router import router as product_router
 
 # 初始化日志系统
@@ -44,6 +47,19 @@ app = FastAPI(
 
 # 绑定路由
 app.include_router(router=product_router)
+app.include_router(router=chat_thread_router)
+
+
+# 统一处理异常信息
+@app.exception_handler(ApplicationError)
+def handle_exception(request: Request, exc: ApplicationError) -> JSONResponse:
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={
+            "code": exc.code,
+            "message": exc.message,
+        },
+    )
 
 
 @app.get("/health", summary="服务健康检查接口")

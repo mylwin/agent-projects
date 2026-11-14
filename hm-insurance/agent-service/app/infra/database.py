@@ -25,6 +25,7 @@ engine: AsyncEngine = create_async_engine(
     max_overflow=settings.db.max_overflow,  # 连接池溢出时，允许创建的连接数
     pool_recycle=settings.db.pool_recycle,  # 连接池中连接的闲置时间，超过这个时间就检查连接是否可用
     pool_pre_ping=True,  # 创建连接时，检查连接是否可用
+    connect_args={"server_settings": {"timezone": "Asia/Shanghai"}},
 )
 
 # 创建异步 Session工厂
