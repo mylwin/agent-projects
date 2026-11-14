@@ -1,3 +1,5 @@
+from app.agents.schemas import InsuranceAgentContext
+from app.agents.tools import query_candidate_products, save_insurance_plan
 from app.core.config import settings
 from app.core.logging import get_logger
 from langchain.agents import create_agent
@@ -26,8 +28,12 @@ def init_insurance_agent(checkpointer: AsyncPostgresSaver):
 
     # 2.创建保险顾问智能体
     agent = create_agent(
-        model=model, tools=[], system_prompt=SYSTEM_PROMPT, checkpointer=checkpointer
+        model=model,
+        tools=[query_candidate_products, save_insurance_plan],
+        system_prompt=SYSTEM_PROMPT,
+        checkpointer=checkpointer,
+        context_schema=InsuranceAgentContext,
     )
 
-    logger.info("保险顾问 Agent初始化成功~✅️")
+    logger.info("保险顾问 Agent 初始化成功~✅️")
     return agent

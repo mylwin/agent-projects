@@ -1,0 +1,66 @@
+from decimal import Decimal
+
+from app.agents.schemas import InsuranceAgentContext
+from app.infra.database import AsyncSessionFactory
+from app.modules.insurance_plan.schemas import InsurancePlanCreate
+from app.modules.insurance_plan.service import InsurancePlanService
+from app.modules.product.service import ProductService
+from fastapi.encoders import jsonable_encoder
+from langchain.tools import ToolRuntime, tool
+
+
+@tool
+async def query_candidate_products(
+    categories: list[str], premium_min: Decimal | None = None, limit: int = 5
+):
+    """
+    根据险种和保费条件查询可用于推荐的候选保险产品。当用户咨询具体保险产品或需要保险产品推荐时使用。
+
+    Args:
+        categories: 产品分类列表，可选值为 medical、critical_illness、life、accident。
+        premium_min: 最低保费上限，可选参数，只返回最低保费小于该值的产品。
+        limit_per_category: 每个险种最多返回的产品数量，可选参数，默认5。
+    """
+
+    async with AsyncSessionFactory() as session:
+        # 1.初始化 service
+        product_service = ProductService(session)
+
+        # 2.得到候选
+        candidate_products = await product_service.list_limited_products(
+            categories, premium_min, limit
+        )
+
+        # 3.返回 json 格式数据
+        return jsonable_encoder(candidate_products)
+
+
+@tool
+async def save_insurance_plan(
+    plan: InsurancePlanCreate,
+    runtime: ToolRuntime[InsuranceAgentContext],
+) -> dict[str, str]:
+    """
+    保存当前用户已确认的保险推荐方案。
+
+    调用前应已查询候选产品，结合用户画像生成完整方案，
+    并向用户展示推荐产品、推荐理由和预算信息。
+
+    仅当用户明确要求保存，或明确同意保存刚刚展示的方案时调用。
+    如果用户尚未确认，应先询问是否保存，收到明确同意后再调用。
+
+    保存内容必须与用户确认的方案一致。
+    只有工具返回保存成功后，才能告知用户方案已保存
+    """
+
+    async with AsyncSessionFactory() as session:
+        service = InsurancePlanService(session)
+        plan_id = await service.create_plan(
+            user_id=runtime.context.user_id,
+            data=plan,
+        )
+
+    return {
+        "plan_id": str(plan_id),
+        "message": "保险方案保存成功",
+    }

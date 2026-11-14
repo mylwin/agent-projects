@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 
+from app.agents.schemas import InsuranceAgentContext
 from app.modules.auth.exceptions import ChatThreadNotFoundError
 from app.modules.chat.schemas import ChatRequest
 from app.modules.chat_thread.repository import ChatThreadRepository
@@ -32,11 +33,13 @@ class ChatService:
         _input = {"messages": [HumanMessage(content=request.message)]}
         # 会话 ID
         config: RunnableConfig = {"configurable": {"thread_id": str(request.thread_id)}}
+        context = InsuranceAgentContext(user_id=user_id)
 
         # 3.使用 v3 协议获取异步事件流
         stream = await self.agent.astream_events(
             _input,
             config,
+            context=context,
             version="v3",
         )
 
