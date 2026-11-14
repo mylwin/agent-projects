@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "9eb216ca-e582-4de2-92ba-f68af513cf12",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Users/myl/Documents/python-code/agent-projects/hm-insurance/docs/LangChain底层问题/流程图/01-PostgreSQL检查点的存储与删除.json",
+  "output": "/Users/myl/Documents/python-code/agent-projects/hm-insurance/docs/LangChain底层问题/流程图/01-PostgreSQL检查点的存储与删除.html",
+  "specification": {
+    "sha256": "675cecd0bc5af56d49588c3fd0b1a7c573cbf0d7ab62e13e1b657aa1a3f227c5",
+    "bytes": 15638
+  },
+  "artifact": {
+    "sha256": "330c19b6524f6913f09eb0405c65dba02c45c98d415e436f4fdf4828bec2e3a4",
+    "bytes": 788374
+  }
+}

@@ -1,0 +1,664 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "PostgreSQL 检查点：初始化、持久化、恢复与删除",
+    "locale": "zh-CN",
+    "animation": "none",
+    "quality_profile": "showcase",
+    "output": "docs/LangChain底层问题/流程图/01-PostgreSQL检查点的存储与删除.html",
+    "repository": {
+      "url": "https://github.com/mylwin/agent-projects.git",
+      "revision": "24ed0ec076d7bdbadbad8c8599612b15fc1093cc",
+      "link_mode": "local-only"
+    }
+  },
+  "lanes": [
+    {
+      "id": "init",
+      "label": "启动初始化"
+    },
+    {
+      "id": "chat",
+      "label": "对话执行与持久化"
+    },
+    {
+      "id": "history",
+      "label": "读取聊天历史"
+    },
+    {
+      "id": "delete",
+      "label": "删除会话"
+    },
+    {
+      "id": "failure",
+      "label": "删除失败出口",
+      "variant": "exception"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "boot",
+      "lane": "init",
+      "col": 0,
+      "type": "backend",
+      "label": "服务启动",
+      "sublabel": "FastAPI lifespan",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/main.py",
+          "line": 27,
+          "end_line": 43
+        }
+      ],
+      "yOffset": -52
+    },
+    {
+      "id": "pool",
+      "lane": "init",
+      "col": 0,
+      "type": "database",
+      "label": "打开专用连接池",
+      "sublabel": "open() / wait()",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/infra/checkpointer.py",
+          "line": 10,
+          "end_line": 29
+        }
+      ],
+      "yOffset": 52
+    },
+    {
+      "id": "migrate",
+      "lane": "init",
+      "col": 1,
+      "type": "backend",
+      "label": "建表与补齐迁移",
+      "sublabel": "saver.setup()",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/infra/checkpointer.py",
+          "line": 31,
+          "end_line": 35
+        }
+      ],
+      "yOffset": 52
+    },
+    {
+      "id": "bind",
+      "lane": "init",
+      "col": 2,
+      "type": "backend",
+      "label": "向 Agent 注入 saver",
+      "sublabel": "create_agent(checkpointer)",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/agents/insurance_advisor.py",
+          "line": 17,
+          "end_line": 36
+        }
+      ],
+      "yOffset": 52
+    },
+    {
+      "id": "chatOwner",
+      "lane": "chat",
+      "col": 0,
+      "type": "security",
+      "label": "校验会话归属",
+      "sublabel": "find_owned；失败则抛异常",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/modules/chat/service.py",
+          "line": 24,
+          "end_line": 28
+        }
+      ]
+    },
+    {
+      "id": "input",
+      "lane": "chat",
+      "col": 1,
+      "type": "backend",
+      "label": "组装本轮输入",
+      "sublabel": "HumanMessage + thread_id",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/modules/chat/service.py",
+          "line": 30,
+          "end_line": 41
+        }
+      ]
+    },
+    {
+      "id": "load",
+      "lane": "chat",
+      "col": 2,
+      "type": "backend",
+      "label": "读取保存状态",
+      "sublabel": "aget_tuple / blobs / writes",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "依赖源码/langgraph/checkpoint/postgres/aio.py",
+          "line": 185,
+          "end_line": 240
+        }
+      ]
+    },
+    {
+      "id": "execute",
+      "lane": "chat",
+      "col": 3,
+      "type": "backend",
+      "label": "合并状态并执行节点",
+      "sublabel": "messages reducer / 模型与工具",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/agents/insurance_advisor.py",
+          "line": 25,
+          "end_line": 36
+        },
+        {
+          "path": "依赖源码/langchain/agents/middleware/types.py",
+          "line": 351,
+          "end_line": 355
+        }
+      ]
+    },
+    {
+      "id": "writes",
+      "lane": "chat",
+      "col": 4,
+      "type": "database",
+      "label": "保存任务中间输出",
+      "sublabel": "aput_writes()",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "依赖源码/langgraph/checkpoint/postgres/aio.py",
+          "line": 312,
+          "end_line": 343
+        }
+      ]
+    },
+    {
+      "id": "save",
+      "lane": "chat",
+      "col": 5,
+      "type": "database",
+      "label": "保存步骤检查点",
+      "sublabel": "aput(): blobs + checkpoints",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "依赖源码/langgraph/checkpoint/postgres/aio.py",
+          "line": 237,
+          "end_line": 310
+        }
+      ]
+    },
+    {
+      "id": "historyOwner",
+      "lane": "history",
+      "col": 0,
+      "type": "security",
+      "label": "校验历史读取权限",
+      "sublabel": "find_owned；失败则抛异常",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/modules/chat_thread/service.py",
+          "line": 77,
+          "end_line": 82
+        }
+      ]
+    },
+    {
+      "id": "state",
+      "lane": "history",
+      "col": 1,
+      "type": "backend",
+      "label": "请求最新状态",
+      "sublabel": "agent.aget_state(config)",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/modules/chat_thread/service.py",
+          "line": 84,
+          "end_line": 86
+        }
+      ]
+    },
+    {
+      "id": "latest",
+      "lane": "history",
+      "col": 2,
+      "type": "backend",
+      "label": "定位最新检查点",
+      "sublabel": "thread_id / namespace / ID",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "依赖源码/langgraph/checkpoint/postgres/aio.py",
+          "line": 185,
+          "end_line": 223
+        }
+      ]
+    },
+    {
+      "id": "restore",
+      "lane": "history",
+      "col": 3,
+      "type": "backend",
+      "label": "反序列化并重建状态",
+      "sublabel": "JSONB + blobs + pending writes",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "依赖源码/langgraph/checkpoint/postgres/aio.py",
+          "line": 558,
+          "end_line": 598
+        }
+      ]
+    },
+    {
+      "id": "filter",
+      "lane": "history",
+      "col": 4,
+      "type": "backend",
+      "label": "筛选用户与 AI 文本",
+      "sublabel": "HumanMessage / AIMessage",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/modules/chat_thread/service.py",
+          "line": 88,
+          "end_line": 105
+        }
+      ]
+    },
+    {
+      "id": "respond",
+      "lane": "history",
+      "col": 5,
+      "type": "frontend",
+      "label": "返回聊天历史",
+      "sublabel": "ChatHistoryResponse",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/modules/chat_thread/service.py",
+          "line": 107,
+          "end_line": 111
+        }
+      ]
+    },
+    {
+      "id": "deleteOwner",
+      "lane": "delete",
+      "col": 0,
+      "type": "security",
+      "label": "开启事务并校验归属",
+      "sublabel": "SQLAlchemy session.begin()",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/modules/chat_thread/service.py",
+          "line": 59,
+          "end_line": 66
+        }
+      ]
+    },
+    {
+      "id": "saverCheck",
+      "lane": "delete",
+      "col": 1,
+      "type": "security",
+      "label": "检查 saver 并调用清理",
+      "sublabel": "BaseCheckpointSaver 类型检查",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/modules/chat_thread/service.py",
+          "line": 68,
+          "end_line": 72
+        }
+      ]
+    },
+    {
+      "id": "deleteCp",
+      "lane": "delete",
+      "col": 2,
+      "type": "database",
+      "label": "删除检查点主体",
+      "sublabel": "DELETE checkpoints",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "依赖源码/langgraph/checkpoint/postgres/aio.py",
+          "line": 354,
+          "end_line": 358
+        }
+      ]
+    },
+    {
+      "id": "deleteBlobs",
+      "lane": "delete",
+      "col": 3,
+      "type": "database",
+      "label": "删除通道所有版本",
+      "sublabel": "DELETE checkpoint_blobs",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "依赖源码/langgraph/checkpoint/postgres/aio.py",
+          "line": 359,
+          "end_line": 362
+        }
+      ]
+    },
+    {
+      "id": "deleteWrites",
+      "lane": "delete",
+      "col": 4,
+      "type": "database",
+      "label": "删除任务级写入",
+      "sublabel": "DELETE checkpoint_writes",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "依赖源码/langgraph/checkpoint/postgres/aio.py",
+          "line": 363,
+          "end_line": 366
+        }
+      ]
+    },
+    {
+      "id": "deleteBusiness",
+      "lane": "delete",
+      "col": 5,
+      "type": "backend",
+      "label": "删除业务会话并提交",
+      "sublabel": "标记删除；退出上下文提交",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/modules/chat_thread/service.py",
+          "line": 59,
+          "end_line": 75
+        }
+      ]
+    },
+    {
+      "id": "denied",
+      "lane": "failure",
+      "col": 0,
+      "type": "security",
+      "label": "拒绝删除并回滚",
+      "sublabel": "ChatThreadNotFoundError",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/modules/chat_thread/service.py",
+          "line": 61,
+          "end_line": 66
+        }
+      ]
+    },
+    {
+      "id": "notConfigured",
+      "lane": "failure",
+      "col": 1,
+      "type": "security",
+      "label": "拒绝删除并回滚",
+      "sublabel": "CheckpointerNotConfiguredError",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/modules/chat_thread/service.py",
+          "line": 69,
+          "end_line": 71
+        }
+      ]
+    },
+    {
+      "id": "partial",
+      "lane": "failure",
+      "col": 5,
+      "type": "security",
+      "label": "业务回滚无法恢复状态",
+      "sublabel": "提交失败时的推论：两套连接",
+      "width": 152,
+      "height": 64,
+      "sources": [
+        {
+          "path": "agent-service/app/infra/database.py",
+          "line": 27,
+          "end_line": 55
+        },
+        {
+          "path": "agent-service/app/modules/chat_thread/service.py",
+          "line": 59,
+          "end_line": 75
+        }
+      ]
+    }
+  ],
+  "edges": [
+    {
+      "id": "boot-pool",
+      "from": "boot",
+      "to": "pool",
+      "variant": "default"
+    },
+    {
+      "id": "pool-migrate",
+      "from": "pool",
+      "to": "migrate",
+      "variant": "default"
+    },
+    {
+      "id": "migrate-bind",
+      "from": "migrate",
+      "to": "bind",
+      "variant": "default"
+    },
+    {
+      "id": "chatOwner-input",
+      "from": "chatOwner",
+      "to": "input",
+      "variant": "default",
+      "label": "通过"
+    },
+    {
+      "id": "input-load",
+      "from": "input",
+      "to": "load",
+      "variant": "default"
+    },
+    {
+      "id": "load-execute",
+      "from": "load",
+      "to": "execute",
+      "variant": "default"
+    },
+    {
+      "id": "execute-writes",
+      "from": "execute",
+      "to": "writes",
+      "variant": "default"
+    },
+    {
+      "id": "writes-save",
+      "from": "writes",
+      "to": "save",
+      "variant": "default"
+    },
+    {
+      "id": "historyOwner-state",
+      "from": "historyOwner",
+      "to": "state",
+      "variant": "default",
+      "label": "通过"
+    },
+    {
+      "id": "state-latest",
+      "from": "state",
+      "to": "latest",
+      "variant": "default"
+    },
+    {
+      "id": "latest-restore",
+      "from": "latest",
+      "to": "restore",
+      "variant": "default"
+    },
+    {
+      "id": "restore-filter",
+      "from": "restore",
+      "to": "filter",
+      "variant": "default"
+    },
+    {
+      "id": "filter-respond",
+      "from": "filter",
+      "to": "respond",
+      "variant": "default"
+    },
+    {
+      "id": "deleteOwner-saverCheck",
+      "from": "deleteOwner",
+      "to": "saverCheck",
+      "variant": "default",
+      "label": "归属通过"
+    },
+    {
+      "id": "saverCheck-deleteCp",
+      "from": "saverCheck",
+      "to": "deleteCp",
+      "variant": "default",
+      "label": "类型有效"
+    },
+    {
+      "id": "deleteCp-deleteBlobs",
+      "from": "deleteCp",
+      "to": "deleteBlobs",
+      "variant": "default"
+    },
+    {
+      "id": "deleteBlobs-deleteWrites",
+      "from": "deleteBlobs",
+      "to": "deleteWrites",
+      "variant": "default"
+    },
+    {
+      "id": "deleteWrites-deleteBusiness",
+      "from": "deleteWrites",
+      "to": "deleteBusiness",
+      "variant": "default"
+    },
+    {
+      "id": "deleteOwner-denied",
+      "from": "deleteOwner",
+      "to": "denied",
+      "variant": "security",
+      "label": "归属失败",
+      "role": "error",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
+    },
+    {
+      "id": "saverCheck-notConfigured",
+      "from": "saverCheck",
+      "to": "notConfigured",
+      "variant": "security",
+      "label": "类型无效",
+      "role": "error",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
+    },
+    {
+      "id": "deleteBusiness-partial",
+      "from": "deleteBusiness",
+      "to": "partial",
+      "variant": "security",
+      "label": "业务提交失败",
+      "role": "error",
+      "fromSide": "bottom",
+      "toSide": "top",
+      "route": "straight"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "slate",
+      "title": "源码依据：本地工作区快照",
+      "items": [
+        "当前部分业务代码尚未提交；图中修订号属于本地证据快照，不是远程提交。",
+        "saver 3.2.0 源码随快照核对；来源标签仅作本地证据定位。"
+      ]
+    },
+    {
+      "dot": "amber",
+      "title": "存储语义与执行边界",
+      "items": [
+        "aput_writes 是任务输出；aput 是步骤检查点。此图表达职责顺序，不限定调用次数。",
+        "简单通道值内联 JSONB；复杂值以通道版本保存到 BYTEA。"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "删除范围与一致性",
+      "items": [
+        "三条 DELETE 都按 thread_id 匹配，覆盖全部 namespace 与历史分支；不删除迁移记录。",
+        "adelete_thread 不取消进行中的 Agent；SQLAlchemy 业务事务与 psycopg 状态事务独立。"
+      ]
+    },
+    {
+      "dot": "slate",
+      "title": "路径说明",
+      "items": [
+        "启动初始化：先准备数据库，再创建 Agent",
+        "对话持久化：图运行时调度；流式事件可与保存交错",
+        "历史读取：最新状态中的 messages，而非拼接所有检查点",
+        "会话删除：三个状态表由 saver 清理；业务会话由服务删除",
+        "删除失败出口：校验异常与跨连接回滚边界"
+      ]
+    }
+  ]
+}

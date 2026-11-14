@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="drawio" version="26.0.0">
+  <diagram name="01 接入架构" id="page-0">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1200" pageHeight="900" background="#f5f5f5">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="startup" value="服务启动&#10;lifespan" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="pool" value="专用 psycopg 连接池&#10;open / wait" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="340" y="80" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="setup" value="AsyncPostgresSaver&#10;setup 创建表与迁移" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="640" y="80" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="agent" value="create_agent&#10;注入 checkpointer" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="640" y="260" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="request" value="聊天请求&#10;thread_id + 本轮消息" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="60" y="260" width="200" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="owner" value="服务层校验归属&#10;通过才调用 Agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="340" y="260" width="220" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="db" value="PostgreSQL 状态表&#10;checkpoints / blobs / writes" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;shape=cylinder3;" vertex="1" parent="1">
+          <mxGeometry x="640" y="460" width="240" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;" edge="1" parent="1" source="startup" target="pool">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;" edge="1" parent="1" source="pool" target="setup">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;" edge="1" parent="1" source="setup" target="agent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;" edge="1" parent="1" source="request" target="owner">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" value="通过" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;" edge="1" parent="1" source="owner" target="agent">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" value="saver 读写" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;" edge="1" parent="1" source="agent" target="db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="02 存储逻辑" id="page-1">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1200" pageHeight="900" background="#f5f5f5">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="thread" value="业务会话 chat_threads&#10;id UUID / user_id / title" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;shape=cylinder3;" vertex="1" parent="1">
+          <mxGeometry x="60" y="100" width="280" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="cp" value="checkpoints&#10;JSONB 骨架 / channel_versions&#10;PK: thread_id + ns + checkpoint_id" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;shape=cylinder3;" vertex="1" parent="1">
+          <mxGeometry x="440" y="100" width="360" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="blobs" value="checkpoint_blobs&#10;BYTEA 复杂值 / channel + version&#10;PK: thread_id + ns + channel + version" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;shape=cylinder3;" vertex="1" parent="1">
+          <mxGeometry x="440" y="380" width="360" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="writes" value="checkpoint_writes&#10;任务输出 / task_id + idx&#10;PK: thread_id + ns + checkpoint_id + task_id + idx" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;shape=cylinder3;" vertex="1" parent="1">
+          <mxGeometry x="860" y="100" width="320" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="migration" value="checkpoint_migrations&#10;v INTEGER PRIMARY KEY" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;shape=cylinder3;" vertex="1" parent="1">
+          <mxGeometry x="60" y="380" width="280" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="note" value="所有连接仅表示代码中的逻辑关系&#10;迁移没有定义这些外键&#10;ns 是 checkpoint_ns 的缩写" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="860" y="400" width="320" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" value="id 转字符串，非外键" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;dashed=1;" edge="1" parent="1" source="thread" target="cp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" value="channel_versions 关联" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;dashed=1;" edge="1" parent="1" source="cp" target="blobs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" value="同 thread / ns / checkpoint" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;dashed=1;" edge="1" parent="1" source="cp" target="writes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram name="03 删除流程" id="page-2">
+    <mxGraphModel grid="1" gridSize="10" page="1" pageWidth="1200" pageHeight="900" background="#f5f5f5">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="owner" value="事务中 find_owned&#10;校验会话归属" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="60" y="80" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="check" value="检查 saver 类型&#10;然后 await adelete_thread" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="400" y="80" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="cp" value="DELETE checkpoints&#10;WHERE thread_id = ..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;shape=cylinder3;" vertex="1" parent="1">
+          <mxGeometry x="800" y="80" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="blobs" value="DELETE checkpoint_blobs&#10;WHERE thread_id = ..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;shape=cylinder3;" vertex="1" parent="1">
+          <mxGeometry x="800" y="280" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="writes" value="DELETE checkpoint_writes&#10;WHERE thread_id = ..." style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;shape=cylinder3;" vertex="1" parent="1">
+          <mxGeometry x="800" y="480" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="business" value="repository.delete 标记业务行&#10;退出上下文时提交事务" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;" vertex="1" parent="1">
+          <mxGeometry x="400" y="480" width="280" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="failure" value="拒绝请求&#10;校验异常使业务事务回滚" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="60" y="280" width="240" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="boundary" value="业务提交失败：回滚业务事务&#10;已清理的 checkpoint 无法一并恢复&#10;也不会自动停止进行中的 Agent" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4f5d75;fontColor=#2d3142;fontFamily=Helvetica;fontSize=14;fillColor=#fff2cc;" vertex="1" parent="1">
+          <mxGeometry x="60" y="480" width="260" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-0" value="通过" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;" edge="1" parent="1" source="owner" target="check">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-1" value="失败" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;dashed=1;" edge="1" parent="1" source="owner" target="failure">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-2" value="类型无效" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;dashed=1;" edge="1" parent="1" source="check" target="failure">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-3" value="类型有效" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;" edge="1" parent="1" source="check" target="cp">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-4" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;" edge="1" parent="1" source="cp" target="blobs">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-5" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;" edge="1" parent="1" source="blobs" target="writes">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-6" value="状态清理完成" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;" edge="1" parent="1" source="writes" target="business">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="edge-7" value="业务提交失败" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=block;endSize=8;strokeColor=#4f5d75;fontSize=12;labelBackgroundColor=#f5f5f5;dashed=1;" edge="1" parent="1" source="business" target="boundary">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
