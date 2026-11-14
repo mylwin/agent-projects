@@ -1,6 +1,11 @@
 from uuid import UUID
 
-from app.modules.auth.exceptions import ChatThreadNotFoundError
+from app.modules.auth.exceptions import CheckpointerNotConfiguredError, ChatThreadNotFoundError
+from app.modules.chat_thread.schemas import ChatHistoryResponse, ChatMessageResponse
+from langchain.messages import AIMessage, HumanMessage
+from langchain_core.runnables import RunnableConfig
+from langgraph.checkpoint.base import BaseCheckpointSaver
+from langgraph.graph.state import CompiledStateGraph
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import ChatThread
@@ -10,9 +15,10 @@ from .repository import ChatThreadRepository
 class ChatThreadService:
     """聊天会话服务"""
 
-    def __init__(self, session: AsyncSession):
+    def __init__(self, session: AsyncSession, agent: CompiledStateGraph):
         self.session = session
         self.repository = ChatThreadRepository(session)
+        self.agent = agent
 
     async def add(self, user_id: int, title: str):
         """创建聊天会话"""
@@ -58,5 +64,48 @@ class ChatThreadService:
             # 如果不属于当前用户，则抛出异常
             if chat_thread is None:
                 raise ChatThreadNotFoundError
-            # 2.删除数据
+
+            # 2.删除 checkpointer 数据
+            checkpointer = self.agent.checkpointer
+            if not isinstance(checkpointer, BaseCheckpointSaver):
+                raise CheckpointerNotConfiguredError
+            await checkpointer.adelete_thread(str(thread_id))
+
+            # 3.删除会话元数据
             await self.repository.delete(chat_thread)
+
+    async def get_history(self, thread_id: UUID, user_id: int) -> ChatHistoryResponse:
+        """获取 chat thread 历史"""
+        # 1.先判断当前会话是否属于当前用户
+        chat_thread = await self.repository.find_owned(thread_id, user_id)
+        if chat_thread is None:
+            raise ChatThreadNotFoundError
+
+        # 2.获取 agent 的最新状态
+        config: RunnableConfig = {"configurable": {"thread_id": str(thread_id)}}
+        snapshot = await self.agent.aget_state(config)
+
+        # 3.只返回用户和 AI 消息
+        messages = []
+        for message in snapshot.values.get("messages", []):
+            if isinstance(message, HumanMessage):
+                role = "user"
+            elif isinstance(message, AIMessage):
+                role = "assistant"
+            else:
+                continue
+
+            # 将每轮新增的文本片段添加到消息
+            if message.text:
+                messages.append(
+                    ChatMessageResponse(
+                        role=role,
+                        content=message.text,
+                    )
+                )
+
+        # 返回结果
+        return ChatHistoryResponse(
+            thread_id=thread_id,
+            messages=messages,
+        )
