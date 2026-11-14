@@ -1,22 +1,24 @@
 import sys
 from pathlib import Path
 
-import uvicorn
-from app.core.exceptions import ApplicationError
-from fastapi import FastAPI, Request
-from fastapi.concurrency import asynccontextmanager
-from fastapi.responses import JSONResponse
-
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 
 # 支持直接运行 app/main.py，包括从项目外部目录启动。
 if __package__ in (None, "") and str(SERVICE_ROOT) not in sys.path:
     sys.path.insert(0, str(SERVICE_ROOT))
 
+import uvicorn
+from app.agents.insurance_advisor import init_insurance_agent
 from app.core.config import settings
+from app.core.exceptions import ApplicationError
 from app.core.logging import get_logger, setup_logging
+from app.infra.checkpointer import close_checkpointer, init_checkpointer
+from app.modules.chat.router import router as chat_router
 from app.modules.chat_thread.router import router as chat_thread_router
 from app.modules.product.router import router as product_router
+from fastapi import FastAPI, Request
+from fastapi.concurrency import asynccontextmanager
+from fastapi.responses import JSONResponse
 
 # 初始化日志系统
 setup_logging(settings.logging.level)
@@ -31,10 +33,18 @@ async def lifespan(app: FastAPI):
     from app.infra.database import check_database, close_database
 
     try:
+        # 1.检查业务数据库连接
         await check_database()
+        # 2.初始化数据检查点
+        checkpointer = await init_checkpointer()
+        # 3.初始化保险顾问 Agent
+        app.state.agent = init_insurance_agent(checkpointer)
         yield
     finally:
         logger.info(f"【{settings.app.name}] 服务关闭中...")
+        # 3.关闭数据检查点
+        await close_checkpointer()
+        # 4.关闭数据库连接
         await close_database()
 
 
@@ -48,6 +58,7 @@ app = FastAPI(
 # 绑定路由
 app.include_router(router=product_router)
 app.include_router(router=chat_thread_router)
+app.include_router(router=chat_router)
 
 
 # 统一处理异常信息

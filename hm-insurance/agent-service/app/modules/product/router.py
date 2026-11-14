@@ -9,7 +9,7 @@ from fastapi.params import Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 # 创建路由对象
-router = APIRouter(prefix="/api/v1/products", tags=["products"])
+router = APIRouter(prefix="/api/v1/products", tags=["保险产品管理接口"])
 
 
 async def get_product_service(

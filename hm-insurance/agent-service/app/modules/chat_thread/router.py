@@ -9,7 +9,7 @@ from .schemas import ChatThreadCreate, ChatThreadResponse
 from .service import ChatThreadService
 
 # 创建路由对象
-router = APIRouter(prefix="/api/v1/chat-threads", tags=["chat-threads"])
+router = APIRouter(prefix="/api/v1/chat-threads", tags=["会话管理接口"])
 
 
 def get_service(session: Annotated[AsyncSession, Depends(get_session)]):

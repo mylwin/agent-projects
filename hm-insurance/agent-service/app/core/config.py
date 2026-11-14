@@ -45,18 +45,28 @@ class DatabaseSettings(EnvSettings):
     max_overflow: int = Field(alias="DB_MAX_OVERFLOW", default=10)
     pool_recycle: int = Field(alias="DB_POOL_RECYCLE", default=1800)
 
-    @computed_field
-    @property
-    def url(self) -> str:
-        """自动拼接数据库连接字符串"""
+    def build_url(self, scheme: str) -> str:
+        """构建数据库连接字符串"""
         return PostgresDsn.build(
-            scheme="postgresql+asyncpg",
+            scheme=scheme,
             host=self.host,
             port=self.port,
             username=self.user,
             password=self.password,
             path=self.name,
         ).encoded_string()
+
+    @computed_field
+    @property
+    def url(self) -> str:
+        """SQLAlchemy 连接字符串"""
+        return self.build_url("postgresql+asyncpg")
+
+    @computed_field
+    @property
+    def checkpoint_url(self) -> str:
+        """PostgreSQL Checkpoint 兼容的连接字符串"""
+        return self.build_url("postgresql")
 
 
 class LLMSettings(EnvSettings):
