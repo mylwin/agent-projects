@@ -83,6 +83,12 @@ class LoggingSettings(EnvSettings):
     level: str = Field(alias="LOG_LEVEL", default="INFO")
 
 
+class RAGSettings(EnvSettings):
+    """RAG settings"""
+
+    mineru_token: str = Field(alias="MINERU_TOKEN")
+
+
 class Settings(BaseSettings):
     app: AppSettings = Field(
         default_factory=cast(Callable[[], AppSettings], AppSettings)
@@ -95,6 +101,9 @@ class Settings(BaseSettings):
     )
     logging: LoggingSettings = Field(
         default_factory=cast(Callable[[], LoggingSettings], LoggingSettings)
+    )
+    rag: RAGSettings = Field(
+        default_factory=cast(Callable[[], RAGSettings], RAGSettings)
     )
 
 
