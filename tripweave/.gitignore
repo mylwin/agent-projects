@@ -27,6 +27,8 @@ node_modules/
 .pnpm-store/
 .npm/
 .yarn/cache/
+# 前端使用 pnpm，屏蔽误由 npm 生成的第二套锁文件
+/frontend/package-lock.json
 .next/
 .nuxt/
 .output/
