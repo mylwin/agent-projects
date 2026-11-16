@@ -69,6 +69,7 @@ class ChatService:
         async for event in stream:
             method = event["method"]
             # 判断事件类型，可以是messages、interrupts等等
+            # TODO 实测一次：把 event 原样 print/logger.debug 打出来看真实结构
             if method == "messages":
                 data = event["params"]["data"][0]
                 if isinstance(data, AIMessage):
