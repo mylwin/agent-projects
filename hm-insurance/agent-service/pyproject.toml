@@ -2,7 +2,7 @@
 name = "agent-service"
 version = "0.1.0"
 description = "Insurance AI agent service"
-requires-python = ">=3.14"
+requires-python = ">=3.14,<3.15"
 dependencies = [
     # Web / 服务
     "fastapi>=0.139.2",
