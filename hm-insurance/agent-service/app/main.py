@@ -31,6 +31,7 @@ async def lifespan(app: FastAPI):
     """服务启动时执行"""
     logger.info(f"【{settings.app.name}] 服务启动中...")
     from app.infra.database import check_database, close_database
+    from app.rag import close_rag
 
     try:
         # 1.检查业务数据库连接
@@ -42,9 +43,11 @@ async def lifespan(app: FastAPI):
         yield
     finally:
         logger.info(f"【{settings.app.name}] 服务关闭中...")
-        # 3.关闭数据检查点
+        # 4.关键Rag资源
+        close_rag()
+        # 5.关闭数据检查点
         await close_checkpointer()
-        # 4.关闭数据库连接
+        # 6.关闭数据库连接
         await close_database()
 
 

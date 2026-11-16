@@ -64,3 +64,20 @@ async def save_insurance_plan(
         "plan_id": str(plan_id),
         "message": "保险方案保存成功",
     }
+
+
+@tool
+async def query_product_clause(query: str, k: int, product_id: int) -> str | None:
+    """从知识库中检索指定产品的条款信息"""
+
+    from app.rag import retrieval
+
+    # 检索得到结果
+    chunks = await retrieval.retrieve(query, k, product_id)
+    if not chunks:
+        return "没有从[知识库]中检索到该产品相关的保险条款"
+
+    # 返回结果
+    return "\n\n".join(
+        f"[章节]:{chunk.section_path}[内容]:{chunk.content}" for chunk in chunks
+    )

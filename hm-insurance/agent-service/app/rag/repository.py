@@ -1,5 +1,5 @@
 from app.rag.models import ParentChunk
-from sqlalchemy import delete
+from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -16,4 +16,12 @@ class ParentChunkRepository:
         )
 
     def add_all(self, parent_chunks: list[ParentChunk]) -> None:
+        """批量添加父块知识块"""
         self.session.add_all(parent_chunks)
+
+    async def list_by_ids(self, ids: list[str]) -> list[ParentChunk] | None:
+        """根据 id 列表查询父块知识块"""
+        result = await self.session.scalars(
+            select(ParentChunk).where(ParentChunk.id.in_(ids))
+        )
+        return list(result.all())

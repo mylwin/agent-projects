@@ -66,6 +66,10 @@ class RAGPipeline:
         )
         logger.info("RAG Pipeline 初始化完成✅️")
 
+    def close(self) -> None:
+        """关闭流水线持有的 MinerU 客户端。"""
+        self._mineru.close()
+
     async def ingest(self, product: Product) -> None:
         """将新的产品对应的条款注入知识库中"""
         # 1.解析并优化文档内容
