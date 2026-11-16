@@ -1,3 +1,4 @@
+import json
 from decimal import Decimal
 
 from app.agents.schemas import InsuranceAgentContext
@@ -7,6 +8,7 @@ from app.modules.insurance_plan.service import InsurancePlanService
 from app.modules.product.service import ProductService
 from fastapi.encoders import jsonable_encoder
 from langchain.tools import ToolRuntime, tool
+from langgraph.config import get_stream_writer
 
 
 @tool
@@ -68,7 +70,14 @@ async def save_insurance_plan(
 
 @tool
 async def query_product_clause(query: str, k: int, product_id: int) -> str | None:
-    """从知识库中检索指定产品的条款信息"""
+    """
+    从知识库中检索指定产品的条款信息
+
+    Args:
+        query: 检索的条款内容
+        k: 检索的条数
+        product_id: 条款所属的产品ID
+    """
 
     from app.rag import retrieval
 
@@ -77,7 +86,21 @@ async def query_product_clause(query: str, k: int, product_id: int) -> str | Non
     if not chunks:
         return "没有从[知识库]中检索到该产品相关的保险条款"
 
-    # 返回结果
-    return "\n\n".join(
-        f"[章节]:{chunk.section_path}[内容]:{chunk.content}" for chunk in chunks
-    )
+    # 把model转换字典数据
+    sources = {
+        # 给文档编号，最终格式 {"ref-001": {"content": ""}}
+        f"ref-{i:03d}": {
+            "product_id": chunk.product_id,
+            "clause_name": chunk.clause_name,
+            "section_path": chunk.section_path,
+            "content": chunk.content,
+        }
+        for i, chunk in enumerate(chunks, start=1)
+    }
+
+    # 把source写到自定义事件中
+    writer = get_stream_writer()
+    writer({"type": "additional_info", "data": sources})
+
+    # 以JSON格式返回
+    return json.dumps(sources, ensure_ascii=False)
