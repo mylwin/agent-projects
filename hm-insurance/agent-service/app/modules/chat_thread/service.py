@@ -1,6 +1,9 @@
 from uuid import UUID
 
-from app.modules.auth.exceptions import CheckpointerNotConfiguredError, ChatThreadNotFoundError
+from app.modules.auth.exceptions import (
+    ChatThreadNotFoundError,
+    CheckpointerNotConfiguredError,
+)
 from app.modules.chat_thread.schemas import ChatHistoryResponse, ChatMessageResponse
 from langchain.messages import AIMessage, HumanMessage
 from langchain_core.runnables import RunnableConfig

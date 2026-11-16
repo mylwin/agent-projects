@@ -1,6 +1,8 @@
 import sys
 from pathlib import Path
 
+from app.agents.orchestrator import init_insurance_orchestrator
+
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 
 # 支持直接运行 app/main.py，包括从项目外部目录启动。
@@ -8,7 +10,6 @@ if __package__ in (None, "") and str(SERVICE_ROOT) not in sys.path:
     sys.path.insert(0, str(SERVICE_ROOT))
 
 import uvicorn
-from app.agents.insurance_advisor import init_insurance_agent
 from app.core.config import settings
 from app.core.exceptions import ApplicationError
 from app.core.logging import get_logger, setup_logging
@@ -38,8 +39,9 @@ async def lifespan(app: FastAPI):
         await check_database()
         # 2.初始化数据检查点
         checkpointer = await init_checkpointer()
-        # 3.初始化保险顾问 Agent
-        app.state.agent = init_insurance_agent(checkpointer)
+        # 3.初始化保险顾问 Agent(graph)
+        # app.state.agent = init_insurance_agent(checkpointer)
+        app.state.agent = init_insurance_orchestrator(checkpointer)
         yield
     finally:
         logger.info(f"【{settings.app.name}] 服务关闭中...")
