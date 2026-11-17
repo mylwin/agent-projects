@@ -87,8 +87,6 @@ class ChatThreadService:
         # 2.获取 agent 的最新状态
         config: RunnableConfig = {"configurable": {"thread_id": str(thread_id)}}
         snapshot = await self.agent.aget_state(config)
-        # TODO(citation-flow): 历史接口与 SSE 返回同一分型结构及消息 ID，恢复每条回答的来源快照；
-        # 旧消息缺失来源时标记不可追溯，不能按重名 ref-001 从其他消息猜测补齐。
         additional_info = snapshot.values.get("additional_info", {})
 
         # 3.只返回用户和 AI 消息

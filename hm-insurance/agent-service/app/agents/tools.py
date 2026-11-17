@@ -1,5 +1,6 @@
 import json
 from decimal import Decimal
+from uuid import NAMESPACE_URL, uuid5
 
 from app.agents.schemas import InsuranceAgentContext
 from app.infra.database import AsyncSessionFactory
@@ -22,7 +23,7 @@ async def query_candidate_products(
     Args:
         categories: 产品分类列表，可选值为 medical、critical_illness、life、accident。
         premium_min: 最低保费上限，可选参数，只返回最低保费小于该值的产品。
-        limit_per_category: 每个险种最多返回的产品数量，可选参数，默认5。
+        limit: 每个险种最多返回的产品数量，可选参数，默认5。
     """
 
     async with AsyncSessionFactory() as session:
@@ -34,10 +35,11 @@ async def query_candidate_products(
             categories, premium_min, limit
         )
 
-        # TODO(citation-flow): 将候选产品以 candidate_products 事件同步给前端并写入检查点；
-        # 为产品概览分配 product 来源 ID，返回给模型，勿把产品简介当作条款证据。
-        # 3.返回 json 格式数据
-        return jsonable_encoder(candidate_products)
+        # 3.将候选产品同步到前端
+        products = jsonable_encoder(candidate_products)
+        writer = get_stream_writer()
+        writer({"type": "additional_info", "data": {"candidate_products": products}})
+        return products
 
 
 @tool
@@ -93,6 +95,14 @@ async def save_insurance_plan(
             data=plan,
         )
 
+    # 保存成功后同步方案产品，拒绝或保存失败时不发送
+    plan_items = [
+        {**item.model_dump(mode="json"), "plan_id": str(plan_id)}
+        for item in plan.items
+    ]
+    writer = get_stream_writer()
+    writer({"type": "additional_info", "data": {"plan_items": plan_items}})
+
     return {
         "plan_id": str(plan_id),
         "status": "saved",
@@ -118,23 +128,20 @@ async def query_product_clause(query: str, k: int, product_id: int) -> str | Non
     if not chunks:
         return "没有从[知识库]中检索到该产品相关的保险条款"
 
-    # TODO(citation-flow): 用产品 ID + 父块 ID/内容版本生成稳定来源 ID，替代每次重置 ref-001；
-    # 工具返回、事件和证据注册表使用同一 ID，保留 chunk.id 与原文快照以支持跨轮复用。
-    # 把model转换字典数据
+    # 使用产品、父块和内容生成固定编号，多次查询不会重名覆盖
     sources = {
-        # 给文档编号，最终格式 {"ref-001": {"content": ""}}
-        f"ref-{i:03d}": {
+        f"ref-clause-{chunk.product_id}-{uuid5(NAMESPACE_URL, f'{chunk.id}:{chunk.content}')}": {
             "product_id": chunk.product_id,
             "clause_name": chunk.clause_name,
             "section_path": chunk.section_path,
             "content": chunk.content,
         }
-        for i, chunk in enumerate(chunks, start=1)
+        for chunk in chunks
     }
 
     # 把source写到自定义事件中
     writer = get_stream_writer()
-    writer({"type": "additional_info", "data": sources})
+    writer({"type": "additional_info", "data": {"sources": sources}})
 
     # 以JSON格式返回
     return json.dumps(sources, ensure_ascii=False)

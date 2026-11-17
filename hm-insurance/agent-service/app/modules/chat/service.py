@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 
+from app.agents.evidence import collect_sources, merge_info, referenced_sources
 from app.agents.schemas import AdditionalInfo, InsuranceAgentContext
 from app.modules.auth.exceptions import ChatThreadNotFoundError
 from app.modules.chat.schemas import ChatRequest
@@ -41,7 +42,19 @@ class ChatService:
         config: RunnableConfig = {"configurable": {"thread_id": str(request.thread_id)}}
         context = InsuranceAgentContext(user_id=user_id)
 
-        # 3.使用 v3 协议获取异步事件流
+        # 3.读取历史来源，供本轮复用
+        # 取该thread的最新状态快照
+        previous_state = await self.agent.aget_state(config)
+        # 获取历史信息来源
+        history_info = previous_state.values.get("additional_info", {})
+        # 历史查询过并且保存的来源列表
+        sources = collect_sources(history_info)
+        # 历史消息的id列表,为了区分那些消息是当前轮新增的
+        previous_ids = {
+            message.id for message in previous_state.values.get("messages", [])
+        }
+
+        # 4.使用 v3 协议获取异步事件流
         stream = await self.agent.astream_events(
             _input,
             config,
@@ -50,29 +63,8 @@ class ChatService:
             transformers=[CustomTransformer],
         )
 
-        # # 4.只读取消息中的文本增量
-        # async def stream_text():
-        #     async for message in stream.messages:
-        #         async for text in message.text:
-        #             yield ServerSentEvent(data=text, event="message")
-
-        # # 5.判断是否有custom事件
-        # async def stream_custom():
-        #     async for event in stream.extensions["custom"]:
-        #         if event.get("type") == "additional_info":
-        #             yield ServerSentEvent(
-        #                 data=event.get("data"), event="additional_info"
-        #             )
-
-        # # 6.合并message和custom事件
-        # merged = astream.merge(stream_text(), stream_custom())
-        # async with merged.stream() as streamer:
-        #     async for event in streamer:
-        #         yield event
-
-        # 4.解析父子Graph的消息
-        final_message_id: str | None = None  # 最后一次发送的消息ID
-        additional_info: AdditionalInfo = {}  # 工具调用后产生的额外信息(当前是引用信息)
+        final_message_id: str | None = None
+        additional_info: AdditionalInfo = {}
 
         async for event in stream:
             method = event["method"]
@@ -100,21 +92,53 @@ class ChatService:
             if method == "custom":
                 data = event["params"]["data"]
                 if isinstance(data, dict) and data.get("type") == "additional_info":
-                    # TODO(citation-flow): 按类型和稳定来源 ID 累积事件，勿用最后一次工具结果覆盖；
-                    # SSE 携带回答 ID，结束时从注册表解析正文引用（含历史来源），逐条消息持久化。
-                    # 来源先写检查点再投递；覆盖多工具、中断恢复及断流后历史重载场景。
-                    additional_info = data.get("data", {})
-                    yield ServerSentEvent(data=additional_info, event="additional_info")
-        # 中断
-        interrupt = await stream.interrupts()
-        for item in interrupt:
+                    # 同一轮可能查询多个产品、多个条款，需要合并而不是覆盖
+                    # 本次工具调用的信息
+                    info = merge_info({}, data.get("data", {}))
+                    # 本轮所有的工具调用累计信息
+                    additional_info = merge_info(additional_info, info)
+                    yield ServerSentEvent(data=info, event="additional_info")
+
+        # 5.按实际回答绑定来源，同时保留本轮检索结果供后续复用
+        snapshot = await self.agent.aget_state(config)
+        # 本轮的AI回答消息
+        ai_messages = [
+            message
+            for message in snapshot.values.get("messages", [])
+            if isinstance(message, AIMessage) and message.id not in previous_ids
+        ]
+        answers = [message for message in ai_messages if message.text]
+
+        # 把本轮的来源加入到历史来源中
+        sources.update(additional_info.get("sources", {}))
+        # 逐条匹配正文
+        message_info = {}
+        for answer in answers:
+            used_sources = referenced_sources(answer.text, sources)
+            if used_sources and answer.id:
+                message_info[answer.id] = {"sources": used_sources}
+
+        target_id = (
+            answers[-1].id
+            if answers
+            else ai_messages[-1].id
+            if ai_messages
+            else final_message_id
+        )
+        if target_id:
+            info = merge_info(message_info.get(target_id, {}), additional_info)
+            if info:
+                message_info[target_id] = info
+
+        if message_info:
+            await self.agent.aupdate_state(config, {"additional_info": message_info})
+            # 保存恢复时即使没有重新检索，也补发正文用到的历史来源
+            for info in message_info.values():
+                yield ServerSentEvent(data=info, event="additional_info")
+
+        # 6.返回保存确认信息
+        interrupts = await stream.interrupts()
+        for item in interrupts:
             yield ServerSentEvent(data=item.value, event="interrupt")
 
-        if final_message_id and additional_info:
-            # 将additional_info更新到state中
-            await self.agent.aupdate_state(
-                config, {"additional_info": {final_message_id: additional_info}}
-            )
-
-        # 7.返回结束事件
         yield ServerSentEvent(data="[DONE]", event="done")

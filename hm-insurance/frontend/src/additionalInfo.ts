@@ -9,28 +9,20 @@ export function normalizeAdditionalInfo(raw: unknown): AdditionalInfo[] {
   if (typeof raw !== 'object') return [];
 
   const record = raw as Record<string, unknown>;
-  // TODO(citation-flow): 统一解析分型信封，来源、候选产品和方案项可以同时存在，
-  // 不在首个字段命中后提前返回；按稳定来源 ID 去重，流式与历史加载共用此协议。
-  const wrappedSources = record.clause_sources ?? record.sources;
-  if (wrappedSources) {
-    return sourceInfo(wrappedSources);
-  }
+  const result: AdditionalInfo[] = [];
+  const sources = record.sources;
+  const products = record.plan_items ?? record.candidate_products ?? record.candidates_products;
+  const policies = record.policies ?? record.policy_items;
 
-  const wrappedProducts = record.plan_items ?? record.candidate_products ?? record.candidates_products;
-  if (wrappedProducts) {
-    return productInfo(wrappedProducts, record.plan_items ? '推荐方案产品' : '候选产品');
+  if (sources) result.push(...sourceInfo(sources));
+  if (products) {
+    result.push(...productInfo(products, record.plan_items ? '推荐方案产品' : '候选产品'));
   }
+  if (policies) result.push(...policyInfo(policies));
+  if (sources || products || policies) return result;
 
-  const wrappedPolicies = record.policies ?? record.policy_items;
-  if (wrappedPolicies) {
-    return policyInfo(wrappedPolicies);
-  }
-
-  if (looksLikePolicy(record)) {
-    return policyInfo([record]);
-  }
-
-  return sourceInfo(record);
+  if (looksLikePolicy(record)) return policyInfo([record]);
+  return [];
 }
 
 function sourceInfo(raw: unknown): AdditionalInfo[] {
@@ -49,6 +41,7 @@ function policyInfo(raw: unknown): AdditionalInfo[] {
 }
 
 function normalizeSources(raw: unknown): ClauseSource[] {
+  if (!raw || typeof raw !== 'object') return [];
   const entries: Array<[string | undefined, unknown]> = Array.isArray(raw)
     ? raw.map((item) => [undefined, item])
     : Object.entries(raw as Record<string, unknown>);
@@ -96,18 +89,46 @@ export function attachInfoToLastAssistantMessage<T extends { role: string; addit
   messages: T[],
   info: AdditionalInfo[],
 ): T[] {
-  // TODO(citation-flow): 按后端回答 ID 绑定附加信息，替代挂到最后一条 assistant；
-  // 缓存先于文本到达的来源事件，正确处理多条 AI 消息及保存确认恢复后的新回复。
   if (info.length === 0) return messages;
   for (let index = messages.length - 1; index >= 0; index -= 1) {
     if (messages[index].role === 'assistant') {
       const next = [...messages];
       next[index] = {
         ...messages[index],
-        additionalInfo: [...(messages[index].additionalInfo ?? []), ...info],
+        additionalInfo: mergeAdditionalInfo(messages[index].additionalInfo ?? [], info),
       };
       return next;
     }
   }
   return messages;
+}
+
+function mergeAdditionalInfo(previous: AdditionalInfo[], current: AdditionalInfo[]): AdditionalInfo[] {
+  const result = [...previous];
+  for (const info of current) {
+    if (info.type === 'clause_sources') {
+      const index = result.findIndex((item) => item.type === 'clause_sources');
+      const old = result[index];
+      const sources = new Map(
+        (old?.type === 'clause_sources' ? old.sources : []).map((source) => [source.source_id, source]),
+      );
+      info.sources.forEach((source) => sources.set(source.source_id, source));
+      const merged: AdditionalInfo = { type: 'clause_sources', sources: [...sources.values()] };
+      if (index >= 0) result[index] = merged;
+      else result.push(merged);
+    } else if (info.type === 'products') {
+      const index = result.findIndex((item) => item.type === 'products' && item.title === info.title);
+      const old = result[index];
+      const products = new Map(
+        (old?.type === 'products' ? old.products : []).map((product) => [String(product.product_id ?? product.id), product]),
+      );
+      info.products.forEach((product) => products.set(String(product.product_id ?? product.id), product));
+      const merged: AdditionalInfo = { ...info, products: [...products.values()] };
+      if (index >= 0) result[index] = merged;
+      else result.push(merged);
+    } else {
+      result.push(info);
+    }
+  }
+  return result;
 }

@@ -46,6 +46,5 @@ class InsuranceAgentState(MessagesState):
 
     previous_workflow: Intent
     active_workflow: Intent
-    # TODO(citation-flow): 增加可持久化的来源注册表与待确认方案快照；additional_info
-    # 仅保存每条回答实际使用的来源/产品，父子图和 interrupt/resume 共享明确的状态契约。
+    # 按 AI 消息 ID 保存产品和条款信息，历史加载时直接读取
     additional_info: Annotated[dict[str, AdditionalInfo], merge_additional_info]

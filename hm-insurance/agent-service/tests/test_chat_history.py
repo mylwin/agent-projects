@@ -24,8 +24,8 @@ class ChatHistoryTests(unittest.IsolatedAsyncioTestCase):
             HumanMessage("问题二"), AIMessage("回答二", id="answer-2"),
             AIMessage("无引用回复", id="answer-3"),
         ]}, config)
-        first = {"ref-001": {"content": "第一条条款"}}
-        second = {"ref-001": {"content": "第二条条款"}}
+        first = {"sources": {"ref-clause-6-first": {"content": "第一条条款"}}}
+        second = {"sources": {"ref-clause-10-second": {"content": "第二条条款"}}}
         await agent.aupdate_state(config, {"additional_info": {"answer-1": first}})
         await agent.aupdate_state(config, {"additional_info": {"answer-2": second}})
         service = ChatThreadService.__new__(ChatThreadService)
