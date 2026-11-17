@@ -28,6 +28,7 @@ import {
 } from './api';
 import { formatCategoryLabel } from './categoryLabels';
 import { MarkdownMessage } from './MarkdownMessage';
+import { PlanRejectModal } from './PlanRejectModal';
 import type { AdditionalInfo, AdditionalPolicy, AdditionalProduct, AuthSession, ClauseSource, PlanInterrupt } from './types';
 import type { ChatMessage, ChatThread } from './types';
 
@@ -468,27 +469,17 @@ export function AdvisorPage({ session, onBack, onSessionExpired, onApplyProduct 
           onPressEnter={() => void renameThread()}
         />
       </Modal>
-      <Modal
+      <PlanRejectModal
         open={rejectReasonOpen}
-        title="取消保存方案"
-        okText="提交"
-        cancelText="返回"
-        okButtonProps={{ disabled: !rejectReason.trim() }}
-        onOk={() => {
+        reason={rejectReason}
+        loading={sending}
+        onReasonChange={setRejectReason}
+        onSubmit={() => {
           setRejectReasonOpen(false);
           void submitDecision('reject', rejectReason);
         }}
         onCancel={() => setRejectReasonOpen(false)}
-      >
-        <Input.TextArea
-          value={rejectReason}
-          autoSize={{ minRows: 3, maxRows: 5 }}
-          maxLength={200}
-          showCount
-          placeholder="请填写取消原因，例如：费用太高了，我想换一个预算更低的方案"
-          onChange={(event) => setRejectReason(event.target.value)}
-        />
-      </Modal>
+      />
       <Drawer
         open={selectedSource !== null}
         title="条款引用"
@@ -526,8 +517,6 @@ function MessageContent({
   planItemStatuses: Record<string, ProductPlanStatus>;
   onSourceClick: (source: ClauseSource, answerContent: string) => void;
 }) {
-  // TODO(citation-flow): 对正文中未解析的引用展示“来源暂不可用”，不跨消息猜测映射；
-  // 保存回执使用自身携带的快照来源，新增产品概览来源时与条款详情分型展示。
   const sources = extractClauseSources(message.additionalInfo);
   const sourceRefs = buildSourceRefs(message.content, sources);
   const sourceById = new Map(sources.map((source) => [source.source_id, source]));

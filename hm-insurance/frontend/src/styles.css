@@ -1696,6 +1696,67 @@ a {
   }
 }
 
+.plan-reject-modal .ant-modal-content {
+  padding: 28px;
+}
+
+.plan-reject-modal .ant-modal-title {
+  color: #173735;
+  font-size: 20px;
+  line-height: 1.5;
+}
+
+.plan-reject-modal__description {
+  color: #657472;
+  line-height: 1.7;
+  margin: 10px 0 22px;
+}
+
+.plan-reject-modal__label {
+  color: #263d3b;
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.plan-reject-modal textarea.ant-input {
+  line-height: 1.7;
+  padding: 10px 12px;
+}
+
+.plan-reject-modal__meta {
+  color: #7a8785;
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12px;
+  gap: 6px 16px;
+  justify-content: space-between;
+  line-height: 1.6;
+  margin-top: 10px;
+}
+
+.plan-reject-modal__meta > span:last-child {
+  margin-left: auto;
+  white-space: nowrap;
+}
+
+.plan-reject-modal .ant-modal-footer {
+  border-top: 1px solid #edf1f0;
+  margin-top: 24px;
+  padding-top: 18px;
+}
+
+.plan-reject-modal .ant-modal-footer .ant-btn {
+  height: 38px;
+  padding-inline: 18px;
+}
+
+@media (max-width: 480px) {
+  .plan-reject-modal .ant-modal-content {
+    padding: 22px 20px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   * {
     scroll-behavior: auto !important;
