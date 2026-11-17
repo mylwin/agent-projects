@@ -19,13 +19,11 @@ class InsurancePlan(Base, CreateAtMixin, UpdateAtMixin):
         primary_key=True,
         default=uuid4,
     )
-    # users 表由数据库脚本维护，未映射到本服务的 ORM metadata。
-    # TODO: 目前项目没有定义并加载 User ORM 模型
-    user_id: Mapped[int] = mapped_column(BigInteger)
-    # user_id: Mapped[int] = mapped_column(
-    #     BigInteger,
-    #     ForeignKey("users.id"),
-    # )
+
+    user_id: Mapped[int] = mapped_column(
+        BigInteger,
+        ForeignKey("users.id"),
+    )
     plan_name: Mapped[str] = mapped_column(String(120))
     # TODO(citation-flow): 新增带 schema_version 的 evidence_snapshot JSONB（配套数据库迁移），
     # 保存确认时的产品数据、条款原文/版本与引用关系，避免清理会话或更新条款后失去依据。

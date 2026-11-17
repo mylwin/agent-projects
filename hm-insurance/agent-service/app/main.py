@@ -10,14 +10,17 @@ if __package__ in (None, "") and str(SERVICE_ROOT) not in sys.path:
 import uvicorn
 from app.agents.orchestrator import init_insurance_orchestrator
 from app.core.config import settings
+from app.core.exception_handlers import handle_request_validation_error
 from app.core.exceptions import ApplicationError
 from app.core.logging import get_logger, setup_logging
 from app.infra.checkpointer import close_checkpointer, init_checkpointer
+from app.modules.auth.router import router as auth_router
 from app.modules.chat.router import router as chat_router
 from app.modules.chat_thread.router import router as chat_thread_router
 from app.modules.product.router import router as product_router
 from fastapi import FastAPI, Request
 from fastapi.concurrency import asynccontextmanager
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
 # 初始化日志系统
@@ -60,12 +63,16 @@ app = FastAPI(
 )
 
 # 绑定路由
+app.include_router(router=auth_router)
 app.include_router(router=product_router)
 app.include_router(router=chat_thread_router)
 app.include_router(router=chat_router)
 
 
 # 统一处理异常信息
+app.exception_handler(RequestValidationError)(handle_request_validation_error)
+
+
 @app.exception_handler(ApplicationError)
 def handle_exception(request: Request, exc: ApplicationError) -> JSONResponse:
     return JSONResponse(

@@ -1,8 +1,8 @@
 from collections.abc import Callable
 from pathlib import Path
-from typing import cast
+from typing import Literal, cast
 
-from pydantic import Field, PostgresDsn, computed_field
+from pydantic import Field, PostgresDsn, SecretStr, computed_field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 # 向上查找根目录
@@ -97,6 +97,23 @@ class RAGSettings(EnvSettings):
         return f"http://{self.milvus_host}:{self.milvus_port}"
 
 
+class JWTSettings(EnvSettings):
+    """JWT 签名与有效期配置"""
+
+    secret_key: SecretStr = Field(alias="JWT_SECRET_KEY", min_length=32)
+    algorithm: Literal["HS256"] = "HS256"
+    access_token_expire_minutes: int = Field(
+        alias="JWT_ACCESS_TOKEN_EXPIRE_MINUTES", default=30, gt=0
+    )
+    refresh_token_expire_days: int = Field(
+        alias="JWT_REFRESH_TOKEN_EXPIRE_DAYS", default=7, gt=0
+    )
+    refresh_cookie_secure: bool = Field(
+        alias="JWT_REFRESH_COOKIE_SECURE", default=False,
+        description="HTTPS 部署时设为 true，本地 HTTP 开发设为 false",
+    )
+
+
 class Settings(BaseSettings):
     app: AppSettings = Field(
         default_factory=cast(Callable[[], AppSettings], AppSettings)
@@ -112,6 +129,9 @@ class Settings(BaseSettings):
     )
     rag: RAGSettings = Field(
         default_factory=cast(Callable[[], RAGSettings], RAGSettings)
+    )
+    jwt: JWTSettings = Field(
+        default_factory=cast(Callable[[], JWTSettings], JWTSettings)
     )
 
 
