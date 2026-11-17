@@ -2,8 +2,8 @@ from collections.abc import AsyncGenerator
 
 from app.agents.evidence import collect_sources, merge_info, referenced_sources
 from app.agents.schemas import AdditionalInfo, InsuranceAgentContext
-from app.modules.auth.exceptions import ChatThreadNotFoundError
 from app.modules.chat.schemas import ChatRequest
+from app.modules.chat_thread.exceptions import ChatThreadNotFoundError
 from app.modules.chat_thread.repository import ChatThreadRepository
 from fastapi.sse import ServerSentEvent
 from langchain.messages import AIMessage, HumanMessage
