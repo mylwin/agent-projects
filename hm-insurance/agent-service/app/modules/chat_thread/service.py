@@ -87,6 +87,9 @@ class ChatThreadService:
         # 2.获取 agent 的最新状态
         config: RunnableConfig = {"configurable": {"thread_id": str(thread_id)}}
         snapshot = await self.agent.aget_state(config)
+        # TODO(citation-flow): 历史接口与 SSE 返回同一分型结构及消息 ID，恢复每条回答的来源快照；
+        # 旧消息缺失来源时标记不可追溯，不能按重名 ref-001 从其他消息猜测补齐。
+        additional_info = snapshot.values.get("additional_info", {})
 
         # 3.只返回用户和 AI 消息
         messages = []
@@ -104,11 +107,25 @@ class ChatThreadService:
                     ChatMessageResponse(
                         role=role,
                         content=message.text,
+                        additional_info=(
+                            additional_info.get(message.id)
+                            if isinstance(message, AIMessage) and message.id
+                            else None
+                        ),
                     )
                 )
-
+        # 4.处理interrupt
+        interrupts = None
+        if hasattr(snapshot, "interrupts") and snapshot.interrupts:
+            interrupts = snapshot.interrupts
+        elif hasattr(snapshot, "tasks") and snapshot.tasks:
+            for task in snapshot.tasks:
+                if hasattr(task, "interrupts") and task.interrupts:
+                    interrupts = task.interrupts
+                    break
         # 返回结果
         return ChatHistoryResponse(
             thread_id=thread_id,
             messages=messages,
+            interrupt=interrupts[0].value if interrupts else None,
         )

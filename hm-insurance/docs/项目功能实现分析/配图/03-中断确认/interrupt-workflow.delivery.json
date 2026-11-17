@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "receiptId": "b89ec1f6-e207-4b32-9315-900d1e88344e",
+  "status": "current",
+  "command": "deliver",
+  "type": "workflow",
+  "input": "/Users/myl/Documents/python-code/agent-projects/hm-insurance/docs/项目功能实现分析/配图/03-中断确认/candidate.json",
+  "output": "/Users/myl/Documents/python-code/agent-projects/hm-insurance/docs/项目功能实现分析/配图/03-中断确认/interrupt-workflow.html",
+  "specification": {
+    "sha256": "d543f0111aac43adf8d030a0c9abf2ef1e1bec9aae6044d2301c5b5e06563ba7",
+    "bytes": 3230
+  },
+  "artifact": {
+    "sha256": "b35c1cb4842e29a5dbbd1d47c8910a88d11a9e1b6c7a0b6efd84ffeff326a409",
+    "bytes": 754965
+  }
+}

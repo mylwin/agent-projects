@@ -9,6 +9,8 @@ export function normalizeAdditionalInfo(raw: unknown): AdditionalInfo[] {
   if (typeof raw !== 'object') return [];
 
   const record = raw as Record<string, unknown>;
+  // TODO(citation-flow): 统一解析分型信封，来源、候选产品和方案项可以同时存在，
+  // 不在首个字段命中后提前返回；按稳定来源 ID 去重，流式与历史加载共用此协议。
   const wrappedSources = record.clause_sources ?? record.sources;
   if (wrappedSources) {
     return sourceInfo(wrappedSources);
@@ -94,6 +96,8 @@ export function attachInfoToLastAssistantMessage<T extends { role: string; addit
   messages: T[],
   info: AdditionalInfo[],
 ): T[] {
+  // TODO(citation-flow): 按后端回答 ID 绑定附加信息，替代挂到最后一条 assistant；
+  // 缓存先于文本到达的来源事件，正确处理多条 AI 消息及保存确认恢复后的新回复。
   if (info.length === 0) return messages;
   for (let index = messages.length - 1; index >= 0; index -= 1) {
     if (messages[index].role === 'assistant') {

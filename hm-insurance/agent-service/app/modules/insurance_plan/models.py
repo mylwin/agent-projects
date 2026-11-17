@@ -27,6 +27,8 @@ class InsurancePlan(Base, CreateAtMixin, UpdateAtMixin):
     #     ForeignKey("users.id"),
     # )
     plan_name: Mapped[str] = mapped_column(String(120))
+    # TODO(citation-flow): 新增带 schema_version 的 evidence_snapshot JSONB（配套数据库迁移），
+    # 保存确认时的产品数据、条款原文/版本与引用关系，避免清理会话或更新条款后失去依据。
     summary: Mapped[str | None] = mapped_column(Text)
     insured_profile: Mapped[dict[str, Any]] = mapped_column(
         JSONB,

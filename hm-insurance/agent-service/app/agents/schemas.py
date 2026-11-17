@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Literal
+from typing import Annotated, Any, Literal
 
 from langgraph.graph import MessagesState
 from pydantic import BaseModel, Field
@@ -21,6 +21,18 @@ Intent = Literal[
     "fallback",  # 意图识别失败兜底
 ]
 
+AdditionalInfo = dict[str, Any]
+
+
+def merge_additional_info(
+    previous: dict[str, AdditionalInfo], current: dict[str, AdditionalInfo]
+) -> dict[str, AdditionalInfo]:
+    """按照AI消息的id合并会话中的引用消息"""
+    return {
+        **previous,
+        **current,
+    }
+
 
 class RouteResult(BaseModel):
     """意图识别结果"""
@@ -34,3 +46,6 @@ class InsuranceAgentState(MessagesState):
 
     previous_workflow: Intent
     active_workflow: Intent
+    # TODO(citation-flow): 增加可持久化的来源注册表与待确认方案快照；additional_info
+    # 仅保存每条回答实际使用的来源/产品，父子图和 interrupt/resume 共享明确的状态契约。
+    additional_info: Annotated[dict[str, AdditionalInfo], merge_additional_info]

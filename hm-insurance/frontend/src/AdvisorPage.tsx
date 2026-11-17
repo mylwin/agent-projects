@@ -526,6 +526,8 @@ function MessageContent({
   planItemStatuses: Record<string, ProductPlanStatus>;
   onSourceClick: (source: ClauseSource, answerContent: string) => void;
 }) {
+  // TODO(citation-flow): 对正文中未解析的引用展示“来源暂不可用”，不跨消息猜测映射；
+  // 保存回执使用自身携带的快照来源，新增产品概览来源时与条款详情分型展示。
   const sources = extractClauseSources(message.additionalInfo);
   const sourceRefs = buildSourceRefs(message.content, sources);
   const sourceById = new Map(sources.map((source) => [source.source_id, source]));

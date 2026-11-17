@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Literal
+from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
@@ -31,6 +31,7 @@ class ChatMessageResponse(BaseModel):
 
     role: Literal["user", "assistant"]
     content: str
+    additional_info: dict[str, Any] | None = None
 
 
 class ChatHistoryResponse(BaseModel):
@@ -38,3 +39,4 @@ class ChatHistoryResponse(BaseModel):
 
     thread_id: UUID
     messages: list[ChatMessageResponse]
+    interrupt: Any | None = None

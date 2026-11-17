@@ -26,6 +26,8 @@ class InsurancePlanRepository:
             sum(item_budgets, Decimal("0.0")) if item_budgets else None
         )
 
+        # TODO(citation-flow): 接收服务端验证后的确认快照，与方案及方案项在同一事务保存；
+        # 快照中的产品/保费必须与确认版本一致，保存回执返回该版本的产品及来源。
         # 2.保存保险方案
         insurance_plan = InsurancePlan(
             user_id=user_id,

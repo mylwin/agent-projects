@@ -1,8 +1,6 @@
 import sys
 from pathlib import Path
 
-from app.agents.orchestrator import init_insurance_orchestrator
-
 SERVICE_ROOT = Path(__file__).resolve().parents[1]
 
 # 支持直接运行 app/main.py，包括从项目外部目录启动。
@@ -10,6 +8,7 @@ if __package__ in (None, "") and str(SERVICE_ROOT) not in sys.path:
     sys.path.insert(0, str(SERVICE_ROOT))
 
 import uvicorn
+from app.agents.orchestrator import init_insurance_orchestrator
 from app.core.config import settings
 from app.core.exceptions import ApplicationError
 from app.core.logging import get_logger, setup_logging

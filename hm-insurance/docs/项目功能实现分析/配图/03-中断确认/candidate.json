@@ -1,0 +1,167 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "中断确认机制示意",
+    "locale": "zh-CN",
+    "quality_profile": "showcase",
+    "output": "docs/项目功能实现分析/配图/03-中断确认/interrupt-workflow.html"
+  },
+  "lanes": [
+    {
+      "id": "ui",
+      "label": "用户与界面"
+    },
+    {
+      "id": "run",
+      "label": "图运行与业务写入"
+    },
+    {
+      "id": "stop",
+      "label": "拒绝分支",
+      "variant": "exception"
+    }
+  ],
+  "mainPath": [
+    "ask",
+    "pause",
+    "card",
+    "choice",
+    "resume",
+    "gate",
+    "write"
+  ],
+  "nodes": [
+    {
+      "id": "ask",
+      "lane": "run",
+      "col": 0,
+      "type": "backend",
+      "label": "准备方案",
+      "sublabel": "尚未写入数据库",
+      "width": 160
+    },
+    {
+      "id": "pause",
+      "lane": "run",
+      "col": 1,
+      "type": "security",
+      "label": "触发中断",
+      "sublabel": "运行暂停并保留状态",
+      "width": 160
+    },
+    {
+      "id": "card",
+      "lane": "ui",
+      "col": 1,
+      "type": "frontend",
+      "label": "展示确认",
+      "sublabel": "本次响应或历史恢复",
+      "width": 160
+    },
+    {
+      "id": "choice",
+      "lane": "ui",
+      "col": 2,
+      "type": "external",
+      "label": "用户决定",
+      "sublabel": "批准或填写拒绝原因",
+      "width": 160
+    },
+    {
+      "id": "resume",
+      "lane": "run",
+      "col": 2,
+      "type": "backend",
+      "label": "恢复任务",
+      "sublabel": "重新执行并读取决定",
+      "width": 160
+    },
+    {
+      "id": "gate",
+      "lane": "run",
+      "col": 3,
+      "type": "security",
+      "label": "检查决定",
+      "sublabel": "只允许明确批准写入",
+      "width": 160
+    },
+    {
+      "id": "write",
+      "lane": "run",
+      "col": 4,
+      "type": "database",
+      "label": "保存方案",
+      "sublabel": "批准后执行业务写入",
+      "width": 160
+    },
+    {
+      "id": "reject",
+      "lane": "stop",
+      "col": 3,
+      "type": "backend",
+      "label": "拒绝保存",
+      "sublabel": "返回原因供后续调整",
+      "width": 160
+    }
+  ],
+  "edges": [
+    {
+      "id": "e0",
+      "from": "ask",
+      "to": "pause"
+    },
+    {
+      "id": "e1",
+      "from": "pause",
+      "to": "card",
+      "label": "待确认内容"
+    },
+    {
+      "id": "e2",
+      "from": "card",
+      "to": "choice"
+    },
+    {
+      "id": "e3",
+      "from": "choice",
+      "to": "resume",
+      "label": "提交决定"
+    },
+    {
+      "id": "e4",
+      "from": "resume",
+      "to": "gate"
+    },
+    {
+      "id": "e5",
+      "from": "gate",
+      "to": "write",
+      "label": "批准"
+    },
+    {
+      "id": "e6",
+      "from": "gate",
+      "to": "reject",
+      "label": "拒绝"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "两次请求",
+      "items": [
+        "暂停时本次响应可以结束",
+        "用户决定通过新请求提交"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "重放语义",
+      "items": [
+        "恢复会重新执行中断所在任务",
+        "写入操作应放在批准判断之后"
+      ]
+    }
+  ]
+}
