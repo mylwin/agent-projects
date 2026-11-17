@@ -195,7 +195,7 @@ export function AdvisorPage({ session, onBack, onSessionExpired, onApplyProduct 
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-  }, [messages, sending]);
+  }, [messages, pendingInterrupt]);
 
   useEffect(() => {
     const planIds = planIdsKey ? planIdsKey.split('|') : [];
