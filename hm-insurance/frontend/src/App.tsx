@@ -1,8 +1,9 @@
+import { Spin } from 'antd';
 import { useEffect, useState } from 'react';
 
 import { AdvisorPage } from './AdvisorPage';
+import { logout as logoutRequest, refreshSession } from './api';
 import { ApplicationPage } from './ApplicationPage';
-import { clearSession, readSession, saveSession } from './auth';
 import { HomePage } from './HomePage';
 import type { AuthSession } from './types';
 
@@ -22,7 +23,26 @@ function applyPath(target: { productId: string; planId: string; itemId: string }
 
 export default function App() {
   const [path, setPath] = useState(window.location.pathname);
-  const [session, setSession] = useState<AuthSession | null>(() => readSession());
+  // 会话只存在内存中；刷新页面后先用 refresh Cookie 静默恢复。
+  const [session, setSession] = useState<AuthSession | null>(null);
+  const [restoring, setRestoring] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    refreshSession()
+      .then((data) => {
+        if (!cancelled) setSession({ user: data.user });
+      })
+      .catch(() => {
+        if (!cancelled) setSession(null);
+      })
+      .finally(() => {
+        if (!cancelled) setRestoring(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const updatePath = () => setPath(window.location.pathname);
@@ -31,20 +51,27 @@ export default function App() {
   }, []);
 
   function authenticated(nextSession: AuthSession) {
-    saveSession(nextSession);
     setSession(nextSession);
   }
 
-  function logout() {
-    clearSession();
+  async function logout() {
+    await logoutRequest();
     setSession(null);
     if (path === '/advisor' || path === '/apply') navigate('/');
   }
 
   function sessionExpired() {
-    clearSession();
     setSession(null);
     navigate('/');
+  }
+
+  if (restoring) {
+    return (
+      <div className="app-restoring">
+        <Spin size="large" />
+        <span>正在恢复登录状态...</span>
+      </div>
+    );
   }
 
   if (path === '/advisor' && session) {
@@ -73,7 +100,7 @@ export default function App() {
       session={session}
       initialAuthOpen={path === '/advisor' || path === '/apply'}
       onAuthenticated={authenticated}
-      onLogout={logout}
+      onLogout={() => void logout()}
       onConsult={() => navigate('/advisor')}
     />
   );

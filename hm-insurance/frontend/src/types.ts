@@ -19,7 +19,7 @@ export interface UserSummary {
   id: number;
   username: string;
   email: string;
-  displayName: string | null;
+  display_name: string;
 }
 
 export interface AuthSession {

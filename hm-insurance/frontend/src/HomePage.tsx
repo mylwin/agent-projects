@@ -97,7 +97,7 @@ export function HomePage({
           <div className="site-actions">
             {session ? (
               <>
-                <span className="user-name">{session.user.displayName || session.user.username}</span>
+                <span className="user-name">{session.user.display_name}</span>
                 <Button type="text" onClick={onLogout}>退出</Button>
               </>
             ) : (

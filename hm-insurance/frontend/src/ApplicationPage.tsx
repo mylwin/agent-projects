@@ -10,7 +10,7 @@ import {
 import { Alert, Button, Steps } from 'antd';
 import { useState } from 'react';
 
-import { ApiError, markPlanItemInsured } from './api';
+import { markPlanItemInsured, SessionExpiredError } from './api';
 import type { AuthSession } from './types';
 
 interface ApplicationPageProps {
@@ -42,10 +42,10 @@ export function ApplicationPage({ session, onBack, onSessionExpired }: Applicati
     setPaying(true);
     setError(null);
     try {
-      await markPlanItemInsured(session.user.id, planId, itemId);
+      await markPlanItemInsured(planId, itemId);
       setPaid(true);
     } catch (reason) {
-      if (reason instanceof ApiError && reason.status === 401) {
+      if (reason instanceof SessionExpiredError) {
         onSessionExpired();
         return;
       }
@@ -65,7 +65,7 @@ export function ApplicationPage({ session, onBack, onSessionExpired }: Applicati
           <span><strong>安心保</strong><small>投保流程</small></span>
         </div>
         <div>
-          <span>{session.user.displayName || session.user.username}</span>
+          <span>{session.user.display_name}</span>
           <Button icon={<ArrowLeftOutlined />} onClick={onBack}>返回顾问</Button>
         </div>
       </header>

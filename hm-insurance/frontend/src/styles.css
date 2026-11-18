@@ -448,6 +448,21 @@ a {
   text-align: center;
 }
 
+.app-restoring {
+  align-items: center;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.app-restoring span {
+  color: #7c898c;
+  font-size: 13px;
+}
+
 .auth-modal__header {
   margin: 6px 0 20px;
   text-align: center;
