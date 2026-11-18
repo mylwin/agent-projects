@@ -1,7 +1,16 @@
 from decimal import Decimal
 
+from app.modules.product.exceptions import (
+    PriceTemplateNotFoundError,
+    ProductNotFoundError,
+)
 from app.modules.product.models import Product
 from app.modules.product.repository import ProductRepository
+from app.modules.product.schemas import (
+    PriceResponse,
+    PriceSchema,
+    ProductResponse,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 
 
@@ -41,3 +50,30 @@ class ProductService:
             candidate_products.extend(products)
 
         return candidate_products
+
+    async def find_by_id(self, product_id: int) -> ProductResponse:
+        """
+        根据 ID 查询产品
+
+        :param product_id: 产品 ID
+        :return: 产品
+        """
+        result = await self.repository.find_by_id(product_id)
+        if result is None:
+            raise ProductNotFoundError
+        return ProductResponse.model_validate(result, from_attributes=True)
+
+    async def find_pricing_schema_by_id(self, product_id: int) -> PriceResponse:
+        """
+        根据 ID 查询产品价格模板
+        """
+        result = await self.repository.find_pricing_schema_by_id(product_id)
+        if result is None:
+            raise PriceTemplateNotFoundError
+
+        return PriceResponse(
+            product_id=result.product_id,
+            scenario=result.scenario,
+            schema_version=result.schema_version,
+            schema=PriceSchema.model_validate(result.schema_json),
+        )

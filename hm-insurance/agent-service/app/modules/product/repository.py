@@ -1,8 +1,9 @@
 from decimal import Decimal
 
-from app.modules.product.models import Product
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.modules.product.models import Product, ProductPrice
 
 
 class ProductRepository:
@@ -58,3 +59,31 @@ class ProductRepository:
         )
 
         return list(products.all())
+
+    async def find_by_id(self, product_id: int) -> Product | None:
+        """
+        根据 ID 查询在售产品
+        """
+        return await self.session.scalar(
+            select(Product).where(Product.id == product_id, Product.status == "active")
+        )
+
+    async def find_pricing_schema_by_id(self, product_id: int) -> ProductPrice | None:
+        """
+        根据 ID 查询价格试算模板
+
+        同一产品可能保留多个历史版本，取当前生效的默认场景模板。
+        """
+        return await self.session.scalar(
+            select(ProductPrice)
+            .where(
+                ProductPrice.product_id == product_id,
+                ProductPrice.scenario == "premium_by_coverage",
+                ProductPrice.status == "active",
+            )
+            .order_by(
+                ProductPrice.activated_at.desc().nullslast(),
+                ProductPrice.created_at.desc(),
+            )
+            .limit(1)
+        )

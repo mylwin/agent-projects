@@ -1,12 +1,13 @@
 from decimal import Decimal
 from typing import Annotated
 
-from app.infra.database import get_session
-from app.modules.product.schemas import ProductResponse
-from app.modules.product.service import ProductService
 from fastapi import APIRouter, Depends
 from fastapi.params import Query
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.infra.database import get_session
+from app.modules.product.schemas import PriceResponse, ProductResponse
+from app.modules.product.service import ProductService
 
 # 创建路由对象
 router = APIRouter(prefix="/api/v1/products", tags=["保险产品管理接口"])
@@ -65,3 +66,29 @@ async def list_candidates(
         ProductResponse.model_validate(product, from_attributes=True)
         for product in candidates_products
     ]
+
+
+@router.get(
+    "/{product_id}/pricing-schema",
+    response_model=PriceResponse,
+    response_model_exclude_none=True,
+)
+async def get_pricing_schema(
+    product_id: int,
+    service: Annotated[ProductService, Depends(get_product_service)],
+) -> PriceResponse:
+    """
+    查询价格模板
+    """
+    return await service.find_pricing_schema_by_id(product_id)
+
+
+@router.get("/{product_id}", response_model=ProductResponse)
+async def get_product(
+    product_id: int,
+    service: Annotated[ProductService, Depends(get_product_service)],
+) -> ProductResponse:
+    """
+    查询产品详情
+    """
+    return await service.find_by_id(product_id)
