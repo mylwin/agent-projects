@@ -95,11 +95,28 @@ async function sendAuthorized(path: string, init?: RequestInit): Promise<Respons
   return response;
 }
 
-async function request<T>(path: string, init?: RequestInit): Promise<T> {
+async function performRequest<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await sendAuthorized(path, init);
   if (!response.ok) throw await toApiError(response);
   if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;
+}
+
+// 开发模式下 React StrictMode 会重放 effect；同一 URL 的并发 GET 复用同一个 Promise，
+// 避免同一份数据被发送两次（否则先发的请求会被后发请求取消）。
+const pendingGets = new Map<string, Promise<unknown>>();
+
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
+  if (init?.method && init.method !== 'GET') {
+    return performRequest<T>(path, init);
+  }
+  const pending = pendingGets.get(path);
+  if (pending) return pending as Promise<T>;
+  const promise = performRequest<T>(path, init).finally(() => {
+    pendingGets.delete(path);
+  });
+  pendingGets.set(path, promise);
+  return promise;
 }
 
 async function submitAuth(
@@ -153,16 +170,13 @@ export async function logout(): Promise<void> {
   await sendRequest('/auth/logout', { method: 'POST' }, null).catch(() => undefined);
 }
 
-export function listProducts(
-  category: InsuranceCategory | 'all',
-  signal?: AbortSignal,
-): Promise<Product[]> {
+export function listProducts(category: InsuranceCategory | 'all'): Promise<Product[]> {
   const params = new URLSearchParams();
   if (category !== 'all') {
     params.set('category', category);
   }
   const query = params.toString();
-  return request<Product[]>(`/products${query ? `?${query}` : ''}`, { signal });
+  return request<Product[]>(`/products${query ? `?${query}` : ''}`);
 }
 
 export function markPlanItemInsured(planId: string, itemId: string): Promise<unknown> {

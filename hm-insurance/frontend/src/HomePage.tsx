@@ -47,19 +47,24 @@ export function HomePage({
   const [reloadKey, setReloadKey] = useState(0);
 
   useEffect(() => {
-    const controller = new AbortController();
+    // StrictMode 会重放 effect；不在这里中断请求（api.ts 会复用进行中的 GET），
+    // 只用 ignore 丢弃过期结果，避免开发模式下重复请求和筛选竞态。
+    let ignore = false;
     setLoading(true);
     setError(null);
-    listProducts(category, controller.signal)
-      .then(setProducts)
+    listProducts(category)
+      .then((items) => {
+        if (!ignore) setProducts(items);
+      })
       .catch((reason) => {
-        if (reason instanceof DOMException && reason.name === 'AbortError') return;
-        setError(reason instanceof Error ? reason.message : '产品加载失败');
+        if (!ignore) setError(reason instanceof Error ? reason.message : '产品加载失败');
       })
       .finally(() => {
-        if (!controller.signal.aborted) setLoading(false);
+        if (!ignore) setLoading(false);
       });
-    return () => controller.abort();
+    return () => {
+      ignore = true;
+    };
   }, [category, reloadKey]);
 
   function openAuth(continueToAdvisor = false) {

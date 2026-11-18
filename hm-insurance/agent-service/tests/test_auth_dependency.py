@@ -23,6 +23,21 @@ def make_request(header: str | None = None) -> Request:
     return Request({"type": "http", "headers": headers})
 
 
+def make_auth_session() -> AsyncMock:
+    """认证依赖专用的短会话替身。"""
+    session = AsyncMock()
+    session.__aenter__.return_value = session
+    session.__aexit__.return_value = False
+    return session
+
+
+def patch_auth_session(session: AsyncMock):
+    """让认证依赖在测试中使用替身会话，避免触碰真实数据库。"""
+    return patch(
+        "app.modules.auth.dependencies.AsyncSessionFactory", return_value=session
+    )
+
+
 def expired_token() -> str:
     now = datetime.now(UTC)
     return jwt.encode(
@@ -41,7 +56,7 @@ class CurrentUserTests(unittest.IsolatedAsyncioTestCase):
     async def test_missing_or_malformed_header_is_rejected(self):
         for header in (None, "Bearer", "Basic abc", "Token abc"):
             with self.subTest(header=header), self.assertRaises(UnauthorizedError):
-                await get_current_user(make_request(header), AsyncMock())
+                await get_current_user(make_request(header))
 
     async def test_bad_tokens_are_rejected_before_database_query(self):
         for token in ("garbage", create_refresh_token("42"), expired_token()):
@@ -49,19 +64,20 @@ class CurrentUserTests(unittest.IsolatedAsyncioTestCase):
                 "app.modules.auth.dependencies.UsersRepository"
             ) as repository:
                 with self.assertRaises((TokenInvalidError, TokenExpiredError)):
-                    await get_current_user(
-                        make_request(f"Bearer {token}"), AsyncMock()
-                    )
+                    await get_current_user(make_request(f"Bearer {token}"))
                 repository.assert_not_called()
 
     async def test_valid_token_returns_current_user(self):
-        with patch("app.modules.auth.dependencies.UsersRepository") as repository:
+        session = make_auth_session()
+        with patch_auth_session(session), patch(
+            "app.modules.auth.dependencies.UsersRepository"
+        ) as repository:
             repository.return_value.find_by_id = AsyncMock(
                 return_value=make_user(display_name=None)
             )
 
             user = await get_current_user(
-                make_request(f"Bearer {create_access_token('42')}"), AsyncMock()
+                make_request(f"Bearer {create_access_token('42')}")
             )
 
         self.assertEqual(
@@ -73,15 +89,20 @@ class CurrentUserTests(unittest.IsolatedAsyncioTestCase):
                 display_name="tester",
             ),
         )
+        repository.assert_called_once_with(session)
         repository.return_value.find_by_id.assert_awaited_once_with(42)
+        session.__aexit__.assert_awaited_once()
 
     async def test_unknown_deleted_user_is_rejected(self):
-        with patch("app.modules.auth.dependencies.UsersRepository") as repository:
+        session = make_auth_session()
+        with patch_auth_session(session), patch(
+            "app.modules.auth.dependencies.UsersRepository"
+        ) as repository:
             repository.return_value.find_by_id = AsyncMock(return_value=None)
 
             with self.assertRaises(TokenInvalidError):
                 await get_current_user(
-                    make_request(f"Bearer {create_access_token('42')}"), AsyncMock()
+                    make_request(f"Bearer {create_access_token('42')}")
                 )
 
     async def test_inactive_and_suspended_users_are_rejected(self):
@@ -89,15 +110,15 @@ class CurrentUserTests(unittest.IsolatedAsyncioTestCase):
             ("inactive", UserInactiveError),
             ("suspended", UserSuspendedError),
         ):
-            with self.subTest(status=status), patch(
-                "app.modules.auth.dependencies.UsersRepository"
-            ) as repository:
+            with self.subTest(status=status), patch_auth_session(
+                make_auth_session()
+            ), patch("app.modules.auth.dependencies.UsersRepository") as repository:
                 repository.return_value.find_by_id = AsyncMock(
                     return_value=make_user(status=status)
                 )
                 with self.assertRaises(error):
                     await get_current_user(
-                        make_request(f"Bearer {create_access_token('42')}"), AsyncMock()
+                        make_request(f"Bearer {create_access_token('42')}")
                     )
 
 
