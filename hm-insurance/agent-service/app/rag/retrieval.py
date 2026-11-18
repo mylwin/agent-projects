@@ -1,9 +1,10 @@
+from langchain_milvus import Milvus
+from pymilvus import Function, FunctionType
+
 from app.core.logging import get_logger
 from app.infra.database import AsyncSessionFactory
 from app.rag.models import ParentChunk
 from app.rag.repository import ParentChunkRepository
-from langchain_milvus import Milvus
-from pymilvus import Function, FunctionType
 
 logger = get_logger(__name__)
 

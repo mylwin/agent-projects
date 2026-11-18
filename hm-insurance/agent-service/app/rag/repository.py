@@ -1,6 +1,7 @@
-from app.rag.models import ParentChunk
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.rag.models import ParentChunk
 
 
 class ParentChunkRepository:

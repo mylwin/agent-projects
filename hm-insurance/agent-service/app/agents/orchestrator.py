@@ -1,13 +1,14 @@
 from typing import cast
 
-from app.agents.chitchat import init_chitchat_agent
-from app.agents.insurance_advisor import init_insurance_advisor
-from app.agents.intent_router import intent_router
-from app.agents.schemas import InsuranceAgentState, Intent
 from langchain.messages import AIMessage, AnyMessage
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command
+
+from app.agents.chitchat import init_chitchat_agent
+from app.agents.insurance_advisor import init_insurance_advisor
+from app.agents.intent_router import intent_router
+from app.agents.schemas import InsuranceAgentState, Intent
 
 
 # 1.定义节点

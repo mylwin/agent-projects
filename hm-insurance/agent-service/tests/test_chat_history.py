@@ -19,11 +19,18 @@ class ChatHistoryTests(unittest.IsolatedAsyncioTestCase):
         agent = builder.compile(checkpointer=InMemorySaver())
         thread_id = uuid4()
         config = {"configurable": {"thread_id": str(thread_id)}}
-        await agent.ainvoke({"messages": [
-            HumanMessage("问题一"), AIMessage("回答一", id="answer-1"),
-            HumanMessage("问题二"), AIMessage("回答二", id="answer-2"),
-            AIMessage("无引用回复", id="answer-3"),
-        ]}, config)
+        await agent.ainvoke(
+            {
+                "messages": [
+                    HumanMessage("问题一"),
+                    AIMessage("回答一", id="answer-1"),
+                    HumanMessage("问题二"),
+                    AIMessage("回答二", id="answer-2"),
+                    AIMessage("无引用回复", id="answer-3"),
+                ]
+            },
+            config,
+        )
         first = {"sources": {"ref-clause-6-first": {"content": "第一条条款"}}}
         second = {"sources": {"ref-clause-10-second": {"content": "第二条条款"}}}
         await agent.aupdate_state(config, {"additional_info": {"answer-1": first}})
@@ -47,9 +54,13 @@ class ChatHistoryTests(unittest.IsolatedAsyncioTestCase):
         service.repository = AsyncMock()
         service.repository.find_owned.return_value = object()
         service.agent = AsyncMock()
-        service.agent.aget_state.return_value = SimpleNamespace(values={
-            "messages": [HumanMessage("你好"), AIMessage("您好")],
-        })
+        service.agent.aget_state.return_value = SimpleNamespace(
+            values={
+                "messages": [HumanMessage("你好"), AIMessage("您好")],
+            }
+        )
         history = await service.get_history(uuid4(), 1)
         self.assertEqual(len(history.messages), 2)
-        self.assertTrue(all(message.additional_info is None for message in history.messages))
+        self.assertTrue(
+            all(message.additional_info is None for message in history.messages)
+        )

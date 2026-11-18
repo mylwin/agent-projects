@@ -1,11 +1,12 @@
 from typing import NotRequired
 
-from app.agents.schemas import InsuranceAgentState
-from app.core.config import settings
-from app.core.logging import get_logger
 from langchain.chat_models import init_chat_model
 from langchain.messages import AIMessage, SystemMessage
 from langgraph.graph import StateGraph
+
+from app.agents.schemas import InsuranceAgentState
+from app.core.config import settings
+from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 

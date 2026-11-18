@@ -1,12 +1,13 @@
 from typing import Annotated
 
+from fastapi import Depends, Request
+
 from app.core.exceptions import TokenInvalidError
 from app.core.security import decode_access_token
 from app.infra.database import AsyncSessionFactory
 from app.modules.auth.exceptions import UnauthorizedError, status_exception
 from app.modules.auth.repository import UsersRepository
 from app.modules.auth.schemas import UserAuthData
-from fastapi import Depends, Request
 
 
 async def get_current_user(request: Request) -> UserAuthData:

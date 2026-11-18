@@ -1,5 +1,8 @@
 from typing import Annotated
 
+from fastapi import APIRouter, Depends, Request, Response, status
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.config import settings
 from app.core.security import create_refresh_token
 from app.infra.database import get_session
@@ -12,8 +15,6 @@ from app.modules.auth.schemas import (
     UserRegisterRequest,
 )
 from app.modules.auth.service import UsersService
-from fastapi import APIRouter, Depends, Request, Response, status
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # 创建路由对象
 router = APIRouter(prefix="/api/v1/auth", tags=["用户认证接口"])
@@ -40,7 +41,7 @@ def set_refresh_cookie(response: Response, user_id: int) -> None:
     response.set_cookie(
         key=REFRESH_COOKIE_NAME,
         value=create_refresh_token(str(user_id)),
-        max_age=settings.jwt.refresh_token_expire_days * 86400,
+        max_age=settings.jwt.refresh_token_expire_days * 86400,  # 最大生效时长
         **_cookie_attrs(),
     )
 

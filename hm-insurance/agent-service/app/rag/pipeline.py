@@ -1,12 +1,6 @@
 from pathlib import Path
 from uuid import uuid4
 
-from app.core.config import APP_ROOT, settings
-from app.core.logging import get_logger
-from app.infra.database import AsyncSessionFactory
-from app.modules.product.models import Product
-from app.rag.models import ParentChunk
-from app.rag.repository import ParentChunkRepository
 from langchain.chat_models import init_chat_model
 from langchain.messages import SystemMessage
 from langchain_classic.schema import Document
@@ -17,6 +11,13 @@ from langchain_text_splitters import (
     RecursiveCharacterTextSplitter,
 )
 from mineru import MinerU
+
+from app.core.config import APP_ROOT, settings
+from app.core.logging import get_logger
+from app.infra.database import AsyncSessionFactory
+from app.modules.product.models import Product
+from app.rag.models import ParentChunk
+from app.rag.repository import ParentChunkRepository
 
 MARKDOWN_OPTIMIZATION_PROMPT = """
 下面这份Markdown文档是从保险条款PDF解析得来，由于PDF中的各个小节是以表格形式存在，所以解析时出现错乱。

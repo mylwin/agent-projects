@@ -1,6 +1,7 @@
-from app.modules.auth.models import Users
 from sqlalchemy import Select, or_
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.modules.auth.models import Users
 
 
 class UsersRepository:

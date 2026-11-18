@@ -1,7 +1,5 @@
 from collections.abc import AsyncGenerator
 
-from app.core.config import settings
-from app.core.logging import get_logger
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
@@ -9,6 +7,9 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
+
+from app.core.config import settings
+from app.core.logging import get_logger
 
 logger = get_logger(__name__)
 
@@ -37,7 +38,7 @@ AsyncSessionFactory = async_sessionmaker(
 
 
 # 获取 session 的工具
-async def get_session() -> AsyncGenerator[AsyncSession, None]:
+async def get_session() -> AsyncGenerator[AsyncSession]:
     """为每个 FastAPI 请求创建独立的 AsyncSession，适用于依赖注入。"""
     async with AsyncSessionFactory() as session:
         yield session

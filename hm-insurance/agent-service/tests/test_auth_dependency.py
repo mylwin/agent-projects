@@ -3,6 +3,7 @@ from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, patch
 
 import jwt
+from auth_support import make_user
 from starlette.requests import Request
 
 from app.core.config import settings
@@ -15,7 +16,6 @@ from app.modules.auth.exceptions import (
     UserSuspendedError,
 )
 from app.modules.auth.schemas import UserAuthData
-from auth_support import make_user
 
 
 def make_request(header: str | None = None) -> Request:
@@ -60,18 +60,20 @@ class CurrentUserTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_bad_tokens_are_rejected_before_database_query(self):
         for token in ("garbage", create_refresh_token("42"), expired_token()):
-            with self.subTest(token=token), patch(
-                "app.modules.auth.dependencies.UsersRepository"
-            ) as repository:
+            with (
+                self.subTest(token=token),
+                patch("app.modules.auth.dependencies.UsersRepository") as repository,
+            ):
                 with self.assertRaises((TokenInvalidError, TokenExpiredError)):
                     await get_current_user(make_request(f"Bearer {token}"))
                 repository.assert_not_called()
 
     async def test_valid_token_returns_current_user(self):
         session = make_auth_session()
-        with patch_auth_session(session), patch(
-            "app.modules.auth.dependencies.UsersRepository"
-        ) as repository:
+        with (
+            patch_auth_session(session),
+            patch("app.modules.auth.dependencies.UsersRepository") as repository,
+        ):
             repository.return_value.find_by_id = AsyncMock(
                 return_value=make_user(display_name=None)
             )
@@ -95,9 +97,10 @@ class CurrentUserTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_unknown_deleted_user_is_rejected(self):
         session = make_auth_session()
-        with patch_auth_session(session), patch(
-            "app.modules.auth.dependencies.UsersRepository"
-        ) as repository:
+        with (
+            patch_auth_session(session),
+            patch("app.modules.auth.dependencies.UsersRepository") as repository,
+        ):
             repository.return_value.find_by_id = AsyncMock(return_value=None)
 
             with self.assertRaises(TokenInvalidError):
@@ -110,9 +113,11 @@ class CurrentUserTests(unittest.IsolatedAsyncioTestCase):
             ("inactive", UserInactiveError),
             ("suspended", UserSuspendedError),
         ):
-            with self.subTest(status=status), patch_auth_session(
-                make_auth_session()
-            ), patch("app.modules.auth.dependencies.UsersRepository") as repository:
+            with (
+                self.subTest(status=status),
+                patch_auth_session(make_auth_session()),
+                patch("app.modules.auth.dependencies.UsersRepository") as repository,
+            ):
                 repository.return_value.find_by_id = AsyncMock(
                     return_value=make_user(status=status)
                 )

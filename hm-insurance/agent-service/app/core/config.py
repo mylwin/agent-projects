@@ -109,7 +109,8 @@ class JWTSettings(EnvSettings):
         alias="JWT_REFRESH_TOKEN_EXPIRE_DAYS", default=7, gt=0
     )
     refresh_cookie_secure: bool = Field(
-        alias="JWT_REFRESH_COOKIE_SECURE", default=False,
+        alias="JWT_REFRESH_COOKIE_SECURE",
+        default=False,
         description="HTTPS 部署时设为 true，本地 HTTP 开发设为 false",
     )
 

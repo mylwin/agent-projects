@@ -1,3 +1,7 @@
+from fastapi.concurrency import run_in_threadpool
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.core.exceptions import InvalidRefreshTokenError
 from app.core.security import (
     create_access_token,
@@ -18,9 +22,6 @@ from app.modules.auth.schemas import (
     UserLoginRequest,
     UserRegisterRequest,
 )
-from fastapi.concurrency import run_in_threadpool
-from sqlalchemy.exc import IntegrityError
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class UsersService:

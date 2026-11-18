@@ -1,8 +1,9 @@
 from uuid import UUID
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.modules.insurance_plan.repository import InsurancePlanRepository
 from app.modules.insurance_plan.schemas import InsurancePlanCreate
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class InsurancePlanService:

@@ -1,8 +1,9 @@
+from langchain_milvus import BM25BuiltInFunction, Milvus
+from langchain_ollama import OllamaEmbeddings
+
 from app.core.config import settings
 from app.rag.pipeline import RAGPipeline
 from app.rag.retrieval import ParentChunkRetrieval
-from langchain_milvus import BM25BuiltInFunction, Milvus
-from langchain_ollama import OllamaEmbeddings
 
 # 1.初始化向量模型
 _embeddings = OllamaEmbeddings(

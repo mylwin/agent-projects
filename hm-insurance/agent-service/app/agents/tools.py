@@ -2,15 +2,16 @@ import json
 from decimal import Decimal
 from uuid import NAMESPACE_URL, uuid5
 
+from fastapi.encoders import jsonable_encoder
+from langchain.tools import ToolRuntime, tool
+from langgraph.config import get_stream_writer
+from langgraph.types import interrupt
+
 from app.agents.schemas import InsuranceAgentContext
 from app.infra.database import AsyncSessionFactory
 from app.modules.insurance_plan.schemas import InsurancePlanCreate
 from app.modules.insurance_plan.service import InsurancePlanService
 from app.modules.product.service import ProductService
-from fastapi.encoders import jsonable_encoder
-from langchain.tools import ToolRuntime, tool
-from langgraph.config import get_stream_writer
-from langgraph.types import interrupt
 
 
 @tool
@@ -78,8 +79,14 @@ async def save_insurance_plan(
     )
 
     # 如果拒绝,则不进行保存
-    if not isinstance(decision, dict) or decision.get("action") not in ("approve", "reject"):
-        return {"status": "not_saved", "message": "确认结果无效，方案未保存，请重新发起确认。"}
+    if not isinstance(decision, dict) or decision.get("action") not in (
+        "approve",
+        "reject",
+    ):
+        return {
+            "status": "not_saved",
+            "message": "确认结果无效，方案未保存，请重新发起确认。",
+        }
     if decision["action"] == "reject":
         reason = decision.get("reject_reason")
         reason = reason.strip() if isinstance(reason, str) else ""
@@ -97,8 +104,7 @@ async def save_insurance_plan(
 
     # 保存成功后同步方案产品，拒绝或保存失败时不发送
     plan_items = [
-        {**item.model_dump(mode="json"), "plan_id": str(plan_id)}
-        for item in plan.items
+        {**item.model_dump(mode="json"), "plan_id": str(plan_id)} for item in plan.items
     ]
     writer = get_stream_writer()
     writer({"type": "additional_info", "data": {"plan_items": plan_items}})

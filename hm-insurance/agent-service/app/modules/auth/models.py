@@ -1,8 +1,9 @@
 from typing import Literal
 
-from app.common.models import Base, CreateAtMixin, UpdateAtMixin
 from sqlalchemy import BigInteger, String
 from sqlalchemy.orm import Mapped, mapped_column
+
+from app.common.models import Base, CreateAtMixin, UpdateAtMixin
 
 type Status = Literal["active", "inactive", "suspended"]
 

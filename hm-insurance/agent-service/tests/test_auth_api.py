@@ -2,6 +2,7 @@ import unittest
 from datetime import UTC, datetime, timedelta
 
 import jwt
+from auth_support import build_app, make_service, make_user
 from fastapi.testclient import TestClient
 from sqlalchemy.exc import IntegrityError
 
@@ -18,7 +19,6 @@ from app.modules.auth.dependencies import get_current_user
 from app.modules.auth.models import Users
 from app.modules.auth.router import REFRESH_COOKIE_NAME
 from app.modules.auth.schemas import UserAuthData
-from auth_support import build_app, make_service, make_user
 
 REGISTER_PAYLOAD = {
     "username": "tester",
@@ -96,7 +96,10 @@ class RegisterTests(AuthApiTestCase):
     def test_invalid_parameters_are_rejected_before_service_calls(self):
         cases = {
             "username 少于 3 个字符": ({"username": "ab"}, "用户名至少需要3个字符"),
-            "username 超过 20 个字符": ({"username": "x" * 21}, "用户名最多允许20个字符"),
+            "username 超过 20 个字符": (
+                {"username": "x" * 21},
+                "用户名最多允许20个字符",
+            ),
             "email 格式错误": ({"email": "not-an-email"}, "请输入有效的邮箱地址"),
             "密码少于 6 位": ({"password": "12345"}, "密码至少需要6个字符"),
             "密码超过 128 位": ({"password": "x" * 129}, "密码最多允许128个字符"),
@@ -133,9 +136,7 @@ class RegisterTests(AuthApiTestCase):
             content='{"password": "private-secret",',
             headers={"Content-Type": "application/json"},
         )
-        wrong_body = self.client.post(
-            "/api/v1/auth/register", json=["private-secret"]
-        )
+        wrong_body = self.client.post("/api/v1/auth/register", json=["private-secret"])
 
         self.assertEqual(invalid_json.status_code, 422)
         self.assertEqual(invalid_json.json()["message"], "请求体必须是有效的 JSON")

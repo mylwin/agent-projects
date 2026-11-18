@@ -1,10 +1,11 @@
 from decimal import Decimal
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.modules.insurance_plan.models import InsurancePlan, InsurancePlanItem
 from app.modules.insurance_plan.schemas import (
     InsurancePlanCreate,
 )
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class InsurancePlanRepository:

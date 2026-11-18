@@ -8,9 +8,9 @@ from pydantic import SecretStr, ValidationError
 from app.core.config import JWTSettings, settings
 from app.core.exceptions import (
     InvalidRefreshTokenError,
+    TokenError,
     TokenExpiredError,
     TokenInvalidError,
-    TokenError,
 )
 from app.core.security import (
     create_access_token,
@@ -81,7 +81,9 @@ class TokenTests(unittest.TestCase):
 
     def test_wrong_signature_algorithm_and_format_are_rejected(self):
         tokens = (
-            jwt.encode({"sub": "1"}, "different-secret-which-is-long-enough", algorithm="HS256"),
+            jwt.encode(
+                {"sub": "1"}, "different-secret-which-is-long-enough", algorithm="HS256"
+            ),
             jwt.encode({"sub": "1"}, self.key, algorithm="HS384"),
             jwt.encode({"sub": "1"}, "", algorithm="none"),
             "malformed-token",
@@ -92,7 +94,11 @@ class TokenTests(unittest.TestCase):
 
     def test_required_claims_cannot_be_omitted(self):
         for claim in ("sub", "iat", "exp"):
-            payload = {"sub": "1", "iat": datetime.now(UTC), "exp": datetime.now(UTC) + timedelta(minutes=5)}
+            payload = {
+                "sub": "1",
+                "iat": datetime.now(UTC),
+                "exp": datetime.now(UTC) + timedelta(minutes=5),
+            }
             del payload[claim]
             payload["type"] = "access"
             with self.subTest(claim=claim), self.assertRaises(TokenError):
@@ -117,7 +123,10 @@ class TokenTests(unittest.TestCase):
                 self.key,
                 algorithm="HS256",
             )
-            with self.subTest(subject=subject), self.assertRaises(InvalidRefreshTokenError):
+            with (
+                self.subTest(subject=subject),
+                self.assertRaises(InvalidRefreshTokenError),
+            ):
                 decode_refresh_token(token)
 
     def test_access_token_requires_numeric_user_id(self):

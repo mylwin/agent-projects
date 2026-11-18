@@ -1,12 +1,13 @@
 from typing import Annotated
 
+from fastapi import APIRouter, Depends, Request
+from fastapi.sse import EventSourceResponse
+from sqlalchemy.ext.asyncio import AsyncSession
+
 from app.infra.database import get_session
 from app.modules.auth.dependencies import CurrentUser
 from app.modules.chat.schemas import ChatRequest
 from app.modules.chat.service import ChatService
-from fastapi import APIRouter, Depends, Request
-from fastapi.sse import EventSourceResponse
-from sqlalchemy.ext.asyncio import AsyncSession
 
 # 创建路由对象
 router = APIRouter(prefix="/api/v1/chat", tags=["与 AI 对话接口"])

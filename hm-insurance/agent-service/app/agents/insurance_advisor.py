@@ -1,3 +1,6 @@
+from langchain.agents import create_agent
+from langchain.chat_models import init_chat_model
+
 from app.agents.schemas import InsuranceAgentContext
 from app.agents.tools import (
     query_candidate_products,
@@ -6,8 +9,6 @@ from app.agents.tools import (
 )
 from app.core.config import settings
 from app.core.logging import get_logger
-from langchain.agents import create_agent
-from langchain.chat_models import init_chat_model
 
 logger = get_logger(__name__)
 

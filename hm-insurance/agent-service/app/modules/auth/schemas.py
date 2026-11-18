@@ -1,7 +1,8 @@
 from typing import Annotated, Literal, TypedDict
 
-from app.modules.auth.models import Users
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+from app.modules.auth.models import Users
 
 
 class UserRegisterRequest(BaseModel):

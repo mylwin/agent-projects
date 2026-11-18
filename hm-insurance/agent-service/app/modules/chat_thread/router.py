@@ -1,10 +1,11 @@
 from typing import Annotated
 from uuid import UUID
 
-from app.infra.database import get_session
-from app.modules.auth.dependencies import CurrentUser
 from fastapi import APIRouter, Depends, Request, status
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.infra.database import get_session
+from app.modules.auth.dependencies import CurrentUser
 
 from .schemas import ChatHistoryResponse, ChatThreadCreate, ChatThreadResponse
 from .service import ChatThreadService
