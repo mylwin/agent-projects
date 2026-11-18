@@ -1,23 +1,29 @@
 import unittest
 from datetime import UTC, datetime, timedelta
 from unittest.mock import patch
-from uuid import uuid4
 
 import jwt
 from pydantic import SecretStr, ValidationError
 
 from app.core.config import JWTSettings, settings
+from app.core.exceptions import (
+    InvalidRefreshTokenError,
+    TokenExpiredError,
+    TokenInvalidError,
+    TokenError,
+)
 from app.core.security import (
     create_access_token,
+    create_refresh_token,
     decode_access_token,
+    decode_refresh_token,
     hash_password,
     verify_password,
 )
-from app.modules.auth.exceptions import TokenExpiredError, TokenInvalidError
 
 
 class PasswordTests(unittest.TestCase):
-    def test_password_round_trip_and_wrong_password(self):
+    def test_password_round_trip(self):
         hashed = hash_password("测试密码-123")
         self.assertTrue(hashed.startswith("$argon2id$"))
         self.assertTrue(verify_password("测试密码-123", hashed))
@@ -26,7 +32,7 @@ class PasswordTests(unittest.TestCase):
     def test_each_hash_uses_a_new_salt(self):
         self.assertNotEqual(hash_password("same"), hash_password("same"))
 
-    def test_invalid_hash_is_rejected(self):
+    def test_broken_hash_is_rejected(self):
         for hashed in ("", "plain-text", "$argon2id$broken"):
             with self.subTest(hashed=hashed):
                 self.assertFalse(verify_password("password", hashed))
@@ -39,35 +45,45 @@ class TokenTests(unittest.TestCase):
         patcher.start()
         self.addCleanup(patcher.stop)
 
-    def signed_token(self, **overrides):
+    def signed(self, **overrides) -> str:
         now = datetime.now(UTC)
-        payload = {"sub": "user-1", "iat": now, "exp": now + timedelta(minutes=5)}
+        payload = {
+            "sub": "1",
+            "iat": now,
+            "exp": now + timedelta(minutes=5),
+            "type": "access",
+        }
         payload.update(overrides)
         return jwt.encode(payload, self.key, algorithm="HS256")
 
-    def test_round_trip_and_default_expiration(self):
-        user_id = uuid4()
-        payload = decode_access_token(create_access_token(user_id))
-        self.assertEqual(payload["sub"], str(user_id))
+    def test_access_token_round_trip(self):
+        payload = decode_access_token(create_access_token("42"))
+        self.assertEqual(payload["sub"], "42")
+        self.assertEqual(payload["type"], "access")
         self.assertEqual(
             payload["exp"] - payload["iat"],
             settings.jwt.access_token_expire_minutes * 60,
         )
 
-    def test_custom_expiration(self):
-        payload = decode_access_token(create_access_token("user-1", timedelta(minutes=5)))
-        self.assertEqual(payload["exp"] - payload["iat"], 300)
+    def test_refresh_token_round_trip(self):
+        payload = decode_refresh_token(create_refresh_token("42"))
+        self.assertEqual(payload["sub"], "42")
+        self.assertEqual(payload["type"], "refresh")
+        self.assertEqual(
+            payload["exp"] - payload["iat"],
+            settings.jwt.refresh_token_expire_days * 86400,
+        )
 
     def test_expired_token_is_rejected(self):
-        token = self.signed_token(exp=datetime.now(UTC) - timedelta(seconds=10))
+        token = self.signed(exp=datetime.now(UTC) - timedelta(seconds=10))
         with self.assertRaises(TokenExpiredError):
             decode_access_token(token)
 
-    def test_wrong_signature_and_algorithm_are_rejected(self):
+    def test_wrong_signature_algorithm_and_format_are_rejected(self):
         tokens = (
-            jwt.encode({"sub": "user-1"}, "different-secret-which-is-long-enough", algorithm="HS256"),
-            jwt.encode({"sub": "user-1"}, self.key, algorithm="HS384"),
-            jwt.encode({"sub": "user-1"}, "", algorithm="none"),
+            jwt.encode({"sub": "1"}, "different-secret-which-is-long-enough", algorithm="HS256"),
+            jwt.encode({"sub": "1"}, self.key, algorithm="HS384"),
+            jwt.encode({"sub": "1"}, "", algorithm="none"),
             "malformed-token",
         )
         for token in tokens:
@@ -75,28 +91,50 @@ class TokenTests(unittest.TestCase):
                 decode_access_token(token)
 
     def test_required_claims_cannot_be_omitted(self):
-        payload = decode_access_token(self.signed_token())
         for claim in ("sub", "iat", "exp"):
-            incomplete = {key: value for key, value in payload.items() if key != claim}
-            token = jwt.encode(incomplete, self.key, algorithm="HS256")
-            with self.subTest(claim=claim), self.assertRaises(TokenInvalidError):
-                decode_access_token(token)
+            payload = {"sub": "1", "iat": datetime.now(UTC), "exp": datetime.now(UTC) + timedelta(minutes=5)}
+            del payload[claim]
+            payload["type"] = "access"
+            with self.subTest(claim=claim), self.assertRaises(TokenError):
+                decode_access_token(jwt.encode(payload, self.key, algorithm="HS256"))
 
-    def test_invalid_subject_is_rejected(self):
-        for subject in ("", " ", 123):
-            with self.subTest(subject=subject), self.assertRaises(TokenInvalidError):
-                decode_access_token(self.signed_token(sub=subject))
+    def test_token_type_is_enforced(self):
+        with self.assertRaises(TokenInvalidError):
+            decode_access_token(create_refresh_token("42"))
+        with self.assertRaises(InvalidRefreshTokenError):
+            decode_refresh_token(create_access_token("42"))
 
-    def test_invalid_creation_parameters_are_rejected(self):
-        for subject, lifetime in (("", None), (" ", None), ("user-1", timedelta(0))):
-            with self.subTest(subject=subject, lifetime=lifetime), self.assertRaises(ValueError):
-                create_access_token(subject, lifetime)
+    def test_refresh_token_requires_numeric_user_id(self):
+        for subject in ("", " ", "not-a-number", "0", "-1", str(2**63)):
+            token = jwt.encode(
+                {
+                    "sub": subject,
+                    "iat": datetime.now(UTC),
+                    "exp": datetime.now(UTC) + timedelta(days=1),
+                    "type": "refresh",
+                    "jti": "test",
+                },
+                self.key,
+                algorithm="HS256",
+            )
+            with self.subTest(subject=subject), self.assertRaises(InvalidRefreshTokenError):
+                decode_refresh_token(token)
 
-    def test_invalid_configuration_is_rejected(self):
+    def test_access_token_requires_numeric_user_id(self):
+        with self.assertRaises(TokenInvalidError):
+            decode_access_token(self.signed(type="access", sub="user-1"))
+
+
+class JWTConfigTests(unittest.TestCase):
+    def test_secret_and_lifetime_are_validated(self):
         with self.assertRaises(ValidationError):
             JWTSettings(JWT_SECRET_KEY="too-short", _env_file=None)
         with self.assertRaises(ValidationError):
-            JWTSettings(JWT_SECRET_KEY=self.key, JWT_ACCESS_TOKEN_EXPIRE_MINUTES=0)
+            JWTSettings(
+                JWT_SECRET_KEY="x" * 48,
+                JWT_ACCESS_TOKEN_EXPIRE_MINUTES=0,
+                _env_file=None,
+            )
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ if __package__ in (None, "") and str(SERVICE_ROOT) not in sys.path:
 import uvicorn
 from app.agents.orchestrator import init_insurance_orchestrator
 from app.core.config import settings
-from app.core.exception_handlers import handle_request_validation_error
+from app.core.exception_handlers import build_validation_error_response
 from app.core.exceptions import ApplicationError
 from app.core.logging import get_logger, setup_logging
 from app.infra.checkpointer import close_checkpointer, init_checkpointer
@@ -70,7 +70,11 @@ app.include_router(router=chat_router)
 
 
 # 统一处理异常信息
-app.exception_handler(RequestValidationError)(handle_request_validation_error)
+@app.exception_handler(RequestValidationError)
+def handle_validation_error(
+    request: Request, exc: RequestValidationError
+) -> JSONResponse:
+    return build_validation_error_response(exc)
 
 
 @app.exception_handler(ApplicationError)

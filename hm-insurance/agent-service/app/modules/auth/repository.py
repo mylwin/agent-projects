@@ -18,12 +18,11 @@ class UsersRepository:
         return await self.session.scalar(Select(Users).where(Users.id == user_id))
 
     async def find_by_username_or_email(
-        self, username: str, email: str | None = None
+        self, username: str, email: str
     ) -> Users | None:
-        """按用户名查询用户；传入邮箱时同时匹配邮箱，用于注册查重。"""
-        condition = Users.username == username
-        if email is not None:
-            condition = or_(condition, Users.email == email)
+        """查询用户名或邮箱匹配的用户，任一命中即返回"""
         return await self.session.scalar(
-            Select(Users).where(condition).limit(1)
+            Select(Users)
+            .where(or_(Users.username == username, Users.email == email))
+            .limit(1)
         )

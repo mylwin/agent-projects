@@ -16,7 +16,7 @@ class ChatThreadRepository:
         """ "添加聊天会话"""
         self.session.add(chat_thread)
 
-    async def list_by_user(self, user_id: int) -> list[ChatThread] | None:
+    async def list_by_user(self, user_id: int) -> list[ChatThread]:
         """获取用户所有聊天会话"""
         result = await self.session.scalars(
             Select(ChatThread)

@@ -1,11 +1,12 @@
 from datetime import UTC, datetime, timedelta
 from typing import Any
-from uuid import UUID, uuid4
+from uuid import uuid4
 
 import jwt
 from app.core.config import settings
-from app.modules.auth.exceptions import (
+from app.core.exceptions import (
     InvalidRefreshTokenError,
+    TokenError,
     TokenExpiredError,
     TokenInvalidError,
 )
@@ -15,9 +16,12 @@ from pwdlib.exceptions import UnknownHashError
 
 password_hash = PasswordHash.recommended()
 
+# 刷新令牌的 sub 是 BIGINT 用户 ID
+MAX_USER_ID = 2**63 - 1
+
 
 def hash_password(password: str) -> str:
-    """注册时生成带随机盐的 Argon2 密码哈希，供数据库保存。"""
+    """生成带随机盐的 Argon2 密码哈希，供数据库保存。"""
     return password_hash.hash(password)
 
 
@@ -29,87 +33,75 @@ def verify_password(password: str, hashed_password: str) -> bool:
         return False
 
 
-def create_access_token(
-    subject: str | UUID, expires_delta: timedelta | None = None
-) -> str:
-    """为用户签发访问令牌，sub 保存用户 ID。"""
-    subject = str(subject)
-    if not subject.strip():
-        raise ValueError("令牌用户标识不能为空")
-
-    lifetime = (
-        expires_delta
-        if expires_delta is not None
-        else timedelta(minutes=settings.jwt.access_token_expire_minutes)
-    )
-    if lifetime <= timedelta(0):
-        raise ValueError("令牌有效期必须大于零")
-
-    now = datetime.now(UTC)
-    payload = {
-        "sub": subject, "iat": now, "exp": now + lifetime,
-        "type": "access", "jti": str(uuid4()),
-    }
-    return jwt.encode(
-        payload,
-        settings.jwt.secret_key.get_secret_value(),
-        algorithm=settings.jwt.algorithm,
-    )
+def _secret() -> str:
+    return settings.jwt.secret_key.get_secret_value()
 
 
-def decode_access_token(token: str) -> dict[str, Any]:
-    """校验签名及声明并返回载荷；无效或过期时抛出认证异常。"""
-    try:
-        payload = jwt.decode(
-            token,
-            settings.jwt.secret_key.get_secret_value(),
-            algorithms=[settings.jwt.algorithm],
-            options={"require": ["sub", "iat", "exp"]},
-        )
-        subject = payload["sub"]
-        if not isinstance(subject, str) or not subject.strip():
-            raise InvalidTokenError("令牌用户标识无效")
-        if payload.get("type", "access") != "access":
-            raise InvalidTokenError("令牌类型无效")
-        return payload
-    except ExpiredSignatureError as exc:
-        raise TokenExpiredError from exc
-    except InvalidTokenError as exc:
-        raise TokenInvalidError from exc
-
-
-def create_refresh_token(subject: str | int) -> str:
-    """签发仅用于刷新登录态的令牌，独立于访问令牌有效期。"""
-    subject = str(subject)
-    if not subject.strip():
-        raise ValueError("令牌用户标识不能为空")
+def _encode(subject: str, lifetime: timedelta, token_type: str) -> str:
     now = datetime.now(UTC)
     return jwt.encode(
         {
             "sub": subject,
             "iat": now,
-            "exp": now + timedelta(days=settings.jwt.refresh_token_expire_days),
-            "type": "refresh",
+            "exp": now + lifetime,
+            "type": token_type,
             "jti": str(uuid4()),
         },
-        settings.jwt.secret_key.get_secret_value(),
+        _secret(),
         algorithm=settings.jwt.algorithm,
     )
 
 
-def decode_refresh_token(token: str) -> dict[str, Any]:
-    """验证刷新令牌，拒绝访问令牌、无效签名和过期令牌。"""
+def create_access_token(subject: str) -> str:
+    """为用户签发访问令牌，sub 保存用户 ID。"""
+    return _encode(
+        subject, timedelta(minutes=settings.jwt.access_token_expire_minutes), "access"
+    )
+
+
+def create_refresh_token(subject: str) -> str:
+    """签发仅用于刷新登录态的令牌。"""
+    return _encode(
+        subject, timedelta(days=settings.jwt.refresh_token_expire_days), "refresh"
+    )
+
+
+def _decode(token: str, token_type: str, required: tuple[str, ...] = ()) -> dict[str, Any]:
+    """校验签名、有效期、令牌类型与必需声明。"""
     try:
         payload = jwt.decode(
             token,
-            settings.jwt.secret_key.get_secret_value(),
+            _secret(),
             algorithms=[settings.jwt.algorithm],
-            options={"require": ["sub", "iat", "exp", "type", "jti"]},
+            options={"require": [*required, "sub", "iat", "exp", "type"]},
         )
-        if payload["type"] != "refresh":
-            raise InvalidTokenError("令牌类型无效")
-        if not isinstance(payload["sub"], str) or not payload["sub"].strip():
-            raise InvalidTokenError("令牌用户标识无效")
-        return payload
-    except (InvalidTokenError, ValueError, TypeError, OverflowError) as exc:
+    except ExpiredSignatureError as exc:
+        raise TokenExpiredError from exc
+    except InvalidTokenError as exc:
+        raise TokenInvalidError from exc
+
+    subject = payload["sub"]
+    if payload["type"] != token_type or not isinstance(subject, str) or not subject.strip():
+        raise TokenInvalidError
+    return payload
+
+
+def decode_access_token(token: str) -> dict[str, Any]:
+    """解析访问令牌；无效或过期时抛出认证异常。"""
+    payload = _decode(token, "access")
+    if not payload["sub"].isdigit():
+        raise TokenInvalidError
+    return payload
+
+
+def decode_refresh_token(token: str) -> dict[str, Any]:
+    """解析刷新令牌，并校验 sub 是可用的用户 ID。"""
+    try:
+        payload = _decode(token, "refresh", ("jti",))
+    except TokenError as exc:
         raise InvalidRefreshTokenError from exc
+
+    subject = payload["sub"]
+    if not subject.isdigit() or not 0 < int(subject) <= MAX_USER_ID:
+        raise InvalidRefreshTokenError
+    return payload

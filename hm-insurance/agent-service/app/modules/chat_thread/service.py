@@ -32,7 +32,7 @@ class ChatThreadService:
 
             return chat_thread
 
-    async def list_by_user(self, user_id: int) -> list[ChatThread] | None:
+    async def list_by_user(self, user_id: int) -> list[ChatThread]:
         """列出用户所有会话"""
         return await self.repository.list_by_user(user_id)
 
