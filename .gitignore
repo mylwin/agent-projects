@@ -15,3 +15,6 @@ tripweave/.oil-ui/
 
 # pnpm 在工作区根目录生成的依赖缓存
 .pnpm-store/
+
+# Milvus 本地凭据（含真实 Key，模板见 deploy/milvus/user.example.yaml）
+hm-insurance/deploy/milvus/user.yaml

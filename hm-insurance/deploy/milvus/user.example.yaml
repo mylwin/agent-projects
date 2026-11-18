@@ -1,3 +1,7 @@
+# Milvus 用户配置示例。
+# 首次部署时复制为 user.yaml 并填入真实 Key：
+#   cp deploy/milvus/user.example.yaml deploy/milvus/user.yaml
+# user.yaml 已被根目录 .gitignore 忽略，请勿提交真实密钥。
 credential:
   dashscope_apikey:
     apikey: YOUR_DASHSCOPE_API_KEY
