@@ -6,6 +6,7 @@ from app.infra.database import get_session
 from app.modules.auth.dependencies import CurrentUser
 from app.modules.auth.schemas import (
     AuthResponse,
+    RefreshCookieAttrs,
     UserAuthData,
     UserLoginRequest,
     UserRegisterRequest,
@@ -17,11 +18,13 @@ from sqlalchemy.ext.asyncio import AsyncSession
 # 创建路由对象
 router = APIRouter(prefix="/api/v1/auth", tags=["用户认证接口"])
 
+# 刷新 cookie 名称
 REFRESH_COOKIE_NAME = "refresh_token"
+# 刷新 cookie 路径
 REFRESH_COOKIE_PATH = "/api/v1/auth"
 
 
-def _cookie_attrs() -> dict[str, object]:
+def _cookie_attrs() -> RefreshCookieAttrs:
     """刷新令牌 Cookie 的公共属性，下发与清除保持一致。"""
     return {
         "path": REFRESH_COOKIE_PATH,
@@ -55,14 +58,11 @@ def get_user_service(
     return UsersService(session)
 
 
-ServiceDep = Annotated[UsersService, Depends(get_user_service)]
-
-
 @router.post("/register", response_model=AuthResponse)
 async def register(
     body: UserRegisterRequest,
     response: Response,
-    service: ServiceDep,
+    service: Annotated[UsersService, Depends(get_user_service)],
 ) -> AuthResponse:
     """注册用户并返回访问令牌及用户信息。"""
     result = await service.register(body)
@@ -74,7 +74,7 @@ async def register(
 async def login(
     body: UserLoginRequest,
     response: Response,
-    service: ServiceDep,
+    service: Annotated[UsersService, Depends(get_user_service)],
 ) -> AuthResponse:
     """用户登录，返回访问令牌及用户信息。"""
     result = await service.login(body)
@@ -86,7 +86,7 @@ async def login(
 async def refresh(
     request: Request,
     response: Response,
-    service: ServiceDep,
+    service: Annotated[UsersService, Depends(get_user_service)],
 ) -> AuthResponse:
     """读取 Refresh Token Cookie，刷新访问令牌并轮换 Cookie。"""
     result = await service.refresh(request.cookies.get(REFRESH_COOKIE_NAME, ""))

@@ -1,9 +1,7 @@
-from typing import TYPE_CHECKING, Annotated
+from typing import Annotated, Literal, TypedDict
 
+from app.modules.auth.models import Users
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
-
-if TYPE_CHECKING:
-    from app.modules.auth.models import Users
 
 
 class UserRegisterRequest(BaseModel):
@@ -40,7 +38,7 @@ class UserAuthData(BaseModel):
     display_name: str = Field(description="展示昵称")
 
     @classmethod
-    def from_user(cls, user: Users) -> UserAuthData:
+    def from_user(cls, user: Users):
         """库中 display_name 可为空，对外统一回落到用户名。"""
         return cls(
             id=user.id,
@@ -56,3 +54,12 @@ class AuthResponse(BaseModel):
     access_token: str = Field(description="访问令牌")
     token_type: str = Field(description="令牌类型", default="Bearer")
     user: UserAuthData = Field(description="用户信息")
+
+
+class RefreshCookieAttrs(TypedDict):
+    """刷新令牌 Cookie 属性"""
+
+    path: str
+    httponly: bool
+    secure: bool
+    samesite: Literal["lax"]

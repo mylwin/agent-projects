@@ -41,11 +41,11 @@ def _encode(subject: str, lifetime: timedelta, token_type: str) -> str:
     now = datetime.now(UTC)
     return jwt.encode(
         {
-            "sub": subject,
-            "iat": now,
-            "exp": now + lifetime,
-            "type": token_type,
-            "jti": str(uuid4()),
+            "sub": subject,  # 签名
+            "iat": now,  # 签发时间
+            "exp": now + lifetime,  # 过期时间
+            "type": token_type,  # 令牌类型
+            "jti": str(uuid4()),  # 令牌 ID
         },
         _secret(),
         algorithm=settings.jwt.algorithm,
@@ -66,7 +66,9 @@ def create_refresh_token(subject: str) -> str:
     )
 
 
-def _decode(token: str, token_type: str, required: tuple[str, ...] = ()) -> dict[str, Any]:
+def _decode(
+    token: str, token_type: str, required: tuple[str, ...] = ()
+) -> dict[str, Any]:
     """校验签名、有效期、令牌类型与必需声明。"""
     try:
         payload = jwt.decode(
@@ -81,7 +83,11 @@ def _decode(token: str, token_type: str, required: tuple[str, ...] = ()) -> dict
         raise TokenInvalidError from exc
 
     subject = payload["sub"]
-    if payload["type"] != token_type or not isinstance(subject, str) or not subject.strip():
+    if (
+        payload["type"] != token_type
+        or not isinstance(subject, str)
+        or not subject.strip()
+    ):
         raise TokenInvalidError
     return payload
 
