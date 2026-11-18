@@ -10,6 +10,13 @@ interface ProductCardProps {
   onView: (product: Product) => void;
 }
 
+function formatAmount(value: number): string {
+  return `¥${value.toLocaleString('zh-CN', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  })}`;
+}
+
 export function ProductCard({ product, onView }: ProductCardProps) {
   const [imageFailed, setImageFailed] = useState(false);
 
@@ -38,7 +45,7 @@ export function ProductCard({ product, onView }: ProductCardProps) {
       </div>
       <div className="product-card__audience">
         <TeamOutlined />
-        <span>适合人群：{product.target_group}</span>
+        <span>适合人群：{product.target_group || '不限'}</span>
       </div>
       <ul className="product-card__highlights">
         {product.highlights.slice(0, 3).map((highlight) => (
@@ -51,8 +58,14 @@ export function ProductCard({ product, onView }: ProductCardProps) {
       <div className="product-card__footer">
         <div>
           <span>年缴保费参考</span>
-          <strong>¥{product.min_premium.toLocaleString('zh-CN')}</strong>
-          <small>起</small>
+          {product.min_premium !== null ? (
+            <>
+              <strong>{formatAmount(product.min_premium)}</strong>
+              <small>起</small>
+            </>
+          ) : (
+            <strong className="product-card__price-pending">待定</strong>
+          )}
         </div>
         <Button type="link" onClick={() => onView(product)}>
           查看详情 <RightOutlined />

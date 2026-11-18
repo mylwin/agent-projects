@@ -198,6 +198,14 @@ export function AdvisorPage({ session, onBack, onSessionExpired, onApplyProduct 
   }, [messages, pendingInterrupt]);
 
   useEffect(() => {
+    // 从产品详情页带过来的试算条件，只消费一次，避免刷新/重进后重复带入
+    const draft = window.sessionStorage.getItem('advisor-draft');
+    if (!draft) return;
+    window.sessionStorage.removeItem('advisor-draft');
+    setInput((current) => current || draft);
+  }, []);
+
+  useEffect(() => {
     const planIds = planIdsKey ? planIdsKey.split('|') : [];
     if (planIds.length === 0) {
       setPlanItemStatuses({});

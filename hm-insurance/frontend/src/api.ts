@@ -4,6 +4,7 @@ import type {
   ChatThread,
   InsuranceCategory,
   PlanInterrupt,
+  PricingSchemaResponse,
   Product,
   UserSummary,
 } from './types';
@@ -170,13 +171,50 @@ export async function logout(): Promise<void> {
   await sendRequest('/auth/logout', { method: 'POST' }, null).catch(() => undefined);
 }
 
+interface RawProduct extends Omit<Product, 'min_premium' | 'max_premium'> {
+  min_premium: number | string | null;
+  max_premium: number | string | null;
+}
+
+function toAmount(value: number | string | null): number | null {
+  if (value === null || value === '') return null;
+  const amount = typeof value === 'number' ? value : Number(value);
+  return Number.isFinite(amount) ? amount : null;
+}
+
+/** 后端 Decimal 会序列化成字符串，统一转成 number 供页面计算和展示。 */
+function toProduct(raw: RawProduct): Product {
+  return {
+    ...raw,
+    min_premium: toAmount(raw.min_premium),
+    max_premium: toAmount(raw.max_premium),
+    description: raw.description ?? '',
+    highlights: raw.highlights ?? [],
+    target_group: raw.target_group ?? null,
+  };
+}
+
 export function listProducts(category: InsuranceCategory | 'all'): Promise<Product[]> {
   const params = new URLSearchParams();
   if (category !== 'all') {
     params.set('category', category);
   }
   const query = params.toString();
-  return request<Product[]>(`/products${query ? `?${query}` : ''}`);
+  return request<RawProduct[]>(`/products${query ? `?${query}` : ''}`).then((items) =>
+    items.map(toProduct),
+  );
+}
+
+export function getProduct(productId: number): Promise<Product> {
+  return request<RawProduct>(
+    `/products/${encodeURIComponent(String(productId))}`,
+  ).then(toProduct);
+}
+
+export function getPricingSchema(productId: number): Promise<PricingSchemaResponse> {
+  return request<PricingSchemaResponse>(
+    `/products/${encodeURIComponent(String(productId))}/pricing-schema`,
+  );
 }
 
 export function markPlanItemInsured(planId: string, itemId: string): Promise<unknown> {

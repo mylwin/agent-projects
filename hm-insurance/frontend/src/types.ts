@@ -8,11 +8,36 @@ export interface Product {
   insurer: string;
   image_url: string | null;
   description: string;
-  min_premium: number;
+  min_premium: number | null;
   max_premium: number | null;
-  target_group: string;
+  target_group: string | null;
   highlights: string[];
   status: string;
+}
+
+export interface PriceOption {
+  label: string;
+  value: string | number;
+}
+
+export interface PriceField {
+  key: string;
+  label: string;
+  type: string;
+  required: boolean;
+  options?: Array<PriceOption | string | number> | null;
+}
+
+export interface PricingSchema {
+  title: string;
+  fields: PriceField[];
+}
+
+export interface PricingSchemaResponse {
+  product_id: number;
+  scenario: string;
+  schema_version: string;
+  schema: PricingSchema;
 }
 
 export interface UserSummary {

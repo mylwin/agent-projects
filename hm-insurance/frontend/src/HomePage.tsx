@@ -3,13 +3,13 @@ import {
   LoginOutlined,
   SafetyCertificateOutlined,
 } from '@ant-design/icons';
-import { Alert, Button, Empty, Modal, Segmented, Skeleton } from 'antd';
+import { Alert, Button, Empty, Segmented, Skeleton } from 'antd';
 import { useEffect, useState } from 'react';
 
 import { listProducts } from './api';
 import { AuthModal } from './AuthModal';
-import { CATEGORY_LABELS } from './categoryLabels';
 import { ProductCard } from './ProductCard';
+import { ProductDetailModal } from './ProductDetailModal';
 import type { AuthSession, InsuranceCategory, Product } from './types';
 
 type CategoryFilter = InsuranceCategory | 'all';
@@ -78,6 +78,13 @@ export function HomePage({
       return;
     }
     openAuth(true);
+  }
+
+  function consultWithSummary(summary?: string) {
+    if (summary) {
+      window.sessionStorage.setItem('advisor-draft', summary);
+    }
+    consult();
   }
 
   function authenticated(nextSession: AuthSession) {
@@ -185,34 +192,17 @@ export function HomePage({
         onCancel={() => {
           setAuthOpen(false);
           setConsultAfterLogin(false);
+          window.sessionStorage.removeItem('advisor-draft');
         }}
         onSuccess={authenticated}
       />
 
-      <Modal
+      <ProductDetailModal
         open={selectedProduct !== null}
-        title={selectedProduct?.name}
-        footer={[
-          <Button key="close" onClick={() => setSelectedProduct(null)}>关闭</Button>,
-          <Button key="consult" type="primary" onClick={consult}>咨询顾问</Button>,
-        ]}
-        onCancel={() => setSelectedProduct(null)}
-        width={620}
-      >
-        {selectedProduct ? (
-          <div className="product-detail">
-            <p>{selectedProduct.description}</p>
-            <dl>
-              <div><dt>承保公司</dt><dd>{selectedProduct.insurer}</dd></div>
-              <div><dt>保险类型</dt><dd>{CATEGORY_LABELS[selectedProduct.category]}</dd></div>
-              <div><dt>适合人群</dt><dd>{selectedProduct.target_group}</dd></div>
-              <div><dt>保费参考</dt><dd>¥{selectedProduct.min_premium.toLocaleString('zh-CN')} 起/年</dd></div>
-            </dl>
-            <h4>产品亮点</h4>
-            <ul>{selectedProduct.highlights.map((item) => <li key={item}>{item}</li>)}</ul>
-          </div>
-        ) : null}
-      </Modal>
+        product={selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+        onConsult={consultWithSummary}
+      />
     </div>
   );
 }
