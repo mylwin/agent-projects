@@ -1,13 +1,12 @@
 from typing import Annotated
 
-from fastapi import Depends, Request
-
 from app.core.exceptions import TokenInvalidError
 from app.core.security import decode_access_token
 from app.infra.database import AsyncSessionFactory
 from app.modules.auth.exceptions import UnauthorizedError, status_exception
 from app.modules.auth.repository import UsersRepository
 from app.modules.auth.schemas import UserAuthData
+from fastapi import Depends, Request
 
 
 async def get_current_user(request: Request) -> UserAuthData:
@@ -29,16 +28,3 @@ async def get_current_user(request: Request) -> UserAuthData:
 
 
 CurrentUser = Annotated[UserAuthData, Depends(get_current_user)]
-
-
-async def get_optional_current_user(request: Request) -> UserAuthData | None:
-    """没有 Bearer 时返回 None；带了令牌则复用登录解析逻辑。"""
-    scheme, _, token = request.headers.get("Authorization", "").partition(" ")
-    if scheme.lower() != "bearer" or not token:
-        return None
-    return await get_current_user(request)
-
-
-OptionalCurrentUser = Annotated[
-    UserAuthData | None, Depends(get_optional_current_user)
-]

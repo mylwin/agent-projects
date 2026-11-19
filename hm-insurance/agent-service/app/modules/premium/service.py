@@ -35,9 +35,7 @@ class PremiumService:
         self.session = session
         self.repository = PremiumRepository(session)
 
-    async def calculate(
-        self, request: PremiumCalculateRequest, user_id: int | None = None
-    ) -> PremiumQuoteResponse:
+    async def calculate(self, request: PremiumCalculateRequest) -> PremiumQuoteResponse:
         """按产品绑定生成报价快照，返回给前端并写入 premium_quotes。"""
         if request.product_id is None:
             raise ProductIdIsNullError
@@ -89,7 +87,7 @@ class PremiumService:
             await self.repository.add_quote(
                 PremiumQuote(
                     id=quote_id,
-                    user_id=user_id,
+                    user_id=None,
                     product_id=request.product_id,
                     request_params=request.model_dump(mode="json"),
                     answers=answers,
