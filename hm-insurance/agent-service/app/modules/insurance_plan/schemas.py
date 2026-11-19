@@ -36,6 +36,8 @@ class InsurancePlanData(BaseModel):
     user_id: int
     plan_name: str
     summary: str | None = None
+    budget_note: str | None = None
     insured_profile: dict[str, Any] = Field(default_factory=dict)
     status: str
     annual_premium_budget: Decimal | None = None
+    version: int

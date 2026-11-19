@@ -26,12 +26,14 @@ class InsurancePlan(Base, CreateAtMixin, UpdateAtMixin):
     )
     plan_name: Mapped[str] = mapped_column(String(120))
     summary: Mapped[str | None] = mapped_column(Text)
+    budget_note: Mapped[str | None] = mapped_column(Text)
     insured_profile: Mapped[dict[str, Any]] = mapped_column(
         JSONB,
         default=dict,
         server_default=text("'{}'::jsonb"),
     )
     annual_premium_budget: Mapped[Decimal | None] = mapped_column(Numeric(14, 2))
+    version: Mapped[int] = mapped_column(Integer, default=1, server_default="1")
     status: Mapped[str] = mapped_column(
         String(30),
         default="uninsured",

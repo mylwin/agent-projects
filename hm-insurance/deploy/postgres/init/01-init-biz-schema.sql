@@ -819,3 +819,11 @@ COMMENT ON COLUMN policies.policy_snapshot IS '投保当时产品、方案、推
 COMMENT ON COLUMN policies.coverage_snapshot IS '理赔演示使用的保障责任摘要快照';
 COMMENT ON COLUMN policies.paid_at IS '支付完成时间';
 COMMENT ON COLUMN policies.issued_at IS '承保出单时间';
+
+-- ==== V15__insurance_plan_version_and_budget_note.sql ====
+ALTER TABLE insurance_plans
+    ADD COLUMN IF NOT EXISTS version INT NOT NULL DEFAULT 1 CHECK (version >= 1),
+    ADD COLUMN IF NOT EXISTS budget_note TEXT;
+
+COMMENT ON COLUMN insurance_plans.version IS '保险方案版本号';
+COMMENT ON COLUMN insurance_plans.budget_note IS '预算说明';
