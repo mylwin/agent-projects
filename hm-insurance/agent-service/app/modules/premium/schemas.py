@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class InsuredAnswers(BaseModel):
@@ -45,7 +45,8 @@ class PremiumCalculateAnswers(BaseModel):
 class PremiumCalculateRequest(BaseModel):
     """保费试算请求参数"""
 
-    product_id: int = Field(description="产品ID")
+    # 缺失交给业务层抛 400 INVALID_PRICING_PARAMS，而非 FastAPI 的 422
+    product_id: int | None = Field(default=None, description="产品ID")
     scenario: str = Field(
         default="premium_by_coverage",
         description="试算场景",
@@ -54,6 +55,19 @@ class PremiumCalculateRequest(BaseModel):
         default_factory=PremiumCalculateAnswers,
         description="试算项",
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _normalize_answers(cls, data: dict[str, Any]) -> dict[str, Any]:
+        """兼容接口文档里 answers 使用点号 key（如 insured.age）的写法。"""
+        nested: dict[str, Any] = {}
+        for key, value in data.get("answers", {}).items():
+            if "." in key:
+                section, field = key.split(".", 1)
+                nested.setdefault(section, {})[field] = value
+            else:
+                nested[key] = value
+        return {**data, "answers": nested}
 
 
 class BreakdownItem(BaseModel):

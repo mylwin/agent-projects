@@ -29,3 +29,16 @@ async def get_current_user(request: Request) -> UserAuthData:
 
 
 CurrentUser = Annotated[UserAuthData, Depends(get_current_user)]
+
+
+async def get_optional_current_user(request: Request) -> UserAuthData | None:
+    """没有 Bearer 时返回 None；带了令牌则复用登录解析逻辑。"""
+    scheme, _, token = request.headers.get("Authorization", "").partition(" ")
+    if scheme.lower() != "bearer" or not token:
+        return None
+    return await get_current_user(request)
+
+
+OptionalCurrentUser = Annotated[
+    UserAuthData | None, Depends(get_optional_current_user)
+]

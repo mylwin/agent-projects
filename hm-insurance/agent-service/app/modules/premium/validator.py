@@ -12,9 +12,6 @@ def validate_answers(answers: dict[str, Any], schema_json: dict[str, Any]) -> No
 
     Field 只能约束所有产品通用的规则（类型、枚举、非负）；
     模板里的必填项与每个产品不同的年龄区间只能在这里动态校验。
-
-    :param answers: 分层后的试算项，由 PremiumCalculateAnswers 导出
-    :param schema_json: product_pricing_schemas.schema_json
     """
     fields = schema_json["fields"]
 
@@ -26,9 +23,7 @@ def validate_answers(answers: dict[str, Any], schema_json: dict[str, Any]) -> No
     if missing:
         raise PriceParamsMissingError(missing)
 
-    errors = [
-        error for field in fields if (error := _range_error(answers, field))
-    ]
+    errors = [error for field in fields if (error := _range_error(answers, field))]
     if errors:
         raise PriceParamsInvalidError("；".join(errors))
 
@@ -36,10 +31,6 @@ def validate_answers(answers: dict[str, Any], schema_json: dict[str, Any]) -> No
 def _get_answer(answers: dict[str, Any], key: str) -> Any:
     """
     按模板的点号 key（如 insured.age）从分层试算项中取值
-
-    :param answers: 分层后的试算项
-    :param key: 模板字段 key
-    :return: 用户填写的值，未填写返回 None
     """
     value: Any = answers
     for part in key.split("."):

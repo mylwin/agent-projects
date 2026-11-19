@@ -3,6 +3,7 @@ from decimal import Decimal
 from typing import Any
 from uuid import UUID, uuid4
 
+from app.common.models import Base, CreateAtMixin, UpdateAtMixin
 from sqlalchemy import (
     BigInteger,
     CheckConstraint,
@@ -15,8 +16,6 @@ from sqlalchemy import (
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
-
-from app.common.models import Base, CreateAtMixin, UpdateAtMixin
 
 
 class InsurerApiAdapter(Base, CreateAtMixin, UpdateAtMixin):

@@ -22,6 +22,7 @@ from app.infra.checkpointer import close_checkpointer, init_checkpointer
 from app.modules.auth.router import router as auth_router
 from app.modules.chat.router import router as chat_router
 from app.modules.chat_thread.router import router as chat_thread_router
+from app.modules.premium.router import router as premium_router
 from app.modules.product.router import router as product_router
 
 # 初始化日志系统
@@ -66,6 +67,7 @@ app = FastAPI(
 # 绑定路由
 app.include_router(router=auth_router)
 app.include_router(router=product_router)
+app.include_router(router=premium_router)
 app.include_router(router=chat_thread_router)
 app.include_router(router=chat_router)
 
