@@ -8,11 +8,6 @@ if __package__ in (None, "") and str(SERVICE_ROOT) not in sys.path:
     sys.path.insert(0, str(SERVICE_ROOT))
 
 import uvicorn
-from fastapi import FastAPI, Request
-from fastapi.concurrency import asynccontextmanager
-from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
-
 from app.agents.orchestrator import init_insurance_orchestrator
 from app.core.config import settings
 from app.core.exception_handlers import build_validation_error_response
@@ -22,8 +17,13 @@ from app.infra.checkpointer import close_checkpointer, init_checkpointer
 from app.modules.auth.router import router as auth_router
 from app.modules.chat.router import router as chat_router
 from app.modules.chat_thread.router import router as chat_thread_router
+from app.modules.insurance_plan.router import router as insurance_plan_router
 from app.modules.premium.router import router as premium_router
 from app.modules.product.router import router as product_router
+from fastapi import FastAPI, Request
+from fastapi.concurrency import asynccontextmanager
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
 # 初始化日志系统
 setup_logging(settings.logging.level)
@@ -70,6 +70,7 @@ app.include_router(router=product_router)
 app.include_router(router=premium_router)
 app.include_router(router=chat_thread_router)
 app.include_router(router=chat_router)
+app.include_router(router=insurance_plan_router)
 
 
 # 统一处理异常信息

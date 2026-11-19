@@ -1,7 +1,8 @@
 from decimal import Decimal
 from typing import Any
+from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class InsurancePlanItemCreate(BaseModel):
@@ -29,10 +30,12 @@ class InsurancePlanCreate(BaseModel):
 class InsurancePlanData(BaseModel):
     """保险方案数据"""
 
-    id: str
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
     user_id: int
     plan_name: str
-    summary: str
-    insured_profile: dict[str, Any]
+    summary: str | None = None
+    insured_profile: dict[str, Any] = Field(default_factory=dict)
     status: str
-    annual_premium_budget: Decimal
+    annual_premium_budget: Decimal | None = None
