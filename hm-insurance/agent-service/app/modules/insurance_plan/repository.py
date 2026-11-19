@@ -1,11 +1,11 @@
 from decimal import Decimal
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.modules.insurance_plan.models import InsurancePlan, InsurancePlanItem
 from app.modules.insurance_plan.schemas import (
     InsurancePlanCreate,
 )
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class InsurancePlanRepository:
@@ -27,8 +27,6 @@ class InsurancePlanRepository:
             sum(item_budgets, Decimal("0.0")) if item_budgets else None
         )
 
-        # TODO(citation-flow): 接收服务端验证后的确认快照，与方案及方案项在同一事务保存；
-        # 快照中的产品/保费必须与确认版本一致，保存回执返回该版本的产品及来源。
         # 2.保存保险方案
         insurance_plan = InsurancePlan(
             user_id=user_id,
@@ -54,3 +52,11 @@ class InsurancePlanRepository:
         self.session.add_all(plan_items)
 
         return insurance_plan
+
+    async def find_by_user_id(self, user_id: int):
+        """根据用户ID查询全部保险方案"""
+        return await self.session.scalars(
+            select(InsurancePlan)
+            .where(InsurancePlan.user_id == user_id)
+            .order_by(InsurancePlan.created_at.desc())
+        )

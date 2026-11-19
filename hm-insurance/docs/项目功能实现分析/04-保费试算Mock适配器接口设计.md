@@ -8,6 +8,7 @@
 
 ### 1.1 表关系
 
+
 ```mermaid
 erDiagram
     products ||--o{ product_pricing_schemas : "定义试算模板"
@@ -74,26 +75,31 @@ erDiagram
     }
 ```
 
+
 ### 1.2 各表在这次接口中的职责
 
-| 表 | 这次怎么用 |
-| --- | --- |
-| `products` | 只作为 `product_id` 的合法性来源；本接口不返回产品详情 |
-| `product_pricing_schemas` | 提供 `schema_json.fields`，决定哪些参数必填、类型、可选值；同时确定 `scenario` 与版本 |
-| `product_pricing_bindings` | 一次查询拿到「模板 + 适配器 + 字段映射 + mock 配置」，是接口的核心配置 |
-| `insurer_api_adapters` | `adapter_type` 决定走哪个计价实现；`insurer_code` 出现在 `breakdown[].source.adapter` |
-| `premium_quotes` | 每次试算落一条报价快照，`quote_id` 返回给前端，`orders.quote_ids` 后续引用 |
-| `orders` | 本接口不写；下单时通过 `quote_ids` 引用报价并校验过期 |
+
+| 表                          | 这次怎么用                                                                    |
+| -------------------------- | ------------------------------------------------------------------------ |
+| `products`                 | 只作为 `product_id` 的合法性来源；本接口不返回产品详情                                       |
+| `product_pricing_schemas`  | 提供 `schema_json.fields`，决定哪些参数必填、类型、可选值；同时确定 `scenario` 与版本              |
+| `product_pricing_bindings` | 一次查询拿到「模板 + 适配器 + 字段映射 + mock 配置」，是接口的核心配置                               |
+| `insurer_api_adapters`     | `adapter_type` 决定走哪个计价实现；`insurer_code` 出现在 `breakdown[].source.adapter` |
+| `premium_quotes`           | 每次试算落一条报价快照，`quote_id` 返回给前端，`orders.quote_ids` 后续引用                     |
+| `orders`                   | 本接口不写；下单时通过 `quote_ids` 引用报价并校验过期                                        |
+
 
 `premium_quotes` 在 V6 迁移中新增了 `pricing_schema_id / schema_version / adapter_id / answers / external_request / external_response`，正好覆盖「模板版本 + 映射后请求 + 适配器原始响应」的追溯需求。
 
 ### 1.3 种子数据现状
 
-| 产品 | 绑定适配器 | 计划编码（`mock_config.base_premium_by_plan`） |
-| --- | --- | --- |
-| 2 达尔文12号重疾 | `mock_fosun` | `basic` / `classic` / `premium` |
-| 6 众安尊享e生 | `mock_zhongan` | `standard` / `plus` |
-| 10 小蜜蜂6号意外 | `mock_cpci` | `basic` / `classic` / `premium` |
+
+| 产品         | 绑定适配器          | 计划编码（`mock_config.base_premium_by_plan`） |
+| ---------- | -------------- | ---------------------------------------- |
+| 2 达尔文12号重疾 | `mock_fosun`   | `basic` / `classic` / `premium`          |
+| 6 众安尊享e生   | `mock_zhongan` | `standard` / `plus`                      |
+| 10 小蜜蜂6号意外 | `mock_cpci`    | `basic` / `classic` / `premium`          |
+
 
 计价因子都放在 `mock_config` 里：
 
@@ -104,6 +110,7 @@ erDiagram
 > ⚠️ 接口文档示例使用 `product_id=2 + plan_code=standard`，但数据库里产品 2 的计划是 `basic/classic/premium`。示例只能当字段演示，实际校验和计价必须以数据库的 `plan_options`、`mock_config` 为准。
 
 ## 2. 代码结构图
+
 
 ```mermaid
 flowchart TB
@@ -141,6 +148,7 @@ flowchart TB
     MD --> DB
 ```
 
+
 ### 2.1 文件清单
 
 ```text
@@ -166,6 +174,7 @@ agent-service/app/modules/premium/
 - `app/modules/auth/dependencies.py`：新增 `get_optional_current_user`，请求头没有 Bearer 时返回 `None`，有则复用 `get_current_user`
 
 ## 3. 请求处理时序
+
 
 ```mermaid
 sequenceDiagram
@@ -201,6 +210,7 @@ sequenceDiagram
     S-->>R: PremiumQuoteResponse
     R-->>C: 200
 ```
+
 
 ## 4. 关键代码骨架
 
@@ -643,27 +653,31 @@ OptionalCurrentUser = Annotated[UserAuthData | None, Depends(get_optional_curren
 
 ## 5. 落库字段对照
 
-| 响应字段 | `premium_quotes` 列 | 说明 |
-| --- | --- | --- |
-| `quote_id` | `id` | `uuid4()`，同时返回给前端 |
-| `product_id` | `product_id` | 请求原值 |
-| `plan_code` | `answers.plan_code` | 默认 `basic` |
-| `pricing_mode` | `pricing_mode` | mock 固定 `mock_adapter` |
-| `annual_premium` | `total_premium` | `Decimal`，两位小数 |
-| `breakdown` | `result.breakdown` | 统一响应快照 |
-| `warnings` | `result.warnings` | 固定两条教学提示 |
-| `expires_at` | `expires_at` | 默认 30 分钟 |
-| 请求原文 | `request_params` | `product_id + scenario + answers` |
-| 映射后请求 | `external_request` | 发给适配器的内容 |
-| 适配器原始结果 | `external_response` | 便于排查 mock 系数 |
+
+| 响应字段             | `premium_quotes` 列  | 说明                                |
+| ---------------- | ------------------- | --------------------------------- |
+| `quote_id`       | `id`                | `uuid4()`，同时返回给前端                 |
+| `product_id`     | `product_id`        | 请求原值                              |
+| `plan_code`      | `answers.plan_code` | 默认 `basic`                        |
+| `pricing_mode`   | `pricing_mode`      | mock 固定 `mock_adapter`            |
+| `annual_premium` | `total_premium`     | `Decimal`，两位小数                    |
+| `breakdown`      | `result.breakdown`  | 统一响应快照                            |
+| `warnings`       | `result.warnings`   | 固定两条教学提示                          |
+| `expires_at`     | `expires_at`        | 默认 30 分钟                          |
+| 请求原文             | `request_params`    | `product_id + scenario + answers` |
+| 映射后请求            | `external_request`  | 发给适配器的内容                          |
+| 适配器原始结果          | `external_response` | 便于排查 mock 系数                      |
+
 
 ## 6. 错误码与边界
 
-| 状态码 | 错误码 | 触发点 |
-| --- | --- | --- |
-| 400 | `INVALID_PRICING_PARAMS` | `product_id` 缺失/非正数；参数类型、区间、计划编码非法 |
+
+| 状态码 | 错误码                         | 触发点                                 |
+| --- | --------------------------- | ----------------------------------- |
+| 400 | `INVALID_PRICING_PARAMS`    | `product_id` 缺失/非正数；参数类型、区间、计划编码非法  |
 | 404 | `PRICING_BINDING_NOT_FOUND` | 绑定/模板/适配器任一不是 active，或 scenario 不匹配 |
-| 400 | `MISSING_PRICING_PARAMS` | 模板 `required=true` 的字段没填 |
+| 400 | `MISSING_PRICING_PARAMS`    | 模板 `required=true` 的字段没填            |
+
 
 其他边界：
 
@@ -681,3 +695,4 @@ OptionalCurrentUser = Annotated[UserAuthData | None, Depends(get_optional_curren
 5. 计价算例：产品 2、`standard` 不在配置里 → 400；产品 2、`classic`、30 岁女、30 万保额 → `700 × 1.0 × 1.0 × 0.6 = 420.00`
 6. 落库断言：`premium_quotes.pricing_mode == "mock_adapter"`，`schema_version`、`adapter_id`、`external_request` 均写入
 7. 未登录可调用，`user_id` 为 `NULL`；带合法 Bearer 时写入用户 ID
+

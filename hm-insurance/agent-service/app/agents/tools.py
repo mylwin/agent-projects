@@ -2,16 +2,15 @@ import json
 from decimal import Decimal
 from uuid import NAMESPACE_URL, uuid5
 
-from fastapi.encoders import jsonable_encoder
-from langchain.tools import ToolRuntime, tool
-from langgraph.config import get_stream_writer
-from langgraph.types import interrupt
-
 from app.agents.schemas import InsuranceAgentContext
 from app.infra.database import AsyncSessionFactory
 from app.modules.insurance_plan.schemas import InsurancePlanCreate
 from app.modules.insurance_plan.service import InsurancePlanService
 from app.modules.product.service import ProductService
+from fastapi.encoders import jsonable_encoder
+from langchain.tools import ToolRuntime, tool
+from langgraph.config import get_stream_writer
+from langgraph.types import interrupt
 
 
 @tool
@@ -66,9 +65,6 @@ async def save_insurance_plan(
     只有工具返回保存成功后，才能告知用户方案已保存。
     """
 
-    # TODO(citation-flow): 中断前固化方案版本、所选产品及有效来源快照，随确认载荷返回；
-    # 批准恢复后使用同一快照保存并发送 plan_items/来源，拒绝时不得发送已保存事件。
-    # 来源从服务端证据注册表解析并校验产品归属，不接受模型编造的原文。
     # 中断执行,用户确认方案没问题再保存到数据库中
     decision = interrupt(
         {

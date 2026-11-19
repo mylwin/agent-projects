@@ -24,3 +24,15 @@ class InsurancePlanCreate(BaseModel):
     summary: str | None = None
     insured_profile: dict[str, Any] = Field(default_factory=dict)
     items: list[InsurancePlanItemCreate] = Field(min_length=1)
+
+
+class InsurancePlanData(BaseModel):
+    """保险方案数据"""
+
+    id: str
+    user_id: int
+    plan_name: str
+    summary: str
+    insured_profile: dict[str, Any]
+    status: str
+    annual_premium_budget: Decimal
