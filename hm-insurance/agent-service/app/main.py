@@ -17,6 +17,7 @@ from app.infra.checkpointer import close_checkpointer, init_checkpointer
 from app.modules.auth.router import router as auth_router
 from app.modules.chat.router import router as chat_router
 from app.modules.chat_thread.router import router as chat_thread_router
+from app.modules.claim.router import router as claim_router
 from app.modules.insurance_plan.router import router as insurance_plan_router
 from app.modules.policy.router import router as policy_router
 from app.modules.premium.router import router as premium_router
@@ -73,6 +74,7 @@ app.include_router(router=chat_thread_router)
 app.include_router(router=chat_router)
 app.include_router(router=insurance_plan_router)
 app.include_router(router=policy_router)
+app.include_router(router=claim_router)
 
 
 # 统一处理异常信息
