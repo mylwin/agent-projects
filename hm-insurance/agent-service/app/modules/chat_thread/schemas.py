@@ -1,4 +1,4 @@
-from typing import Any, Literal
+from typing import Any, Literal  # noqa: I001
 from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
