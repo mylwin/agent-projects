@@ -1,8 +1,10 @@
 import json
+from datetime import datetime
 from decimal import Decimal
 from uuid import NAMESPACE_URL, uuid5
 
 from app.agents.schemas import InsuranceAgentContext
+from app.common.dates import BUSINESS_TIME_ZONE
 from app.infra.database import AsyncSessionFactory
 from app.modules.insurance_plan.schemas import InsurancePlanCreate
 from app.modules.insurance_plan.service import InsurancePlanService
@@ -36,7 +38,12 @@ async def query_candidate_products(
         )
 
         # 3.将候选产品同步到前端
-        products = jsonable_encoder(candidate_products)
+        products = jsonable_encoder(
+            candidate_products,
+            custom_encoder={
+                datetime: lambda value: value.astimezone(BUSINESS_TIME_ZONE).isoformat()
+            },
+        )
         writer = get_stream_writer()
         writer({"type": "additional_info", "data": {"candidate_products": products}})
         return products

@@ -1,9 +1,10 @@
-from datetime import datetime
 from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict, Field, computed_field
+
+from app.common.dates import BusinessDateTime
 
 
 class InsurancePlanItemCreate(BaseModel):
@@ -73,8 +74,8 @@ class InsurancePlanData(BaseModel):
     status: str
     annual_premium_budget: Decimal | None = None
     version: int
-    created_at: datetime
-    updated_at: datetime
+    created_at: BusinessDateTime
+    updated_at: BusinessDateTime
     items: list[InsurancePlanItemData]
 
 

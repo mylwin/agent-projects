@@ -1,7 +1,8 @@
-from datetime import datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
+
+from app.common.dates import BusinessDateTime
 
 
 class InsuredAnswers(BaseModel):
@@ -91,4 +92,4 @@ class PremiumQuoteResponse(BaseModel):
     payment_frequency: str = Field(description="缴费频率")
     breakdown: list[BreakdownItem] = Field(description="保费明细")
     warnings: list[str] = Field(description="风险提示")
-    expires_at: datetime = Field(description="报价过期时间")
+    expires_at: BusinessDateTime = Field(description="报价过期时间")

@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from typing import Any
 from uuid import UUID, uuid4
-from zoneinfo import ZoneInfo
 
+from app.common.dates import BUSINESS_TIME_ZONE
 from app.modules.premium.adapters.base import PricingRequest
 from app.modules.premium.adapters.registry import get_adapter
 from app.modules.premium.exceptions import (
@@ -71,7 +71,7 @@ class PremiumService:
             )
 
             quote_id: UUID = uuid4()
-            expires_at = datetime.now(ZoneInfo("Asia/Shanghai")) + self.QUOTE_TTL
+            expires_at = datetime.now(BUSINESS_TIME_ZONE) + self.QUOTE_TTL
             response = PremiumQuoteResponse(
                 quote_id=str(quote_id),
                 product_id=request.product_id,

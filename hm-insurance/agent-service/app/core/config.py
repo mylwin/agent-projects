@@ -44,6 +44,7 @@ class DatabaseSettings(EnvSettings):
     pool_size: int = Field(alias="DB_POOL_SIZE", default=5)
     max_overflow: int = Field(alias="DB_MAX_OVERFLOW", default=10)
     pool_recycle: int = Field(alias="DB_POOL_RECYCLE", default=1800)
+    timezone: str = Field(alias="DB_TIMEZONE", default="Asia/Shanghai")
 
     def build_url(self, scheme: str) -> str:
         """构建数据库连接字符串"""

@@ -1,8 +1,9 @@
-from datetime import datetime
 from typing import Any, Literal
 from uuid import UUID
 
 from pydantic import BaseModel, Field, field_validator
+
+from app.common.dates import BusinessDateTime
 
 
 class ChatThreadCreate(BaseModel):
@@ -22,8 +23,8 @@ class ChatThreadResponse(BaseModel):
 
     id: UUID
     title: str
-    created_at: datetime
-    updated_at: datetime
+    created_at: BusinessDateTime
+    updated_at: BusinessDateTime
 
 
 class ChatMessageResponse(BaseModel):

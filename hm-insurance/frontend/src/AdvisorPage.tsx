@@ -769,9 +769,26 @@ function policyPeriod(policy: AdditionalPolicy): string {
   return start || end || '未提供';
 }
 
+const businessDateFormatter = new Intl.DateTimeFormat('sv-SE', {
+  timeZone: 'Asia/Shanghai',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+const businessThreadTimeFormatter = new Intl.DateTimeFormat('zh-CN', {
+  timeZone: 'Asia/Shanghai',
+  month: '2-digit',
+  day: '2-digit',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+});
+
 function formatDate(value: unknown): string {
   const text = textOf(value);
-  return text ? text.slice(0, 10) : '';
+  const date = new Date(text);
+  return Number.isNaN(date.getTime()) ? text : businessDateFormatter.format(date);
 }
 
 function formatMoney(value: unknown): string {
@@ -1181,8 +1198,10 @@ function isSessionExpired(reason: unknown): boolean {
 function formatThreadTime(value: string): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
-  const pad = (num: number) => String(num).padStart(2, '0');
-  return `${pad(date.getMonth() + 1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}`;
+  const { month, day, hour, minute } = Object.fromEntries(
+    businessThreadTimeFormatter.formatToParts(date).map(({ type, value }) => [type, value]),
+  );
+  return `${month}-${day} ${hour}:${minute}`;
 }
 
 function escapeRegExp(value: string): string {
