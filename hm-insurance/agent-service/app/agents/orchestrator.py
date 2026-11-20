@@ -1,6 +1,7 @@
 from typing import cast
 
 from app.agents.chitchat import init_chitchat_agent
+from app.agents.claim import init_claim
 from app.agents.insurance_advisor import init_insurance_advisor
 from app.agents.intent_router import intent_router
 from app.agents.schemas import InsuranceAgentState, Intent
@@ -68,24 +69,13 @@ def find_previous_ai_message(messages: list[AnyMessage]) -> str | None:
     return None
 
 
-# 1.3.闲聊节点
-async def chitchat_node(state: InsuranceAgentState) -> dict:
-    return {"messages": [AIMessage("你好，今天想聊点什么？")]}
-
-
-# 1.4.保险推荐节点
-async def recommendation_node(state: InsuranceAgentState) -> dict:
-    return {"messages": [AIMessage("保险推荐工作流暂未接入。")]}
-
-
-# 1.5.理赔节点
-async def claim_node(state: InsuranceAgentState) -> dict:
-    return {"messages": [AIMessage("理赔工作流暂未接入。")]}
-
-
 # 1.6.人工节点
 def human_handoff_node(state: InsuranceAgentState) -> dict:
-    return {"messages": [AIMessage("已记录转人工请求，后续可接入人工客服系统。")]}
+    return {
+        "messages": [
+            AIMessage("当前暂未接入在线人工客服。如需人工核实理赔，请联系保单上的承保公司。")
+        ]
+    }
 
 
 # 1.7.fallback节点
@@ -109,7 +99,7 @@ def init_insurance_orchestrator(checkpointer: AsyncPostgresSaver):
     builder.add_node("route", route_node)
     builder.add_node("chitchat", init_chitchat_agent())
     builder.add_node("recommendation_plan", init_insurance_advisor())
-    builder.add_node("claim", claim_node)
+    builder.add_node("claim", init_claim())
     builder.add_node("human_handoff", human_handoff_node)
     builder.add_node("fallback", fallback_node)
 

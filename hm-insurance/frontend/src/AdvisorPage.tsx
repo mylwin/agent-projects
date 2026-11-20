@@ -719,7 +719,11 @@ function PolicyInfoPanel({ info }: { info: AdditionalInfo[] | undefined }) {
           <h4>{group.title}</h4>
           <div className="policy-card-grid">
             {group.policies.map((policy, index) => (
-              <PolicyInfoCard policy={policy} key={textOf(policy.id ?? policy.policy_number ?? index)} />
+              <PolicyInfoCard
+                policy={policy}
+                number={index + 1}
+                key={textOf(policy.id ?? policy.policy_number ?? index)}
+              />
             ))}
           </div>
         </section>
@@ -728,7 +732,7 @@ function PolicyInfoPanel({ info }: { info: AdditionalInfo[] | undefined }) {
   );
 }
 
-function PolicyInfoCard({ policy }: { policy: AdditionalPolicy }) {
+function PolicyInfoCard({ policy, number }: { policy: AdditionalPolicy; number: number }) {
   const productName = textOf(policy.product?.name ?? policy.policy_snapshot?.product_name ?? '保险产品');
   const category = textOf(policy.product?.category ?? policy.policy_snapshot?.category);
   const coverageAmount = policy.coverage_amount ?? policy.coverage_snapshot?.coverage_amount ?? policy.coverage_snapshot?.annual_limit;
@@ -737,7 +741,7 @@ function PolicyInfoCard({ policy }: { policy: AdditionalPolicy }) {
       <div className="policy-card__top">
         <div>
           <strong>{productName}</strong>
-          {policy.policy_number ? <span>{textOf(policy.policy_number)}</span> : null}
+          <span>第 {number} 张{policy.policy_number ? ` · 尾号 ${policy.policy_number.slice(-4)}` : ''}</span>
         </div>
         <em className={`policy-status policy-status--${textOf(policy.status || 'active')}`}>
           {formatPolicyStatus(policy.status)}
@@ -745,11 +749,9 @@ function PolicyInfoCard({ policy }: { policy: AdditionalPolicy }) {
       </div>
       <dl>
         {category ? <PolicyField label="险种" value={formatCategoryLabel(category)} /> : null}
-        <PolicyField label="被保人" value={textOf(policy.insured_name || '未提供')} />
-        {policy.insured_phone ? <PolicyField label="联系电话" value={textOf(policy.insured_phone)} /> : null}
+        {policy.insured_name ? <PolicyField label="被保人" value={policy.insured_name} /> : null}
         <PolicyField label="保障期间" value={policyPeriod(policy)} />
         {coverageAmount ? <PolicyField label="保额/限额" value={`¥${formatMoney(coverageAmount)}`} /> : null}
-        {policy.premium_amount ? <PolicyField label="保费" value={`¥${formatMoney(policy.premium_amount)} / 年`} /> : null}
       </dl>
     </article>
   );

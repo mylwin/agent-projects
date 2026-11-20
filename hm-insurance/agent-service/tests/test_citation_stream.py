@@ -1,15 +1,23 @@
 import json
 import sys
 import unittest
+from datetime import datetime, timezone
+from decimal import Decimal
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, MagicMock, patch
 from uuid import uuid4
 
 from langchain.messages import AIMessage, HumanMessage
 
-from app.agents.tools import query_candidate_products, query_product_clause
+from app.agents.schemas import InsuranceAgentContext
+from app.agents.tools import (
+    list_user_policies,
+    query_candidate_products,
+    query_product_clause,
+)
 from app.modules.chat.schemas import ChatRequest
 from app.modules.chat.service import ChatService
+from app.modules.policy.schemas import PolicyItemData, PolicyListData, PolicyProductData
 
 
 class EventStream:
@@ -37,6 +45,68 @@ def custom(info):
 
 
 class CitationStreamTests(unittest.IsolatedAsyncioTestCase):
+    async def test_policy_tool_streams_summaries_and_saves_them_with_answer(self):
+        from langgraph.checkpoint.memory import InMemorySaver
+        from langgraph.graph import END, START, StateGraph
+        from langgraph.runtime import Runtime
+
+        from app.agents.schemas import InsuranceAgentState
+        from app.modules.chat_thread.service import ChatThreadService
+
+        policy = PolicyItemData.model_construct(
+            id=uuid4(),
+            product_id=6,
+            policy_number="POL-DEMO-0001",
+            status="active",
+            effective_at=datetime(2026, 1, 1, tzinfo=timezone.utc),
+            coverage_amount=Decimal("1000000"),
+            insured_phone="13800000000",
+            insured_id_no_masked="TEST-ID",
+            product=PolicyProductData(id=6, name="医疗险", category="medical"),
+        )
+        policy_service = AsyncMock()
+        policy_service.list_policies.return_value = PolicyListData(items=[policy])
+        session = MagicMock()
+        session.return_value.__aenter__ = AsyncMock()
+        session.return_value.__aexit__ = AsyncMock(return_value=False)
+
+        async def reply(state, runtime: Runtime[InsuranceAgentContext]):
+            await list_user_policies.coroutine(runtime=runtime)
+            return {"messages": [AIMessage("请选择保单", id="policy-answer")]}
+
+        builder = StateGraph(InsuranceAgentState, context_schema=InsuranceAgentContext)
+        builder.add_node("reply", reply)
+        builder.add_edge(START, "reply")
+        builder.add_edge("reply", END)
+        agent = builder.compile(checkpointer=InMemorySaver())
+        service = ChatService.__new__(ChatService)
+        service.repository = AsyncMock()
+        service.repository.find_owned.return_value = object()
+        service.agent = agent
+        request = ChatRequest(thread_id=uuid4(), message="我该准备哪些理赔材料？")
+        with (
+            patch("app.agents.tools.AsyncSessionFactory", session),
+            patch("app.agents.tools.PolicyService", return_value=policy_service),
+        ):
+            events = [event async for event in service.chat_stream(42, request)]
+
+        policy_service.list_policies.assert_awaited_once_with(user_id=42, status="all")
+        summaries = next(
+            event.data["policies"] for event in events if event.event == "additional_info"
+        )
+        self.assertEqual(summaries[0]["id"], str(policy.id))
+        self.assertEqual(summaries[0]["product"]["name"], "医疗险")
+        self.assertEqual(summaries[0]["effective_at"], "2026-01-01T08:00:00+08:00")
+        self.assertEqual(summaries[0]["coverage_amount"], "1000000")
+        self.assertNotIn("insured_phone", summaries[0])
+        self.assertNotIn("insured_id_no_masked", summaries[0])
+
+        history_service = ChatThreadService.__new__(ChatThreadService)
+        history_service.agent = agent
+        history_service.repository = service.repository
+        history = await history_service.get_history(request.thread_id, 42)
+        self.assertEqual(history.messages[-1].additional_info["policies"], summaries)
+
     async def test_multiple_queries_and_cross_turn_save_keep_sources(self):
         source_id = "ref-clause-6-medical"
         old_source = {"product_id": 6, "content": "不保证续保"}

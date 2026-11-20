@@ -127,7 +127,9 @@ function mergeAdditionalInfo(previous: AdditionalInfo[], current: AdditionalInfo
       if (index >= 0) result[index] = merged;
       else result.push(merged);
     } else {
-      result.push(info);
+      const index = result.findIndex((item) => item.type === 'policies' && item.title === info.title);
+      if (index >= 0) result[index] = info;
+      else result.push(info);
     }
   }
   return result;

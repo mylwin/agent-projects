@@ -1,13 +1,17 @@
 import json
 from datetime import datetime
 from decimal import Decimal
-from uuid import NAMESPACE_URL, uuid5
+from uuid import NAMESPACE_URL, UUID, uuid5
 
 from app.agents.schemas import InsuranceAgentContext
 from app.common.dates import BUSINESS_TIME_ZONE
 from app.infra.database import AsyncSessionFactory
+from app.modules.claim.schemas import ClaimStatus
+from app.modules.claim.service import ClaimService
 from app.modules.insurance_plan.schemas import InsurancePlanCreate
 from app.modules.insurance_plan.service import InsurancePlanService
+from app.modules.policy.schemas import PolicyStatusFilter
+from app.modules.policy.service import PolicyService
 from app.modules.premium.exceptions import (
     PriceBindingNotFoundError,
     PriceParamsInvalidError,
@@ -184,11 +188,18 @@ async def get_premium_schemas(
         service = ProductService(session)
         if product_id is None:
             products = await service.list_products(None)
-            matches = [product for product in products if name in product.name.casefold()]
-            exact_matches = [product for product in matches if name == product.name.casefold()]
+            matches = [
+                product for product in products if name in product.name.casefold()
+            ]
+            exact_matches = [
+                product for product in matches if name == product.name.casefold()
+            ]
             matches = exact_matches or matches
             if not matches:
-                return {"code": "PRODUCT_NOT_FOUND", "message": "未找到该名称对应的在售产品"}
+                return {
+                    "code": "PRODUCT_NOT_FOUND",
+                    "message": "未找到该名称对应的在售产品",
+                }
             if len(matches) > 1:
                 return {
                     "code": "PRODUCT_NAME_AMBIGUOUS",
@@ -236,3 +247,98 @@ async def calculate_premium(
         ) as exc:
             return {"code": exc.code, "message": exc.message}
     return quote.model_dump(mode="json")
+
+
+@tool
+async def list_user_policies(
+    runtime: ToolRuntime[InsuranceAgentContext], status: PolicyStatusFilter = "all"
+) -> list[dict]:
+    """
+    列出当前用户的保险保单。
+
+    Args:
+        status: 保单状态过滤条件
+    """
+    async with AsyncSessionFactory() as session:
+        service = PolicyService(session)
+        policies = await service.list_policies(
+            user_id=runtime.context.user_id, status=status
+        )
+    summaries = [
+        policy.model_dump(
+            mode="json",
+            include={
+                "id",
+                "policy_number",
+                "product_id",
+                "product",
+                "status",
+                "insured_name",
+                "effective_at",
+                "expires_at",
+                "coverage_amount",
+            },
+        )
+        for policy in policies.items
+    ]
+    if summaries:
+        get_stream_writer()(
+            {"type": "additional_info", "data": {"policies": summaries}}
+        )
+    return summaries
+
+
+@tool
+async def list_user_claims(
+    runtime: ToolRuntime[InsuranceAgentContext],
+    policy_id: UUID | None = None,
+    status: ClaimStatus | None = None,
+) -> list[dict]:
+    """
+    列出当前用户的保险理赔申请。
+
+    Args:
+        policy_id: 保单 ID
+        status: 理赔申请状态
+    """
+    async with AsyncSessionFactory() as session:
+        service = ClaimService(session)
+        claims = await service.list_claims(
+            user_id=runtime.context.user_id,
+            policy_id=policy_id,
+            status=status,
+        )
+    return [claim.model_dump(mode="json") for claim in claims.items]
+
+
+@tool
+async def get_user_claim_detail(
+    runtime: ToolRuntime[InsuranceAgentContext], claim_id: UUID
+) -> dict:
+    """
+    获取当前用户的保险理赔申请详情。
+
+    Args:
+        claim_id: 理赔申请 ID
+    """
+    async with AsyncSessionFactory() as session:
+        service = ClaimService(session)
+        claim = await service.get_claim(claim_id, runtime.context.user_id)
+    return claim.model_dump(mode="json")
+
+
+@tool
+async def get_user_claim_guide(
+    runtime: ToolRuntime[InsuranceAgentContext],
+    policy_id: UUID,
+) -> dict | None:
+    """
+    获取当前用户的保险理赔申请指引。
+
+    Args:
+        policy_id: 保单 ID
+    """
+    async with AsyncSessionFactory() as session:
+        service = ClaimService(session)
+        guide = await service.get_guide(policy_id, runtime.context.user_id)
+    return guide.model_dump(mode="json") if guide is not None else None
