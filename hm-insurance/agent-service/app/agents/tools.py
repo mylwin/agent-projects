@@ -93,20 +93,21 @@ async def save_insurance_plan(
         }
     async with AsyncSessionFactory() as session:
         service = InsurancePlanService(session)
-        plan_id = await service.create_plan(
+        saved_plan = await service.create_plan(
             user_id=runtime.context.user_id,
             data=plan,
         )
 
     # 保存成功后同步方案产品，拒绝或保存失败时不发送
     plan_items = [
-        {**item.model_dump(mode="json"), "plan_id": str(plan_id)} for item in plan.items
+        {**item.model_dump(mode="json"), "product_name": item.product.name}
+        for item in saved_plan.items
     ]
     writer = get_stream_writer()
     writer({"type": "additional_info", "data": {"plan_items": plan_items}})
 
     return {
-        "plan_id": str(plan_id),
+        "plan_id": str(saved_plan.id),
         "status": "saved",
         "message": "保险方案保存成功",
     }

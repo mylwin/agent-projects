@@ -3,10 +3,11 @@ from typing import Any
 from uuid import UUID, uuid4
 
 from app.common.models import Base, CreateAtMixin, UpdateAtMixin
+from app.modules.product.models import Product
 from sqlalchemy import BigInteger, ForeignKey, Integer, Numeric, String, Text, text
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PG_UUID
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class InsurancePlan(Base, CreateAtMixin, UpdateAtMixin):
@@ -38,6 +39,15 @@ class InsurancePlan(Base, CreateAtMixin, UpdateAtMixin):
         String(30),
         default="uninsured",
         server_default="uninsured",
+    )
+    items: Mapped[list["InsurancePlanItem"]] = relationship(
+        order_by=lambda: (
+            InsurancePlanItem.priority,
+            InsurancePlanItem.created_at,
+            InsurancePlanItem.id,
+        ),
+        lazy="raise",
+        viewonly=True,
     )
 
 
@@ -71,3 +81,4 @@ class InsurancePlanItem(Base, CreateAtMixin, UpdateAtMixin):
         default="uninsured",
         server_default="uninsured",
     )
+    product: Mapped[Product] = relationship(lazy="raise")
