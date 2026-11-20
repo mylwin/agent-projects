@@ -1,4 +1,5 @@
 from decimal import Decimal
+from uuid import UUID
 
 from app.modules.insurance_plan.models import InsurancePlan, InsurancePlanItem
 from app.modules.insurance_plan.schemas import (
@@ -91,3 +92,12 @@ class InsurancePlanRepository:
             )
             .limit(1)
         )
+
+    async def find_by_id_and_user_id(
+        self, plan_id: UUID, user_id: int, *, for_update: bool = False
+    ) -> InsurancePlan | None:
+        """根据方案ID和用户ID查询保险方案（仅限该用户自己的方案）"""
+        query = self._query_for_user(user_id).where(InsurancePlan.id == plan_id)
+        if for_update:
+            query = query.with_for_update()
+        return await self.session.scalar(query)
