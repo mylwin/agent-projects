@@ -8,6 +8,14 @@ from app.common.dates import BUSINESS_TIME_ZONE
 from app.infra.database import AsyncSessionFactory
 from app.modules.insurance_plan.schemas import InsurancePlanCreate
 from app.modules.insurance_plan.service import InsurancePlanService
+from app.modules.premium.exceptions import (
+    PriceBindingNotFoundError,
+    PriceParamsInvalidError,
+    PriceParamsMissingError,
+)
+from app.modules.premium.schemas import PremiumCalculateAnswers, PremiumCalculateRequest
+from app.modules.premium.service import PremiumService
+from app.modules.product.exceptions import PriceTemplateNotFoundError
 from app.modules.product.service import ProductService
 from fastapi.encoders import jsonable_encoder
 from langchain.tools import ToolRuntime, tool
@@ -155,3 +163,76 @@ async def query_product_clause(query: str, k: int, product_id: int) -> str | Non
 
     # 以JSON格式返回
     return json.dumps(sources, ensure_ascii=False)
+
+
+@tool
+async def get_premium_schemas(
+    product_id: int | None = None, product_name: str | None = None
+) -> dict:
+    """
+    按产品 ID 或产品名称查询指定产品的试算模板。
+
+    Args:
+        product_id: 已知的保险产品 ID，优先使用。
+        product_name: 产品 ID 未知时，使用用户指定的产品名称。
+    """
+    name = (product_name or "").strip().casefold()
+    if product_id is None and not name:
+        return {"code": "PRODUCT_REQUIRED", "message": "请提供要试算的产品名称或 ID"}
+
+    async with AsyncSessionFactory() as session:
+        service = ProductService(session)
+        if product_id is None:
+            products = await service.list_products(None)
+            matches = [product for product in products if name in product.name.casefold()]
+            exact_matches = [product for product in matches if name == product.name.casefold()]
+            matches = exact_matches or matches
+            if not matches:
+                return {"code": "PRODUCT_NOT_FOUND", "message": "未找到该名称对应的在售产品"}
+            if len(matches) > 1:
+                return {
+                    "code": "PRODUCT_NAME_AMBIGUOUS",
+                    "message": "请确认要试算的产品版本",
+                    "matches": [
+                        {"product_id": product.id, "product_name": product.name}
+                        for product in matches
+                    ],
+                }
+            product_id = matches[0].id
+
+        try:
+            template = await service.find_pricing_schema_by_id(product_id)
+        except PriceTemplateNotFoundError as exc:
+            return {"code": exc.code, "message": exc.message}
+    return template.model_dump(mode="json")
+
+
+@tool
+async def calculate_premium(
+    product_id: int,
+    answers: PremiumCalculateAnswers,
+    scenario: str = "premium_by_coverage",
+) -> dict:
+    """
+    按指定产品的模板试算年缴保费。使用模板中的实际计划编码和用户提供的条件。
+
+    Args:
+        product_id: 试算的保险产品ID
+        answers: 试算条件
+        scenario: 试算场景,默认为 `premium_by_coverage`
+    """
+    request = PremiumCalculateRequest(
+        product_id=product_id,
+        scenario=scenario,
+        answers=answers,
+    )
+    async with AsyncSessionFactory() as session:
+        try:
+            quote = await PremiumService(session).calculate(request)
+        except (
+            PriceBindingNotFoundError,
+            PriceParamsMissingError,
+            PriceParamsInvalidError,
+        ) as exc:
+            return {"code": exc.code, "message": exc.message}
+    return quote.model_dump(mode="json")

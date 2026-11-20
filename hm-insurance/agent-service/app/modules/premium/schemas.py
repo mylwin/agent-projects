@@ -1,6 +1,6 @@
 from typing import Any, Literal
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, field_validator
 
 from app.common.dates import BusinessDateTime
 
@@ -57,18 +57,21 @@ class PremiumCalculateRequest(BaseModel):
         description="试算项",
     )
 
-    @model_validator(mode="before")
+    @field_validator("answers", mode="before")
     @classmethod
-    def _normalize_answers(cls, data: dict[str, Any]) -> dict[str, Any]:
+    def _normalize_answers(cls, answers: Any) -> Any:
         """兼容接口文档里 answers 使用点号 key（如 insured.age）的写法。"""
+        if not isinstance(answers, dict):
+            return answers
+
         nested: dict[str, Any] = {}
-        for key, value in data.get("answers", {}).items():
+        for key, value in answers.items():
             if "." in key:
                 section, field = key.split(".", 1)
                 nested.setdefault(section, {})[field] = value
             else:
                 nested[key] = value
-        return {**data, "answers": nested}
+        return nested
 
 
 class BreakdownItem(BaseModel):

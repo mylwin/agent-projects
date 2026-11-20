@@ -71,9 +71,16 @@ class ProductService:
         if result is None:
             raise PriceTemplateNotFoundError
 
+        template = result.schema_json
+        fields = [
+            {**field, "options": template[field["options_ref"]]}
+            if "options_ref" in field
+            else field
+            for field in template["fields"]
+        ]
         return PriceResponse(
             product_id=result.product_id,
             scenario=result.scenario,
             schema_version=result.schema_version,
-            schema=PriceSchema.model_validate(result.schema_json),
+            schema=PriceSchema.model_validate({**template, "fields": fields}),
         )

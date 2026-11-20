@@ -32,6 +32,13 @@ class ProductResponse(BaseModel):
         return [] if value is None else value
 
 
+class PriceOption(BaseModel):
+    """试算模板的带标签选项。"""
+
+    value: int | str
+    label: str
+
+
 class PriceField(BaseModel):
     """价格试算模板字段"""
 
@@ -39,6 +46,9 @@ class PriceField(BaseModel):
     label: str = Field(description="字段label，前端展示名称")
     type: str = Field(description="字段类型")
     required: bool = Field(description="是否必填")
+    options: list[PriceOption | int | str] | None = Field(
+        default=None, description="供试算表单选择的有效值"
+    )
 
 
 class PriceSchema(BaseModel):
