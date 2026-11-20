@@ -1,4 +1,5 @@
 import {
+  CalculatorOutlined,
   CheckCircleOutlined,
   CustomerServiceOutlined,
   FilePdfOutlined,
@@ -18,13 +19,14 @@ import {
 } from 'antd';
 import { useEffect, useState } from 'react';
 
-import { ApiError, getPricingSchema, getProduct } from './api';
+import { ApiError, calculatePremium, createQuotedOrder, getPricingSchema, getProduct, SessionExpiredError } from './api';
 import { CATEGORY_LABELS } from './categoryLabels';
 import type {
   PriceField,
   PriceOption,
   PricingSchema,
   PricingSchemaResponse,
+  PremiumQuote,
   Product,
 } from './types';
 
@@ -36,7 +38,14 @@ interface ProductDetailModalProps {
   open: boolean;
   onClose: () => void;
   onConsult: (summary?: string) => void;
+  signedIn: boolean;
+  onSignIn: () => void;
+  onOrderCreated: (id: string) => void;
 }
+
+const quoteTime = new Intl.DateTimeFormat('zh-CN', {
+  timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+});
 
 function formatAmount(value: number): string {
   return `¥${value.toLocaleString('zh-CN', {
@@ -75,9 +84,10 @@ function resolveFieldOptions(field: PriceField): PriceOption[] {
 function buildInitialValues(schema: PricingSchema): QuoteValues {
   const values: QuoteValues = {};
   schema.fields.forEach((field) => {
-    if (field.type !== 'select' && field.type !== 'plan_select') return;
     const options = resolveFieldOptions(field);
-    if (options.length > 0) values[field.key] = options[0].value;
+    if (options.length > 0 && (field.type === 'select' || field.type === 'plan_select')) {
+      values[field.key] = options[0].value;
+    }
   });
   return values;
 }
@@ -121,6 +131,9 @@ export function ProductDetailModal({
   open,
   onClose,
   onConsult,
+  signedIn,
+  onSignIn,
+  onOrderCreated,
 }: ProductDetailModalProps) {
   const [detail, setDetail] = useState<Product | null>(product);
   const [pricing, setPricing] = useState<PricingSchemaResponse | null>(null);
@@ -130,6 +143,10 @@ export function ProductDetailModal({
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [loadingPricing, setLoadingPricing] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
+  const [quote, setQuote] = useState<PremiumQuote | null>(null);
+  const [quoteIssue, setQuoteIssue] = useState<string | null>(null);
+  const [quoting, setQuoting] = useState(false);
+  const [ordering, setOrdering] = useState(false);
   const [form] = Form.useForm<QuoteValues>();
 
   useEffect(() => {
@@ -142,6 +159,8 @@ export function ProductDetailModal({
     setPricingError(null);
     setPricingUnavailable(false);
     setImageFailed(false);
+    setQuote(null);
+    setQuoteIssue(null);
     setLoadingDetail(true);
     setLoadingPricing(true);
 
@@ -196,6 +215,7 @@ export function ProductDetailModal({
     product && pricing?.product_id === product.id ? pricing : null;
 
   function handleClose() {
+    if (ordering || quoting) return;
     if (activePricing) form.resetFields();
     setDetail(null);
     setPricing(null);
@@ -211,20 +231,51 @@ export function ProductDetailModal({
     handleClose();
   }
 
-  function handleFinish(values: QuoteValues) {
+  async function handleFinish(values: QuoteValues) {
     if (!current || !activePricing) return;
-    onConsult(buildSummary(current, activePricing.schema, values));
-    handleClose();
+    const answers: Record<string, string | number> = {};
+    for (const [key, value] of Object.entries(values)) {
+      if (value !== null && value !== undefined && value !== '') answers[key] = value;
+    }
+    setQuoting(true);
+    setQuoteIssue(null);
+    setQuote(null);
+    try {
+      setQuote(await calculatePremium(current.id, activePricing.scenario, answers));
+    } catch (reason) {
+      setQuoteIssue(reason instanceof Error ? reason.message : '保费试算失败，请重试');
+    } finally {
+      setQuoting(false);
+    }
+  }
+
+  async function handleOrder() {
+    if (!quote || !current || ordering) return;
+    if (!signedIn) {
+      onSignIn();
+      return;
+    }
+    if (Date.parse(quote.expires_at) <= Date.now()) {
+      setQuote(null);
+      setQuoteIssue('报价已过期，请重新试算。已填写的条件会保留。');
+      return;
+    }
+    setOrdering(true);
+    setQuoteIssue(null);
+    try {
+      const order = await createQuotedOrder(quote, current.name);
+      onOrderCreated(order.id);
+    } catch (reason) {
+      if (reason instanceof SessionExpiredError) onSignIn();
+      else setQuoteIssue(reason instanceof Error ? reason.message : '订单创建失败，请重试');
+    } finally {
+      setOrdering(false);
+    }
   }
 
   function renderControl(field: PriceField) {
     const options = resolveFieldOptions(field);
-    const isChoice =
-      field.type === 'select' || field.type === 'plan_select' || options.length > 0;
-    const isNumber =
-      field.type === 'number' || field.type === 'integer' || field.type === 'money';
-
-    if (isChoice && options.length > 0) {
+    if (options.length > 0) {
       return (
         <Select
           showSearch
@@ -237,7 +288,7 @@ export function ProductDetailModal({
         />
       );
     }
-    if (field.type === 'integer' || field.type === 'money') {
+    if (field.type === 'integer' || field.type === 'money' || field.type === 'number') {
       return (
         <InputNumber
           precision={field.type === 'integer' ? 0 : undefined}
@@ -281,7 +332,7 @@ export function ProductDetailModal({
         </>
       );
     }
-    if (!activePricing || activePricing.schema.fields.length === 0) {
+    if (!current || !activePricing || activePricing.schema.fields.length === 0) {
       return (
         <div className="product-quote__fallback">
           <CustomerServiceOutlined />
@@ -295,7 +346,10 @@ export function ProductDetailModal({
     }
 
     return (
-      <Form form={form} layout="vertical" onFinish={handleFinish}>
+      <Form form={form} layout="vertical" disabled={quoting || ordering} onFinish={handleFinish} onValuesChange={() => {
+        setQuote(null);
+        setQuoteIssue(null);
+      }}>
         {activePricing.schema.fields.map((field) => (
           <Form.Item
             className="product-quote__field"
@@ -307,17 +361,27 @@ export function ProductDetailModal({
             {renderControl(field)}
           </Form.Item>
         ))}
-        <Button
-          block
-          htmlType="submit"
-          icon={<CustomerServiceOutlined />}
-          type="primary"
-        >
-          带着条件咨询顾问
-        </Button>
-        <p className="product-quote__hint">
-          提交后会把试算条件带入智能顾问对话，具体保费由业务计算能力返回。
-        </p>
+        {quoteIssue && <Alert className="quote-error" type="error" message={quoteIssue} showIcon />}
+        {quote ? (
+          <div className="quote-review">
+            <div className="quote-review__price" aria-live="polite">
+              <div><span>试算年缴保费</span><strong>{formatAmount(Number(quote.annual_premium))}</strong></div>
+              <span>有效至 {quoteTime.format(new Date(quote.expires_at))}</span>
+            </div>
+            <p>订单创建后为待支付，当前操作不会扣款。</p>
+            <Button block type="primary" loading={ordering} onClick={() => void handleOrder()}>
+              {signedIn ? '确认创建订单' : '登录后下单'}
+            </Button>
+          </div>
+        ) : (
+          <Button block htmlType="submit" icon={<CalculatorOutlined />} type="primary" loading={quoting}>
+            试算保费
+          </Button>
+        )}
+        <Button type="link" className="quote-consult" icon={<CustomerServiceOutlined />} onClick={() => {
+          onConsult(buildSummary(current, activePricing.schema, form.getFieldsValue()));
+          handleClose();
+        }}>带着条件咨询顾问</Button>
       </Form>
     );
   }
@@ -329,8 +393,9 @@ export function ProductDetailModal({
       destroyOnHidden
       footer={null}
       onCancel={handleClose}
+      closable={!ordering && !quoting}
       open={open}
-      title={null}
+      aria-label={current?.name ?? '产品详情'}
       width={920}
     >
       {current ? (
@@ -429,13 +494,8 @@ export function ProductDetailModal({
               <div className="product-quote__header">
                 <div>
                   <h3>保费试算</h3>
-                  <p>{activePricing?.schema.title ?? '选择条件，向顾问获取报价'}</p>
+                  <p>{activePricing?.schema.title ?? '填写条件后查看报价'}</p>
                 </div>
-                {activePricing ? (
-                  <span className="product-quote__version">
-                    {activePricing.schema_version}
-                  </span>
-                ) : null}
               </div>
               {renderQuote()}
             </section>

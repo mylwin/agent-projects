@@ -28,6 +28,9 @@ interface HomePageProps {
   onAuthenticated: (session: AuthSession) => void;
   onLogout: () => void;
   onConsult: () => void;
+  onRecords: () => void;
+  onOrderCreated: (id: string) => void;
+  onLoginDismissed: () => void;
 }
 
 export function HomePage({
@@ -36,15 +39,22 @@ export function HomePage({
   onAuthenticated,
   onLogout,
   onConsult,
+  onRecords,
+  onOrderCreated,
+  onLoginDismissed,
 }: HomePageProps) {
   const [category, setCategory] = useState<CategoryFilter>('all');
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [authOpen, setAuthOpen] = useState(initialAuthOpen);
-  const [consultAfterLogin, setConsultAfterLogin] = useState(initialAuthOpen);
+  const [consultAfterLogin, setConsultAfterLogin] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+
+  useEffect(() => {
+    if (initialAuthOpen) setAuthOpen(true);
+  }, [initialAuthOpen]);
 
   useEffect(() => {
     // StrictMode 会重放 effect；不在这里中断请求（api.ts 会复用进行中的 GET），
@@ -104,9 +114,17 @@ export function HomePage({
           </a>
           <nav className="site-nav" aria-label="主导航">
             <a className="is-active" href="#products">保险产品</a>
-            <a href="#service">服务保障</a>
+            <a href="/account/plans" onClick={(event) => {
+              if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+              event.preventDefault();
+              onRecords();
+            }}>我的保障</a>
           </nav>
           <div className="site-actions">
+            <a className="site-account-mobile" href="/account/plans" onClick={(event) => {
+              event.preventDefault();
+              onRecords();
+            }}>我的保障</a>
             {session ? (
               <>
                 <span className="user-name">{session.user.display_name}</span>
@@ -114,7 +132,7 @@ export function HomePage({
               </>
             ) : (
               <>
-                <Button type="text" icon={<LoginOutlined />} onClick={() => openAuth()}>
+                <Button className="home-login" type="text" icon={<LoginOutlined />} onClick={() => openAuth()}>
                   登录
                 </Button>
               </>
@@ -193,6 +211,7 @@ export function HomePage({
           setAuthOpen(false);
           setConsultAfterLogin(false);
           window.sessionStorage.removeItem('advisor-draft');
+          onLoginDismissed();
         }}
         onSuccess={authenticated}
       />
@@ -202,6 +221,9 @@ export function HomePage({
         product={selectedProduct}
         onClose={() => setSelectedProduct(null)}
         onConsult={consultWithSummary}
+        signedIn={session !== null}
+        onSignIn={() => openAuth()}
+        onOrderCreated={onOrderCreated}
       />
     </div>
   );

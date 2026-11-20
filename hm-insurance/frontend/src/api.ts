@@ -2,8 +2,16 @@ import type {
   AuthSession,
   ChatHistory,
   ChatThread,
+  ClaimGuide,
+  ClaimRecord,
+  ClaimStatus,
   InsuranceCategory,
+  InsuranceOrder,
+  InsurancePlan,
+  InsurancePolicy,
   PlanInterrupt,
+  PolicyStatus,
+  PremiumQuote,
   PricingSchemaResponse,
   Product,
   UserSummary,
@@ -224,8 +232,76 @@ export function markPlanItemInsured(planId: string, itemId: string): Promise<unk
   );
 }
 
-export function getInsurancePlan(planId: string): Promise<unknown> {
-  return request<unknown>(`/insurance-plans/${encodeURIComponent(planId)}`);
+export function getInsurancePlan(planId: string): Promise<InsurancePlan> {
+  return request(`/insurance-plans/${encodeURIComponent(planId)}`);
+}
+
+export async function listInsurancePlans(): Promise<InsurancePlan[]> {
+  const result = await request<{ items: InsurancePlan[] }>('/insurance-plans');
+  return result.items;
+}
+
+export async function listPolicies(status: PolicyStatus | 'all'): Promise<InsurancePolicy[]> {
+  const result = await request<{ items: InsurancePolicy[] }>(`/policies?status=${status}`);
+  return result.items;
+}
+
+export function getPolicy(id: string): Promise<InsurancePolicy> {
+  return request(`/policies/${encodeURIComponent(id)}`);
+}
+
+export async function listClaims(status: ClaimStatus | 'all', policyId: string | null): Promise<ClaimRecord[]> {
+  const params = new URLSearchParams();
+  if (status !== 'all') params.set('status', status);
+  if (policyId) params.set('policy_id', policyId);
+  const query = params.toString();
+  const result = await request<{ items: ClaimRecord[] }>(`/claims${query ? `?${query}` : ''}`);
+  return result.items;
+}
+
+export function getClaim(id: string): Promise<ClaimRecord> {
+  return request(`/claims/${encodeURIComponent(id)}`);
+}
+
+export function getClaimGuide(policyId: string): Promise<ClaimGuide> {
+  return request(`/claim-guides/${encodeURIComponent(policyId)}`);
+}
+
+export async function listOrders(): Promise<InsuranceOrder[]> {
+  const result = await request<{ items: InsuranceOrder[] }>('/orders');
+  return result.items;
+}
+
+export function getOrder(id: string): Promise<InsuranceOrder> {
+  return request(`/orders/${encodeURIComponent(id)}`);
+}
+
+export function cancelOrder(id: string): Promise<InsuranceOrder> {
+  return request(`/orders/${encodeURIComponent(id)}/cancel`, { method: 'POST' });
+}
+
+export async function calculatePremium(
+  productId: number,
+  scenario: string,
+  answers: Record<string, string | number>,
+): Promise<PremiumQuote> {
+  const response = await sendRequest('/premium/calculate', {
+    method: 'POST',
+    body: JSON.stringify({ product_id: productId, scenario, answers }),
+  }, null);
+  if (!response.ok) throw await toApiError(response);
+  return response.json() as Promise<PremiumQuote>;
+}
+
+export function createQuotedOrder(quote: PremiumQuote, productName: string): Promise<InsuranceOrder> {
+  return request('/orders', {
+    method: 'POST',
+    body: JSON.stringify({
+      quote_ids: [quote.quote_id],
+      idempotency_key: `mall-${quote.quote_id}`,
+      items: [{ quote_id: quote.quote_id, product_id: quote.product_id, product_name: productName }],
+    }),
+  });
 }
 
 export function listChatThreads(): Promise<ChatThread[]> {

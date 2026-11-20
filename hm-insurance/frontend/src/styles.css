@@ -808,15 +808,6 @@ a {
   margin: 3px 0 0;
 }
 
-.product-quote__version {
-  background: #e8f4f1;
-  border-radius: 3px;
-  color: #0b766c;
-  font-size: 10px;
-  padding: 3px 6px;
-  white-space: nowrap;
-}
-
 .product-quote__field.ant-form-item {
   margin-bottom: 12px;
 }
@@ -842,13 +833,6 @@ a {
 .product-quote .ant-input-number-input::placeholder {
   color: #6f7d80;
   opacity: 1;
-}
-
-.product-quote__hint {
-  color: #8a9698;
-  font-size: 11px;
-  line-height: 1.5;
-  margin: 10px 0 0;
 }
 
 .product-quote__fallback {

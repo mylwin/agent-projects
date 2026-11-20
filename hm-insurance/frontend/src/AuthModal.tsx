@@ -52,6 +52,7 @@ export function AuthModal({ open, onCancel, onSuccess }: AuthModalProps) {
       title={null}
       footer={null}
       width={420}
+      zIndex={1100}
       onCancel={onCancel}
       afterClose={() => {
         setMode('login');
@@ -62,7 +63,7 @@ export function AuthModal({ open, onCancel, onSuccess }: AuthModalProps) {
     >
       <div className="auth-modal__header">
         <h2>欢迎来到安心保</h2>
-        <p>登录后可使用智能顾问服务</p>
+        <p>登录后可查看保障记录、下单和咨询顾问</p>
       </div>
       <Tabs
         activeKey={mode}

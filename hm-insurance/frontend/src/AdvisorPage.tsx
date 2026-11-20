@@ -35,6 +35,7 @@ import type { ChatMessage, ChatThread } from './types';
 interface AdvisorPageProps {
   session: AuthSession;
   onBack: () => void;
+  onRecords: () => void;
   onSessionExpired: () => void;
   onApplyProduct: (target: ApplyProductTarget) => void;
 }
@@ -45,7 +46,7 @@ interface ApplyProductTarget {
   itemId: string;
 }
 
-export function AdvisorPage({ session, onBack, onSessionExpired, onApplyProduct }: AdvisorPageProps) {
+export function AdvisorPage({ session, onBack, onRecords, onSessionExpired, onApplyProduct }: AdvisorPageProps) {
   const [threads, setThreads] = useState<ChatThread[]>([]);
   const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -345,6 +346,7 @@ export function AdvisorPage({ session, onBack, onSessionExpired, onApplyProduct 
         </div>
         <div>
           <span>{session.user.display_name}</span>
+          <Button onClick={onRecords}>我的保障</Button>
           <Button icon={<ArrowLeftOutlined />} onClick={onBack}>返回商城</Button>
         </div>
       </header>

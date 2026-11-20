@@ -133,3 +133,92 @@ export type AdditionalInfo =
   | { type: 'clause_sources'; sources: ClauseSource[] }
   | { type: 'products'; title: string; products: AdditionalProduct[] }
   | { type: 'policies'; title: string; policies: AdditionalPolicy[] };
+
+export interface RecordProduct {
+  id: number;
+  name: string;
+  category: InsuranceCategory;
+}
+
+export interface InsurancePlanItem {
+  id: string;
+  plan_id: string;
+  product_id: number;
+  product: RecordProduct;
+  status: 'uninsured' | 'insured';
+  recommendation_reason: string | null;
+  annual_premium_budget: string | null;
+}
+
+export interface InsurancePlan {
+  id: string;
+  plan_name: string;
+  summary: string | null;
+  budget_note: string | null;
+  status: 'uninsured' | 'applying' | 'insured';
+  annual_premium_budget: string | null;
+  created_at: string;
+  items: InsurancePlanItem[];
+}
+
+export type PolicyStatus = 'active' | 'expired' | 'cancelled' | 'pending';
+
+export interface InsurancePolicy {
+  id: string;
+  policy_number: string;
+  application_no: string | null;
+  status: PolicyStatus;
+  product: RecordProduct;
+  effective_at: string;
+  expires_at: string | null;
+  insured_name: string | null;
+  holder_name: string | null;
+  insured_id_no_masked: string | null;
+  insured_phone: string | null;
+  coverage_amount: string | null;
+  premium_amount: string | null;
+}
+
+export type ClaimStatus = 'submitted' | 'reviewing' | 'approved' | 'rejected' | 'paid';
+
+export interface ClaimRecord {
+  id: string;
+  policy_id: string | null;
+  claim_number: string | null;
+  claim_type: InsuranceCategory;
+  amount: string | null;
+  description: string | null;
+  status: ClaimStatus;
+  status_message: string;
+  policy: { id: string; policy_number: string } | null;
+  submitted_at: string;
+  updated_at: string;
+}
+
+export interface ClaimGuide {
+  policy_id: string;
+  product_name: string;
+  download_uri: string;
+  steps: Array<{ title: string; description: string }>;
+  materials: Array<{ name: string; required: boolean; remark: string }>;
+  notes: string[];
+}
+
+export type OrderStatus = 'pending_payment' | 'pending_policy' | 'paid' | 'completed' | 'cancelled';
+
+export interface InsuranceOrder {
+  id: string;
+  order_number: string;
+  total_premium: string;
+  status: OrderStatus;
+  created_at: string;
+  updated_at: string;
+  items: Array<{ quote_id?: string; product_id?: number; product_name?: string }>;
+}
+
+export interface PremiumQuote {
+  quote_id: string;
+  product_id: number;
+  annual_premium: string;
+  expires_at: string;
+}
